@@ -20,8 +20,10 @@ export default function SimpleTable({columns, data}){
                                 <tr {...headerGroup.getHeaderGroupProps()}>
                                     {headerGroup.headers.map(column => (
                                     <th
-                                        {...column.getHeaderProps()}
-                                    >
+                                    {...column.getHeaderProps({
+                                        style: column.style || {},
+                                    })}
+                                >
                                         {column.render('Header')}
                                     </th>
                                     ))}

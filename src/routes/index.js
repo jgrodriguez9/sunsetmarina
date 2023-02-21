@@ -2,6 +2,7 @@ import { Redirect } from "react-router-dom"
 import Alumnos from "../pages/Alumnos"
 import Login from "../pages/Authentication/Login"
 import Logout from "../pages/Authentication/Logout"
+import TipoBarco from "../pages/Catalogos/TipoBarco"
 import CicloEscolar from "../pages/CicloEscolar"
 import Cobranza from "../pages/Cobranza"
 import Colegiatura from "../pages/Colegiatura"
@@ -10,12 +11,20 @@ import Configuracion from "../pages/Configuracion"
 import Dashboard from "../pages/Dashboard"
 import Documento from "../pages/Documento"
 import PasarelaPagos from "../pages/PasarelaPagos"
+import Slip from "../pages/Slip"
 
 const authProtectedRoutes = [
     { path: "/logout", component: Logout },
-    { path: "/inicio", component: Dashboard },
-    { path: "/", exact: true, component: () => <Redirect to="/inicio" /> },
+    { path: "/dashboard", component: Dashboard },
+    { path: "/", exact: true, component: () => <Redirect to="/dashboard" /> },
 
+    //slip
+    { path: "/slip", exact: true, component: Slip },
+
+    //catalogos
+
+    //boadTypes
+    { path: "/boadtype", exact: true, component: TipoBarco },
     // //documents
     // { path: "/case-list", exact: true, component: DocumentList },
     // { path: "/case-add", exact: true, component: DocumentAdd },

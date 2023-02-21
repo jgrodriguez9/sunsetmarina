@@ -1,8 +1,8 @@
-import { get, post, put } from "./api";
-import * as url from "./url";
+import { get } from "../api";
+import * as url from "../url";
 
-//get user logued
-// const getUserList = query => get(`${url.USER}${query}`)
+//get listado paginado
+const getBoadTypeListPaginado = query => get(`${url.boatType}${query}`)
 
 // //get case
 // const getUser = id => get(`${url.USER}/${id}`)
@@ -15,9 +15,9 @@ import * as url from "./url";
 
 
 
-// export {
-//     getUserList,
+export {
+     getBoadTypeListPaginado,
 //     getUser,
 //     postUser,
 //     putUser,
-// }
+}

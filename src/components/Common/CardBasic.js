@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { useState } from "react";
-import { Card, CardBody, Collapse } from "reactstrap";
+import { Card, CardBody } from "reactstrap";
 
 export default function CardBasic({title, children}){
     const [accordionSearch, setAccordionSearch] = useState(true);
@@ -26,11 +26,9 @@ export default function CardBasic({title, children}){
                             </button>
                         </h2>}
 
-                        <Collapse isOpen={accordionSearch} className="accordion-collapse">
-                            <div className="accordion-body">
-                                {children}
-                            </div>
-                        </Collapse>
+                        <div className="accordion-body">
+                            {children}
+                        </div>
                     </div>
                 </div>
             </CardBody>

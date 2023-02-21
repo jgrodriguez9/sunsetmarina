@@ -190,3 +190,10 @@
 .invalid-tooltip{
   position: static;
 }
+#img-mapper{
+  margin: auto;
+}
+.placeholder-glow .placeholder{
+    webkit-animation: placeholder-glow 1s ease-in-out infinite;
+    animation: placeholder-glow 1s ease-in-out infinite;
+}
