@@ -58,7 +58,7 @@ const Navbar = props => {
             id="navigation"
           >
             <Collapse
-              isOpen={props.leftMenu}
+              isOpen={props.isMenuOpened}
               className="navbar-collapse"
               id="topnav-menu-content"
             >

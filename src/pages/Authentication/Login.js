@@ -3,7 +3,6 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Card, CardBody, Col, Container, Form, Label, Row, Input, FormFeedback, Alert } from "reactstrap";
 
-import profile from "../../assets/images/profile-img2.png"
 import logo from "../../assets/images/logo.png";
 import { postJwtLogin } from "../../helpers/auth";
 import useHandleErrors from "../../hooks/useHandleErrors";

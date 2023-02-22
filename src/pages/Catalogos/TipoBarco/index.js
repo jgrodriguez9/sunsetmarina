@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useMemo, useState } from "react";
 import { useHistory, withRouter } from "react-router-dom";
 import { toast } from "react-toastify";
-import { Card, CardBody, Col, Container, Row } from "reactstrap";
+import { Col, Container, Row } from "reactstrap";
 import Breadcrumbs from "../../../components/Common/Breadcrumbs";
 import CardMain from "../../../components/Common/CardMain";
 import TableLoader from "../../../components/Loader/TablaLoader";
@@ -17,10 +17,11 @@ function TipoBarco(){
     const [loading, setLoading] = useState(true)
     const [items, setItems] = useState([]);
     const [totalPaginas, setTotalPaginas] = useState(0)
+    const [totalRegistros, setTotalRegistros]   =useState(10)
     const history = useHistory();
     const [query, setQuery] = useState({
         page: 1,
-        max: 10
+        max: totalRegistros
     })
     
     useEffect(() => {
@@ -31,11 +32,13 @@ function TipoBarco(){
                 console.log(response)
                 setItems(response.list)
                 setTotalPaginas(response.pagination.totalPages)
+                setTotalRegistros(response.pagination.totalCount)
                 setLoading(false)
             } catch (error) {
                 toast.error(ERROR_SERVER)
                 setItems([])
                 setTotalPaginas(0)
+                setTotalRegistros(10)
                 setLoading(false)
             } 
         }
@@ -89,6 +92,14 @@ function TipoBarco(){
         }))
     }
 
+    const handleChangeLimit = limit => {
+        setQuery(prev=>({
+            ...prev,
+            page: 1,
+            max: limit
+        }))
+    }
+
     const cardHandleList = (
         loading ?
         <Row>
@@ -108,10 +119,10 @@ function TipoBarco(){
                 <Paginate
                     page={query.page}
                     totalPaginas={totalPaginas}
-                    totalRegistros={0}
+                    totalRegistros={totalRegistros}
                     handlePageClick={handlePageClick}
                     limit={query.limite}
-                    handleChangeLimit={() => {}}
+                    handleChangeLimit={handleChangeLimit}
                 />
             }            
         </Row>
@@ -125,6 +136,10 @@ function TipoBarco(){
               <Breadcrumbs
                 title={'Embarcación'}
                 breadcrumbItem={"Tipo de embarcación"}
+                add={{
+                    allow: true,
+                    text: 'Crear Nuevo Tipo de Embarcación'
+                }}
               />
 
               
@@ -133,11 +148,7 @@ function TipoBarco(){
                   <Col lg="12">
                     <CardMain
                         title='Listado'
-                        children={cardHandleList} 
-                        add={{
-                            allow: true,
-                            text: 'Crear Nuevo Tipo de Embarcación'
-                        }}
+                        children={cardHandleList}
                     />                                          
                   </Col>
               </Row>  

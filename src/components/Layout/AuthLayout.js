@@ -15,8 +15,13 @@ const AuthLayout = props => {
     return (
         <>      
           <div id="layout-wrapper">
-            <Header openLeftMenuCallBack={openMenu} />
-            <Navbar menuOpen={isMenuOpened} />
+            <Header 
+              openMenu={openMenu} 
+              isMenuOpened={isMenuOpened}
+            />
+            <Navbar 
+              isMenuOpened={isMenuOpened}               
+            />
             {/* <Sidebar /> */}
             <div className="main-content">{props.children}</div>
             <Footer />

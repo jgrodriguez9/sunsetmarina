@@ -1,7 +1,6 @@
-import { Link } from "react-router-dom"
-import { BreadcrumbItem, Col, Row } from "reactstrap"
+import { Button, Col, Row } from "reactstrap"
 
-function Breadcrumbs({breadcrumbItem, title}){
+function Breadcrumbs({breadcrumbItem, title, add}){
 
     return (
         <Row>
@@ -9,14 +8,7 @@ function Breadcrumbs({breadcrumbItem, title}){
             <div className="page-title-box d-sm-flex align-items-center justify-content-between">
               <h4 className="mb-0 font-size-18">{breadcrumbItem}</h4>
               <div className="page-title-right">
-                <ol className="breadcrumb m-0">
-                  <BreadcrumbItem>
-                    <Link to="#">{title}</Link>
-                  </BreadcrumbItem>
-                  <BreadcrumbItem active>
-                    <Link to="#">{breadcrumbItem}</Link>
-                  </BreadcrumbItem>
-                </ol>
+                {add.allow && <Button color="primary" size="sm" className="fw-bold">{add.text}</Button>}                
               </div>
             </div>
           </Col>

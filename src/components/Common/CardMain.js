@@ -1,6 +1,6 @@
-import { Button, Card, CardBody } from "reactstrap";
+import { Card, CardBody } from "reactstrap";
 
-export default function CardMain({title, children, add}){
+export default function CardMain({title, children}){
 
     return (
         <Card>
@@ -11,9 +11,6 @@ export default function CardMain({title, children, add}){
                             <h5 className="accordion-header m-0">
                                 {title}
                             </h5>
-                            <div>
-                                {add.allow && <Button color="primary" size="sm" className="fw-bold">{add.text}</Button>}
-                            </div>
                         </div>                        
                     </div>
                 </div>

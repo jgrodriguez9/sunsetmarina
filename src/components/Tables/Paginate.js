@@ -21,11 +21,25 @@ function Paginate({page, totalPaginas, handlePageClick, totalRegistros, limit, h
     
         return options;
     }
+
+    const getLimites = () =>{
+      const options = [];
+      let total = totalRegistros;
+      let cont = 1;
+      console.log(cont)
+      console.log(total)
+      // while(total < 10 ){
+      //   options.push(10*cont)
+      //   cont ++;
+      //   total -= 10;
+      // }
+      return options
+    }
     
     return (
       <div className="d-flex align-items-center">
         <div className="me-auto">
-          {/* <span className="text-muted fs-08">
+          <span className="text-muted fs-08">
             Total de registros: 
             <select 
               className="mx-1" 
@@ -35,13 +49,13 @@ function Paginate({page, totalPaginas, handlePageClick, totalRegistros, limit, h
             >
               {
                 totalRegistros < 10 ? <option value={totalRegistros}>{totalRegistros}</option> :
-                limites.map((item) => (
+                getLimites().map((item) => (
                   <option value={item} key={item}>{item}</option>
                 ))
 
               }
             </select> de {totalRegistros}
-           </span> */}
+           </span>
         </div>
         <div>
           <Pagination className="pagination pagination-rounded justify-content-end paginate-margin-ul-none">
