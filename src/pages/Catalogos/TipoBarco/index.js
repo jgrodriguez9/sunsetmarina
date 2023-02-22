@@ -59,11 +59,23 @@ function TipoBarco(){
             }
           },
           {
+            Header: 'Tiene motor',
+            accessor: 'hasEngine',
+            Cell: ({row, value}) => <CellFormatEnable 
+                                        value={value} 
+                                        okText="Tiene motor" 
+                                        failText="No tiene motor"
+                                        badge={false}/>,
+            style: {
+                width: '15%'
+            }
+          },
+          {
             Header: 'Habilitado',
             accessor: 'enabled',
-            Cell: ({row, value}) => <CellFormatEnable value={value}/>,
+            Cell: ({row, value}) => <CellFormatEnable value={value} okText="Habilitado" failText="No habilitado"/>,
             style: {
-                width: '30%'
+                width: '15%'
             }
           },
           {
@@ -104,7 +116,7 @@ function TipoBarco(){
         loading ?
         <Row>
             <Col xs="12" xl="12">
-                <TableLoader columns={[{name: "Descripción", width: '60%'}, {name: "Activo", width: '30%'}, {name: "Acciones", width: '10%'}]} />
+                <TableLoader columns={[{name: "Descripción", width: '60%'}, {name: "Tiene motor", with: '15%'}, {name: "Habilitado", width: '15%'}, {name: "Acciones", width: '10%'}]} />
             </Col>
         </Row> :
         <Row>

@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { Pagination, PaginationItem, PaginationLink } from "reactstrap"
 
 function Paginate({page, totalPaginas, handlePageClick, totalRegistros, limit, handleChangeLimit}){
@@ -21,20 +22,6 @@ function Paginate({page, totalPaginas, handlePageClick, totalRegistros, limit, h
     
         return options;
     }
-
-    const getLimites = () =>{
-      const options = [];
-      let total = totalRegistros;
-      let cont = 1;
-      console.log(cont)
-      console.log(total)
-      // while(total < 10 ){
-      //   options.push(10*cont)
-      //   cont ++;
-      //   total -= 10;
-      // }
-      return options
-    }
     
     return (
       <div className="d-flex align-items-center">
@@ -49,7 +36,7 @@ function Paginate({page, totalPaginas, handlePageClick, totalRegistros, limit, h
             >
               {
                 totalRegistros < 10 ? <option value={totalRegistros}>{totalRegistros}</option> :
-                getLimites().map((item) => (
+                limites.map((item) => (
                   <option value={item} key={item}>{item}</option>
                 ))
 

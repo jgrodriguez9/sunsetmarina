@@ -1,6 +1,7 @@
 import { Badge } from "reactstrap";
 
-export default function CellFormatEnable({value}){
+export default function CellFormatEnable({value, okText, failText, badge=true}){
 
-    return <Badge color={value ? 'success' : 'danger '}>{value ? 'Habilitado' : 'No Habilitado'}</Badge>
+    return badge ? <Badge color={value ? 'success' : 'danger '}>{value ? okText : failText}</Badge> :
+                   <Badge color={'light'}>{value ? okText : failText}</Badge>
 }
