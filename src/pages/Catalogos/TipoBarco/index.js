@@ -4,7 +4,9 @@ import { useHistory, withRouter } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Col, Container, Row } from "reactstrap";
 import Breadcrumbs from "../../../components/Common/Breadcrumbs";
+import CardBasic from "../../../components/Common/CardBasic";
 import CardMain from "../../../components/Common/CardMain";
+import FormFilter from "../../../components/Common/FormFilter";
 import TableLoader from "../../../components/Loader/TablaLoader";
 import CellActions from "../../../components/Tables/CellActions";
 import CellFormatEnable from "../../../components/Tables/CellFormatEnable";
@@ -23,6 +25,16 @@ function TipoBarco(){
         page: 1,
         max: totalRegistros
     })
+    const [filters, setFilters] = useState([
+        {
+            label: 'Descripción',
+            field: 'description',
+            width: 3,
+            control: 'input',
+            type: 'text',
+            value: ''
+        }
+    ]);
     
     useEffect(() => {
         const getBoadTypeListPaginadoApi = async () => {
@@ -139,6 +151,18 @@ function TipoBarco(){
             }            
         </Row>
     )
+
+    
+    const handleFilter = (
+            <Row>
+                <Col>
+                    <FormFilter 
+                        filters={filters}
+                        setFilters={setFilters}
+                    />
+                </Col>
+            </Row>
+    )
     
     return (
         <>
@@ -154,7 +178,14 @@ function TipoBarco(){
                 }}
               />
 
-              
+              <Row>
+                <Col xs="12" lg="12">
+                    <CardBasic 
+                        title="Filtros"
+                        children={handleFilter}
+                    />                    
+                </Col>
+              </Row>
 
               <Row className="pb-5">
                   <Col lg="12">
