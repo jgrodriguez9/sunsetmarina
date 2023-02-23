@@ -197,3 +197,10 @@
     webkit-animation: placeholder-glow 1s ease-in-out infinite;
     animation: placeholder-glow 1s ease-in-out infinite;
 }
+.accordion-button{
+  font-size: 1.01562rem;
+}
+.accordion-button:not(.collapsed){
+  color: #495057;
+  background-color: $gray-300
+}

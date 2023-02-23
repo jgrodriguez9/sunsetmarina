@@ -22,7 +22,7 @@ function TipoBarco(){
     const [totalRegistros, setTotalRegistros]   =useState(10)
     const history = useHistory();
     const [query, setQuery] = useState({
-        page: 1,
+        page: 0,
         max: totalRegistros
     })
     const [filters, setFilters] = useState([
@@ -35,13 +35,13 @@ function TipoBarco(){
             value: ''
         }
     ]);
-    
+
     useEffect(() => {
         const getBoadTypeListPaginadoApi = async () => {
             let q = Object.keys(query).map(key=>`${key}=${query[key]}`).join("&")
             try {
                 const response = await getBoadTypeListPaginado(`?${q}`);
-                console.log(response)
+                //console.log(response)
                 setItems(response.list)
                 setTotalPaginas(response.pagination.totalPages)
                 setTotalRegistros(response.pagination.totalCount)
@@ -119,9 +119,22 @@ function TipoBarco(){
     const handleChangeLimit = limit => {
         setQuery(prev=>({
             ...prev,
-            page: 1,
+            page: 0,
             max: limit
         }))
+    }
+    
+    const fireSearch = (filts) => {
+        const activeFilters = filts.filter(fl => fl.value).map(field => ({name: field.field, value: field.value}))
+        const obj = activeFilters.reduce((accumulator, value) => {
+            return {...accumulator, [value.name]: value.value};
+          }, {});
+        setQuery(prev=>({
+            max: prev.max,
+            page: 0,
+            ...obj
+        }))
+
     }
 
     const cardHandleList = (
@@ -151,7 +164,6 @@ function TipoBarco(){
             }            
         </Row>
     )
-
     
     const handleFilter = (
             <Row>
@@ -159,6 +171,7 @@ function TipoBarco(){
                     <FormFilter 
                         filters={filters}
                         setFilters={setFilters}
+                        fireSearch={fireSearch}
                     />
                 </Col>
             </Row>

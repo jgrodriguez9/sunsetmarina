@@ -9,7 +9,7 @@ function Paginate({page, totalPaginas, handlePageClick, totalRegistros, limit, h
         const lastPageIndex = pageSize;
         
         if (lastPageIndex <= maxNumberOfOptions) {
-          while(options.length < lastPageIndex) options.push(options.length+1);
+          while(options.length < lastPageIndex) options.push(options.length);
         } else if (pageIndex < pivot) {
           while(options.length < maxNumberOfOptions) options.push(options.length);
         } else if (pageIndex > (lastPageIndex - pivot)) {
@@ -46,7 +46,7 @@ function Paginate({page, totalPaginas, handlePageClick, totalRegistros, limit, h
         </div>
         <div>
           <Pagination className="pagination pagination-rounded justify-content-end paginate-margin-ul-none">
-              <PaginationItem disabled={page === 1}>
+              <PaginationItem disabled={page === 0}>
               <PaginationLink
                   previous
                   href="#"
@@ -60,12 +60,12 @@ function Paginate({page, totalPaginas, handlePageClick, totalRegistros, limit, h
                       onClick={() => handlePageClick(item)}
                       href="#"
                       >
-                      {item}
+                      {item+1}
                       </PaginationLink>
                   </PaginationItem>
               ))
               }
-              <PaginationItem disabled={page === totalPaginas}>
+              <PaginationItem disabled={page+1 === totalPaginas}>
               <PaginationLink
                   next
                   href="#"
