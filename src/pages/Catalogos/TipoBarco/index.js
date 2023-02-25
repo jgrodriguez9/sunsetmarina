@@ -6,14 +6,16 @@ import { Col, Container, Row } from "reactstrap";
 import Breadcrumbs from "../../../components/Common/Breadcrumbs";
 import CardBasic from "../../../components/Common/CardBasic";
 import CardMain from "../../../components/Common/CardMain";
+import DeleteDialog from "../../../components/Common/DeleteDialog";
 import FormFilter from "../../../components/Common/FormFilter";
 import TableLoader from "../../../components/Loader/TablaLoader";
 import CellActions from "../../../components/Tables/CellActions";
 import CellFormatEnable from "../../../components/Tables/CellFormatEnable";
 import Paginate from "../../../components/Tables/Paginate";
 import SimpleTable from "../../../components/Tables/SimpleTable";
-import { ERROR_SERVER } from "../../../constants/messages";
-import { getBoadTypeListPaginado } from "../../../helpers/catalogos/boadType";
+import { DELETE_SUCCESS, ERROR_SERVER } from "../../../constants/messages";
+import { deleteBoadType, getBoadTypeListPaginado } from "../../../helpers/catalogos/boadType";
+import extractMeaningfulMessage from "../../../utils/extractMeaningfulMessage";
 
 function TipoBarco(){  
     const [loading, setLoading] = useState(true)
@@ -21,9 +23,12 @@ function TipoBarco(){
     const [totalPaginas, setTotalPaginas] = useState(0)
     const [totalRegistros, setTotalRegistros]   =useState(10)
     const history = useHistory();
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+    const [isDeleting, setDeleting] = useState(false)
+    const [selectedIdDelete, setSelectedIdDeleted] = useState(null)
     const [query, setQuery] = useState({
-        page: 0,
-        max: totalRegistros
+        max: totalRegistros,
+        page: 1,       
     })
     const [filters, setFilters] = useState([
         {
@@ -33,29 +38,48 @@ function TipoBarco(){
             control: 'input',
             type: 'text',
             value: ''
+        },
+        {
+            label: 'Tiene motor',
+            field: 'hasEngine',
+            width: 2,
+            control: 'checkbox',
+            type: 'text',
+            value: ''
+        },
+        {
+            label: 'Habilitado',
+            field: 'enabled',
+            width: 2,
+            control: 'checkbox',
+            type: 'text',
+            value: ''
         }
     ]);
 
+    const fetchList = async () => {
+        let q = Object.keys(query).map(key=>`${key}=${query[key]}`).join("&")
+        try {
+            const response = await getBoadTypeListPaginado(`?${q}`);
+            //console.log(response)
+            setItems(response.list)
+            setTotalPaginas(response.pagination.totalPages)
+            setTotalRegistros(response.pagination.totalCount)
+            setLoading(false)
+        } catch (error) {
+            let message  = ERROR_SERVER;
+            message = extractMeaningfulMessage(error, message)
+            toast.error(message) 
+            setItems([])
+            setTotalPaginas(0)
+            setTotalRegistros(10)
+            setLoading(false)
+        } 
+    }
+
     useEffect(() => {
-        const getBoadTypeListPaginadoApi = async () => {
-            let q = Object.keys(query).map(key=>`${key}=${query[key]}`).join("&")
-            try {
-                const response = await getBoadTypeListPaginado(`?${q}`);
-                //console.log(response)
-                setItems(response.list)
-                setTotalPaginas(response.pagination.totalPages)
-                setTotalRegistros(response.pagination.totalCount)
-                setLoading(false)
-            } catch (error) {
-                toast.error(ERROR_SERVER)
-                setItems([])
-                setTotalPaginas(0)
-                setTotalRegistros(10)
-                setLoading(false)
-            } 
-        }
-        getBoadTypeListPaginadoApi()
-    }, [query])
+        fetchList();
+    }, [JSON.stringify(query)])
 
     const editAction = (row) => {
         history.push(`/boadtype/edit/${row.original.id}`)
@@ -97,6 +121,7 @@ function TipoBarco(){
                 <>
                     <CellActions
                         edit={{"allow": true, action: editAction}} 
+                        del={{"allow": true, action: handleShowDialogDelete}}
                         row={row}
                     />
                 </>
@@ -109,6 +134,11 @@ function TipoBarco(){
         []
     );
 
+    const handleShowDialogDelete = (row) => {
+        setShowDeleteDialog(true)
+        setSelectedIdDeleted(row.original.idi)
+    }
+
     const handlePageClick = page => {
         setQuery(prev=>({
             ...prev,
@@ -119,8 +149,8 @@ function TipoBarco(){
     const handleChangeLimit = limit => {
         setQuery(prev=>({
             ...prev,
-            page: 0,
-            max: limit
+            max: limit,
+            page: 1            
         }))
     }
     
@@ -129,12 +159,32 @@ function TipoBarco(){
         const obj = activeFilters.reduce((accumulator, value) => {
             return {...accumulator, [value.name]: value.value};
           }, {});
-        setQuery(prev=>({
-            max: prev.max,
-            page: 0,
-            ...obj
-        }))
 
+          setQuery(prev=>({
+            max: prev.max,
+            page: 1,
+            ...obj
+        }))        
+    }
+
+    const goPageCreate = () => {
+        history.push("/boadtype/create")
+    }
+
+    const handleDelete = async (row) => {
+        setDeleting(true)   
+        try {
+            await deleteBoadType(row.original.id);
+            fetchList()
+            setDeleting(false)
+            setShowDeleteDialog(false)
+            toast.success(DELETE_SUCCESS)
+        } catch (error) {
+            let message  = ERROR_SERVER;
+            message = extractMeaningfulMessage(error, message)
+            toast.error(message) 
+            setDeleting(false)
+        }      
     }
 
     const cardHandleList = (
@@ -187,7 +237,8 @@ function TipoBarco(){
                 breadcrumbItem={"Tipo de embarcación"}
                 add={{
                     allow: true,
-                    text: 'Crear Nuevo Tipo de Embarcación'
+                    text: 'Crear Nuevo',
+                    goPageCreate: goPageCreate
                 }}
               />
 
@@ -199,7 +250,7 @@ function TipoBarco(){
                     />                    
                 </Col>
               </Row>
-
+                <span onClick={() => setShowDeleteDialog(true)}>test delete</span>
               <Row className="pb-5">
                   <Col lg="12">
                     <CardMain
@@ -210,6 +261,12 @@ function TipoBarco(){
               </Row>  
             </Container>
           </div>
+          <DeleteDialog 
+            handleDelete={handleDelete}
+            show={showDeleteDialog}
+            setShow={setShowDeleteDialog}
+            isDeleting={isDeleting}
+          />
         </>
       );
   }

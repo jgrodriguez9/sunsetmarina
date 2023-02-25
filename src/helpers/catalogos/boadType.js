@@ -1,23 +1,17 @@
-import { get } from "../api";
+import { del, get, post, put } from "../api";
 import * as url from "../url";
 
 //get listado paginado
+const getBoadType = (id) => get(`${url.boatType}/${id}`)
 const getBoadTypeListPaginado = query => get(`${url.boatType}${query}`)
-
-// //get case
-// const getUser = id => get(`${url.USER}/${id}`)
-
-// //save stage
-// const postUser = data => post(url.USER, data)
-
-// //update stage
-// const putUser = (id, data) => put(`${url.USER}/${id}`, data)
-
-
+const saveBoadType = (data) => post(url.boatType, data)
+const updateBoadType = (id, data) => put(`${url.boatType}/${id}`, data)
+const deleteBoadType = (id) => del(`${url.boatType}/${id}`)
 
 export {
+     getBoadType,
      getBoadTypeListPaginado,
-//     getUser,
-//     postUser,
-//     putUser,
+     saveBoadType,
+     updateBoadType,
+     deleteBoadType
 }

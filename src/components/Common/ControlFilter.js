@@ -11,10 +11,28 @@ export default function ControlFilter({field, handleChange, handleFilter}){
                     <Input
                         id={field.field}
                         className={`form-control`}
-                        onChange={(e) => handleChange(field.field, e.target.value)}
+                        onChange={(e) => handleChange(field.field, e.target.value, 'input')}
                         value={field.value}  
                         onBlur={handleFilter}
                     />
+                </>
+            );
+        case 'checkbox':
+            return (
+                <>
+                    <Label className="mb-0 d-block opacity-0">placeholder</Label>
+                    <Input
+                        id={field.field}
+                        name="activo"
+                        type="checkbox"
+                        className={`form-check-Input form-check-input`}
+                        onChange={(e) => {
+                            handleChange(field.field, e.target.checked, 'checkbox')
+                            handleFilter()
+                        }}
+                        checked={field.value || false}  
+                    />
+                    <Label htmlFor={field.field} className="mb-0 ms-2">{field.label}</Label>
                 </>
             );
         default:

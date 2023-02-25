@@ -15,9 +15,8 @@ axiosApi.defaults.headers.common["Content-Type"] = "multipart/form-data"
 axiosApi.interceptors.response.use(
     response => response,
     error => {
-        console.log(error)
         if(error.response === undefined){
-            alert("Seems there are some issue with his internet, check your conextion please")
+            return Promise.reject(error);
         }else if(error.response.status===403){
             window.localStorage.removeItem('sunsetadmiralauth');
             window.location.reload();

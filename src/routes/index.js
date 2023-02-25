@@ -3,6 +3,8 @@ import Alumnos from "../pages/Alumnos"
 import Login from "../pages/Authentication/Login"
 import Logout from "../pages/Authentication/Logout"
 import TipoBarco from "../pages/Catalogos/TipoBarco"
+import CreateTipoBarco from "../pages/Catalogos/TipoBarco/Create"
+import EditTipoBarco from "../pages/Catalogos/TipoBarco/Edit"
 import CicloEscolar from "../pages/CicloEscolar"
 import Cobranza from "../pages/Cobranza"
 import Colegiatura from "../pages/Colegiatura"
@@ -25,6 +27,8 @@ const authProtectedRoutes = [
 
     //boadTypes
     { path: "/boadtype", exact: true, component: TipoBarco },
+    { path: "/boadtype/edit/:id", exact: true, component: EditTipoBarco },
+    { path: "/boadtype/create", exact: true, component: CreateTipoBarco },
     // //documents
     // { path: "/case-list", exact: true, component: DocumentList },
     // { path: "/case-add", exact: true, component: DocumentAdd },

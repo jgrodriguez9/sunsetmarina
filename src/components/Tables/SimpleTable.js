@@ -23,7 +23,7 @@ export default function SimpleTable({columns, data}){
                                     {...column.getHeaderProps({
                                         style: column.style || {},
                                     })}
-                                >
+                                    >
                                         {column.render('Header')}
                                     </th>
                                     ))}
