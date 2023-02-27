@@ -3,7 +3,7 @@ import axios from "axios";
 //pass new generated access token here
 const token = localStorage.getItem("sunsetadmiralauth") ? `Bearer ${JSON.parse(localStorage.getItem("sunsetadmiralauth")).token}` : "";
 //apply base url for axios
-const API_URL = 'https://33ac-2806-2f0-8000-6b4c-e971-5613-1838-7867.ngrok.io/api';
+const API_URL = 'http://139.144.51.203:9090/api';
 
 const axiosApi = axios.create({
     baseURL: API_URL,
