@@ -261,7 +261,6 @@ function TipoBarco(){
                     />                    
                 </Col>
               </Row>
-                <span onClick={() => setShowDeleteDialog(true)}>test delete</span>
               <Row className="pb-5">
                   <Col lg="12">
                     <CardMain
