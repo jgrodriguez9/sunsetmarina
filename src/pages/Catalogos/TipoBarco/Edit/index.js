@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { useParams, withRouter } from "react-router-dom";
-import { toast } from "react-toastify";
 import { Col, Container, Row } from "reactstrap";
 import FormTipoEmbarcacion from "../../../../components/Catalogo/TipoEmbarcacion/FormTipoEmbarcacion";
 import Breadcrumbs from "../../../../components/Common/Breadcrumbs";
@@ -10,11 +10,13 @@ import ErrorEntity from "../../../../components/Common/ErrorEntity";
 import FormLoader from "../../../../components/Loader/FormLoader";
 import { ERROR_SERVER } from "../../../../constants/messages";
 import { getBoadType } from "../../../../helpers/catalogos/boadType";
+import { addMessage } from "../../../../redux/messageSlice";
 import extractMeaningfulMessage from "../../../../utils/extractMeaningfulMessage";
 
 const fields = [{label: 'Nombre', width: 4}, {label: 'Tiene motor', width: 2}, {label: 'Habilitado', width: 2}]
 function EditTipoBarco(){
     const {id} = useParams();
+    const dispatch = useDispatch();
     const [item, setItem] = useState(null)
     const [states, setStates] = useState({
         reload: true,
@@ -26,13 +28,15 @@ function EditTipoBarco(){
     const fetchItem = async () => {
         try {
             const response = await getBoadType(id);
-            console.log(response)
-            //setItem(response)            
+            setItem(response)            
             setStates(prev=>({...prev, loading: false, error: false, success: true}))
         } catch (error) {
             let message  = ERROR_SERVER;
             message = extractMeaningfulMessage(error, message)
-            toast.error(message)            
+            dispatch(addMessage({
+                type: 'error',
+                message: message
+            }))          
             setStates(prev=>({...prev, loading: false, error: true, success: false}))
         } 
     }
@@ -46,8 +50,7 @@ function EditTipoBarco(){
                 error: false,
                 success:false
             })
-        }
-        
+        }        
     },[states.reload])
 
     return(

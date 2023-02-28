@@ -1,13 +1,19 @@
 import { useFormik } from "formik"
-import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { Link, useHistory } from "react-router-dom";
 import { Button, Col, Form, Input, Label, Row } from "reactstrap";
 import * as Yup from "yup";
-import { FIELD_REQUIRED } from "../../../constants/messages";
+import { ERROR_SERVER, FIELD_REQUIRED, SAVE_SUCCESS, UPDATE_SUCCESS } from "../../../constants/messages";
+import { saveBoadType, updateBoadType } from "../../../helpers/catalogos/boadType";
+import { addMessage } from "../../../redux/messageSlice";
+import extractMeaningfulMessage from "../../../utils/extractMeaningfulMessage";
 
 export default function FormTipoEmbarcacion({item, btnTextSubmit="Aceptar"}){
-    
+    const history = useHistory();
+    const dispatch = useDispatch();
     const formik = useFormik({
         initialValues: {
+            id: item?.id ?? '',
             description: item?.description ?? '',
             enabled: item?.enabled ?? true,
             hasEngine: item?.hasEngine ?? false,           
@@ -15,26 +21,58 @@ export default function FormTipoEmbarcacion({item, btnTextSubmit="Aceptar"}){
         validationSchema: Yup.object({
             description: Yup.string().required(FIELD_REQUIRED),
         }),
-        onSubmit: (values) => {
+        onSubmit: async (values) => {
             //validaciones antes de enviarlo
             console.log(values)
-           
-            //service here
-            // try {
-            //     async function savePartnerApi() {
-            //         let response = await savePartner(values)
-            //         if(response.state){
-            //             toast.success("Actualizado correctamente");
-            //             setReloadPartner(true)
-            //             setShowForm(false)
-            //         }else{
-            //             toast.error(ERROR_SERVER);
-            //         }
-            //     }
-            //     savePartnerApi()
-            // }catch(error) {
-            //     toast.error(ERROR_SERVER); 
-            // }
+            if(values.id){
+                //update
+                try {
+                    let response = await updateBoadType(values.id, values)
+                    if(response){
+                        dispatch(addMessage({
+                            type: 'success',
+                            message: UPDATE_SUCCESS
+                        }))
+                        history.push('/boadtype')
+                    }else{
+                        dispatch(addMessage({
+                            type: 'error',
+                            message: ERROR_SERVER
+                        }))
+                    }
+                } catch (error) {
+                    let message  = ERROR_SERVER;
+                    message = extractMeaningfulMessage(error, message)
+                    dispatch(addMessage({
+                        type: 'error',
+                        message: message
+                    })) 
+                }
+            }else{
+                //save
+                try{
+                    let response = await saveBoadType(values)
+                    if(response){
+                        dispatch(addMessage({
+                            type: 'success',
+                            message: SAVE_SUCCESS
+                        }))
+                        history.push('/boadtype')
+                    }else{
+                        dispatch(addMessage({
+                            type: 'error',
+                            message: ERROR_SERVER
+                        }))
+                    }
+                }catch(error){
+                    let message  = ERROR_SERVER;
+                    message = extractMeaningfulMessage(error, message)
+                    dispatch(addMessage({
+                        type: 'error',
+                        message: message
+                    }))
+                }
+            }
         }
     })
 

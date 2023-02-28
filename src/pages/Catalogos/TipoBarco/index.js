@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useHistory, withRouter } from "react-router-dom";
-import { toast } from "react-toastify";
 import { Col, Container, Row } from "reactstrap";
 import Breadcrumbs from "../../../components/Common/Breadcrumbs";
 import CardBasic from "../../../components/Common/CardBasic";
@@ -15,9 +15,11 @@ import Paginate from "../../../components/Tables/Paginate";
 import SimpleTable from "../../../components/Tables/SimpleTable";
 import { DELETE_SUCCESS, ERROR_SERVER } from "../../../constants/messages";
 import { deleteBoadType, getBoadTypeListPaginado } from "../../../helpers/catalogos/boadType";
+import { addMessage } from "../../../redux/messageSlice";
 import extractMeaningfulMessage from "../../../utils/extractMeaningfulMessage";
 
 function TipoBarco(){  
+    const dispatch = useDispatch();
     const [loading, setLoading] = useState(true)
     const [items, setItems] = useState([]);
     const [totalPaginas, setTotalPaginas] = useState(0)
@@ -69,7 +71,10 @@ function TipoBarco(){
         } catch (error) {
             let message  = ERROR_SERVER;
             message = extractMeaningfulMessage(error, message)
-            toast.error(message) 
+            dispatch(addMessage({
+                message: message,
+                type: 'error'
+            }))
             setItems([])
             setTotalPaginas(0)
             setTotalRegistros(10)
@@ -136,7 +141,7 @@ function TipoBarco(){
 
     const handleShowDialogDelete = (row) => {
         setShowDeleteDialog(true)
-        setSelectedIdDeleted(row.original.idi)
+        setSelectedIdDeleted(row.original.id)
     }
 
     const handlePageClick = page => {
@@ -171,18 +176,24 @@ function TipoBarco(){
         history.push("/boadtype/create")
     }
 
-    const handleDelete = async (row) => {
+    const handleDelete = async () => {
         setDeleting(true)   
         try {
-            await deleteBoadType(row.original.id);
+            await deleteBoadType(selectedIdDelete);
             fetchList()
             setDeleting(false)
             setShowDeleteDialog(false)
-            toast.success(DELETE_SUCCESS)
+            dispatch(addMessage({
+                message: DELETE_SUCCESS,
+                type: 'success'
+            }))
         } catch (error) {
             let message  = ERROR_SERVER;
             message = extractMeaningfulMessage(error, message)
-            toast.error(message) 
+            dispatch(addMessage({
+                message: message,
+                type: 'error'
+            }))
             setDeleting(false)
         }      
     }

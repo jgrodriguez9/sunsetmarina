@@ -3,7 +3,7 @@ import axios from "axios";
 //pass new generated access token here
 const token = localStorage.getItem("sunsetadmiralauth") ? `Bearer ${JSON.parse(localStorage.getItem("sunsetadmiralauth")).token}` : "";
 //apply base url for axios
-const API_URL = 'http://139.144.51.203:9090/api';
+const API_URL = 'https://apiadmiral.plan-nex.com/api';
 
 const axiosApi = axios.create({
     baseURL: API_URL,

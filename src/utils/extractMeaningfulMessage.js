@@ -1,9 +1,10 @@
 const extractMeaningfulMessage = (error, message) => {
     if(!error) return message;
     let returnMessage = message;
-    // if(error.response?.data?.detail){
-    //     returnMessage = error.response?.data?.detail;
-    // }
+    console.log(error)
+    if(error.response?.data?.message){
+        returnMessage = error.response?.data?.message;
+    }
     return returnMessage;
 }
 
