@@ -1,6 +1,6 @@
 import { Input, Label } from "reactstrap";
 
-export default function ControlFilter({field, handleChange, handleFilter}){
+export default function ControlFilter({field, handleChange}){
 
 
     switch(field.control){
@@ -13,7 +13,6 @@ export default function ControlFilter({field, handleChange, handleFilter}){
                         className={`form-control`}
                         onChange={(e) => handleChange(field.field, e.target.value, 'input')}
                         value={field.value}  
-                        onBlur={handleFilter}
                     />
                 </>
             );
@@ -28,7 +27,6 @@ export default function ControlFilter({field, handleChange, handleFilter}){
                         className={`form-check-Input form-check-input`}
                         onChange={(e) => {
                             handleChange(field.field, e.target.checked, 'checkbox')
-                            handleFilter()
                         }}
                         checked={field.value || false}  
                     />
