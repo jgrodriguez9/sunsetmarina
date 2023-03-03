@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Collapse } from "reactstrap";
 import { Link, withRouter } from "react-router-dom";
 import classname from "classnames";
+import { navigations } from "../../routes/navigation";
 
 
 const Navbar = props => {
@@ -63,164 +64,40 @@ const Navbar = props => {
               id="topnav-menu-content"
             >
               <ul className="navbar-nav">
-                <li className="nav-item dropdown">
-                  <Link
-                    className="nav-link dropdown-toggle arrow-none"
-                    to="/dashboard"
-                  >
-                    <i className="bx bx-home-circle me-2"></i> Inicio
-                  </Link>
-                </li>
-
-                {/* <li className="nav-item dropdown">
-                  <Link
-                    to="/#"
-                    onClick={e => {
-                      e.preventDefault();
-                      setui(!ui);
-                    }}
-                    className="nav-link dropdown-toggle arrow-none"
-                  >
-                    <i className="bx bx-tone me-2"></i>
-                    UI Elements <div className="arrow-down"></div>
-                  </Link>
-                  <div
-                    className={classname(
-                      "dropdown-menu mega-dropdown-menu dropdown-menu-left dropdown-mega-menu-xl",
-                      { show: ui }
-                    )}
-                  >
-                    <Row>
-                        <Col lg={4}>
-                          <div>
-                            <Link to="/ui-alerts" className="dropdown-item">
-                              Alerts
-                            </Link>
-                            <Link to="/ui-buttons" className="dropdown-item">
-                              Buttons
-                            </Link>
-                            <Link to="/ui-cards" className="dropdown-item">
-                              Cards
-                            </Link>
-                            <Link to="/ui-carousel" className="dropdown-item">
-                              Carousel
-                            </Link>
-                            <Link to="/ui-dropdowns" className="dropdown-item">
-                              Dropdowns
-                            </Link>
-                            <Link to="/ui-grid" className="dropdown-item">
-                              Grid
-                            </Link>
-                            <Link to="/ui-images" className="dropdown-item">
-                              Images
-                            </Link>
-                            <Link to="/ui-lightbox" className="dropdown-item">
-                              Lightbox
-                            </Link>
-                          </div>
-                        </Col>
-                        <Col lg={4}>
-                          <div>
-                            <Link to="/ui-modals" className="dropdown-item">
-                              Modals
-                            </Link>
-                            <Link to="/ui-offcanvas" className="dropdown-item">
-                              Offcanvas
-                            </Link>
-                            <Link to="/ui-rangeslider" className="dropdown-item">
-                              Range Slider
-                            </Link>
-                            <Link
-                              to="/ui-session-timeout"
-                              className="dropdown-item"
-                            >
-                              Session Timeout
-                            </Link>
-                            <Link to="/ui-progressbars" className="dropdown-item">
-                              Progress Bars
-                            </Link>
-                            <Link to="/ui-placeholders" className="dropdown-item">
-                              Placeholders
-                            </Link>
-                            <Link to="/ui-sweet-alert" className="dropdown-item">
-                              Sweet-Alert
-                            </Link>
-                            <Link
-                              to="/ui-tabs-accordions"
-                              className="dropdown-item"
-                            >
-                              Tabs & Accordions
-                            </Link>
-                          </div>
-                        </Col>
-                        <Col lg={4}>
-                          <div>
-                            <Link to="/ui-typography" className="dropdown-item">
-                              Typography
-                            </Link>
-                            <Link to="/ui-toasts" className="dropdown-item">
-                              Toasts
-                            </Link>
-                            <Link to="/ui-video" className="dropdown-item">
-                              Video
-                            </Link>
-                            <Link to="/ui-general" className="dropdown-item">
-                              General
-                            </Link>
-                            <Link to="/ui-colors" className="dropdown-item">
-                              Colors
-                            </Link>
-                            <Link to="/ui-rating" className="dropdown-item">
-                              Rating
-                            </Link>
-                            <Link to="/ui-notifications" className="dropdown-item">
-                              Notifications
-                            </Link>
-                            <Link to="/ui-breadcrumb" className="dropdown-item">
-                              Breadcrumb
-                            </Link>
-                          </div>
-                        </Col>
-                      </Row>
-                  </div>
-                </li> */}
-
-                {/* <li className="nav-item dropdown">
-                  <Link
-                    to="/#"
-                    onClick={e => {
-                      e.preventDefault();
-                      setapp(!app);
-                    }}
-                    className="nav-link dropdown-togglez arrow-none"
-                  >
-                    <i className="fas fa-align-justify me-2"></i>
-                    Slips <div className="arrow-down"></div>
-                  </Link>
-                  <div className={classname("dropdown-menu", { show: app })}>
-                    <Link to="/slip" className="dropdown-item">
-                      Ver muelle
-                    </Link>
-                  </div>
-                </li> */}
-                <li className="nav-item dropdown">
-                  <Link
-                    to="/#"
-                    onClick={e => {
-                      e.preventDefault();
-                      setapp(!app);
-                    }}
-                    className="nav-link dropdown-togglez arrow-none"
-                  >
-                    <i className="fas fa-th me-2"></i>
-                    Catálogos <div className="arrow-down"></div>
-                  </Link>
-                  <div className={classname("dropdown-menu", { show: app })}>
-                    <Link to="/boadtype" className="dropdown-item">
-                      Tipo de embarcación
-                    </Link>
-                  </div>
-                </li>
+                {
+                  navigations.map(navigation => (
+                    <li key={navigation.id} className={`nav-item dropdown`}>
+                      <Link
+                        to={navigation.route}
+                        onClick={e => {
+                            if(navigation.items.length > 0){
+                              e.preventDefault();
+                              setapp(!app);
+                            }                            
+                          }}
+                        className="nav-link dropdown-togglez arrow-none"
+                      >
+                        {navigation.classIcon && <i className={navigation.classIcon} />}
+                        {navigation.label} 
+                        {navigation.items.length > 0 && <div className="arrow-down"></div>}
+                      </Link>
+                      {
+                        navigation.items.length > 0 && 
+                        <div className={classname("dropdown-menu", { show: app })}>
+                          {
+                            navigation.items.map(item=>(
+                              <Link to={item.route} className="dropdown-item" key={item.id}>
+                                {item.classIcon && <i className={item.classIcon} />}
+                                {item.label}
+                              </Link>
+                            ))
+                          }
+                          
+                        </div>
+                      }
+                    </li>
+                  ))
+                }
               </ul>
             </Collapse>
           </nav>

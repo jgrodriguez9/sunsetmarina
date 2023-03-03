@@ -1,5 +1,4 @@
 import { Redirect } from "react-router-dom"
-import Alumnos from "../pages/Alumnos"
 import Login from "../pages/Authentication/Login"
 import Logout from "../pages/Authentication/Logout"
 import TipoBarco from "../pages/Catalogos/TipoBarco"
@@ -69,7 +68,6 @@ const adminRoutes = [
 ]
 const managerRoutes = [
      //satges
-    { path: "/alumnos", exact: true, component: Alumnos },
     { path: "/cobranza", exact: true, component: Cobranza },
     { path: "/documento", exact: true, component: Documento },
     { path: "/configuracion", exact: true, component: Configuracion },

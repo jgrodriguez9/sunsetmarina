@@ -2,7 +2,6 @@ import { useMemo } from "react";
 import { useState } from "react";
 import { withRouter } from "react-router-dom";
 import { Col, Container, Row } from "reactstrap";
-import FormAlumnos from "../../components/Alumnos/FormAlumnos";
 import Breadcrumbs from "../../components/Common/Breadcrumbs";
 import CardBasic from "../../components/Common/CardBasic";
 import BuscarDocumento from "../../components/Documento/BuscarDocumento";
@@ -45,7 +44,7 @@ function Documento(){
             </Row>
             <Row className="mt-2 bg-primary bg-opacity-10 p-2">
                 <Col>
-                    <FormAlumnos />
+                    
                 </Col>
             </Row>
         </>
