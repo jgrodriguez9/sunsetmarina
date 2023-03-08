@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useSelector } from "react-redux"
 import { Link } from "react-router-dom"
 import {
     Dropdown,
@@ -6,12 +7,9 @@ import {
     DropdownMenu,
   } from "reactstrap"
 
-import useLoguedUser from "../../hooks/useLoguedUser"
-
 function ProfileMenu(){
     const [menu, setMenu] = useState(false)
-    const userLogued = useLoguedUser()
-
+    const user = useSelector((state) => state.user)
     return (
         <>
           <Dropdown
@@ -24,7 +22,7 @@ function ProfileMenu(){
               id="page-header-user-dropdown"
               tag="button"
             >
-              <span className="d-xl-inline-block ms-2 me-1">{userLogued?.username}</span>
+              <span className="d-xl-inline-block ms-2 me-1">{user?.name}</span>
               <i className="mdi mdi-chevron-down d-none d-xl-inline-block"/>
             </DropdownToggle>
             <DropdownMenu className="dropdown-menu-end">              

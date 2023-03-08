@@ -2,7 +2,7 @@ import { useHistory, withRouter } from "react-router-dom"
 
 function Logout() {
     const history = useHistory();
-    localStorage.removeItem("sunsetadmiralauth");
+    sessionStorage.removeItem("sunsetadmiralauth");
     history.push("/login");
     return <></>
 }

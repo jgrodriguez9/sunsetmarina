@@ -1,11 +1,9 @@
-import { Row, Col, Card, CardBody } from "reactstrap"
-
-import avatar1 from "../../assets/images/users/avatar-1.jpg"
+import { useSelector } from "react-redux"
+import { Row, Col, Card } from "reactstrap"
 import profileImg from "../../assets/images/profile-img.png"
-import useLoguedUser from "../../hooks/useLoguedUser"
 
 const WelcomeCard = () => {
-  const userLogued  = useLoguedUser();
+  const user = useSelector((state) => state.user)
 
   return (
     <>
@@ -14,9 +12,8 @@ const WelcomeCard = () => {
           <Row>
             <Col xs="7">
               <div className="text-primary p-3">
-                <h5 className="text-primary">Alejandro Perez</h5>
-                {/* <h5 className="font-size-15 mb-0">{userLogued?.name ?? '----'}</h5> */}
-                <p>{userLogued?.Role?.name ?? '-'}</p>
+                <h5 className="text-primary">{user?.name}</h5>
+                <p>{user?.roles.join(' | ')}</p>
               </div>
             </Col>
             <Col xs="5" className="align-self-end">

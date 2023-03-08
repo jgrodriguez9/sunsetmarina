@@ -1,6 +1,7 @@
 import { Redirect } from "react-router-dom"
 import Login from "../pages/Authentication/Login"
 import Logout from "../pages/Authentication/Logout"
+import Compania from "../pages/Catalogos/Compania"
 import TipoBarco from "../pages/Catalogos/TipoBarco"
 import CreateTipoBarco from "../pages/Catalogos/TipoBarco/Create"
 import EditTipoBarco from "../pages/Catalogos/TipoBarco/Edit"
@@ -13,6 +14,8 @@ import Dashboard from "../pages/Dashboard"
 import Documento from "../pages/Documento"
 import PasarelaPagos from "../pages/PasarelaPagos"
 import Slip from "../pages/Slip"
+import CreateCompania from '../pages/Catalogos/Compania/Create'
+import EditCompania from '../pages/Catalogos/Compania/Edit'
 
 const authProtectedRoutes = [
     { path: "/logout", component: Logout },
@@ -22,16 +25,7 @@ const authProtectedRoutes = [
     //slip
     { path: "/slip", exact: true, component: Slip },
 
-    //catalogos
-
-    //boadTypes
-    { path: "/boadtype", exact: true, component: TipoBarco },
-    { path: "/boadtype/edit/:id", exact: true, component: EditTipoBarco },
-    { path: "/boadtype/create", exact: true, component: CreateTipoBarco },
-    // //documents
-    // { path: "/case-list", exact: true, component: DocumentList },
-    // { path: "/case-add", exact: true, component: DocumentAdd },
-    // { path: "/case-edit/:id", exact: true, component: DocumentEdit },
+    
 
     // //satges
     // { path: "/stage-list", exact: true, component: StagesList },
@@ -65,6 +59,17 @@ const adminRoutes = [
     // { path: "/user-list", exact: true, component: UserList },
     // { path: "/user-add", exact: true, component: UserAdd },
     // { path: "/user-edit/:id", exact: true, component: UserEdit },
+
+    //catalogos
+
+    //boadTypes
+    { path: "/boadtype", exact: true, component: TipoBarco },
+    { path: "/boadtype/edit/:id", exact: true, component: EditTipoBarco },
+    { path: "/boadtype/create", exact: true, component: CreateTipoBarco },
+    //compania
+    { path: "/company", exact: true, component: Compania },
+    { path: "/company/create", exact: true, component: CreateCompania },
+    { path: "/company/edit/:id", exact: true, component: EditCompania },
 ]
 const managerRoutes = [
      //satges

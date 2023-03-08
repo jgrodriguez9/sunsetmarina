@@ -5,31 +5,48 @@ import NonAuthLayout from './components/Layout/NonAuthLayout';
 import AuthLayout from './components/Layout/AuthLayout';
 
 import "./assets/scss/theme.scss"
-import 'react-toastify/dist/ReactToastify.css';
-import useLoguedUser from './hooks/useLoguedUser';
+import 'react-toastify/dist/ReactToastify.css'
 import { useState, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { getUserLogued } from './helpers/auth';
+import { setUser } from './redux/userSlice';
+import NotFoundPage from './pages/Utility/NotFoundPage';
 
 function App() {
-  const userLogued = useLoguedUser();
   const [authRoutes, setAuthRoutes] = useState(authProtectedRoutes)
+  const user = useSelector((state) => state.user)
+  const dispatch = useDispatch();
 
   useMemo(() => {
-    if(userLogued){
-      switch(userLogued.Role.name){
-        case "ADMINISTRADOR":
-          setAuthRoutes([...authProtectedRoutes, ...agentRoutes, ...managerRoutes, ...adminRoutes]);
-          break;
-        case 'MANAGER':
-          setAuthRoutes([...authProtectedRoutes, ...agentRoutes, ...managerRoutes]);
-          break;
-        case 'AGENTE':
-          setAuthRoutes([...authProtectedRoutes, ...agentRoutes]);
-          break;
-        default:
-          break;
+    if(user.name){
+      if(user.roles.includes('ROLE_ADMIN')){
+        setAuthRoutes([...authProtectedRoutes, ...agentRoutes, ...managerRoutes, ...adminRoutes]);
+      }else if(user.roles.includes('ROLE_ADMIN')){
+        setAuthRoutes([...authProtectedRoutes, ...agentRoutes, ...managerRoutes]);
+      }else{
+        setAuthRoutes([...authProtectedRoutes, ...agentRoutes]);
       }
     }
-  }, [userLogued])
+  }, [user.name, user.roles])
+
+
+  useEffect(() => {
+    if(sessionStorage.getItem('sunsetadmiralauth')){
+      async function  fetchUserInfoApi(){
+        const response = await getUserLogued();
+        if(response.data.length > 0){
+          const user = {
+              ...response.data[0],
+              ...JSON.parse(sessionStorage.getItem("sunsetadmiralauth"))
+          }
+          dispatch(setUser(user)) 
+        }
+      }
+      fetchUserInfoApi();
+    }
+  },[sessionStorage.getItem('sunsetadmiralauth')])
+
   return (
     <BrowserRouter>
         <Router>
@@ -58,7 +75,7 @@ function App() {
           <Route 
             path={"*"}
             render={props => {
-              if (!localStorage.getItem("sunsetadmiralauth")) {
+              if (!sessionStorage.getItem("sunsetadmiralauth")) {
                 return (
                   <Redirect
                     to={{ pathname: "/login", state: { from: props.location } }}
@@ -66,7 +83,7 @@ function App() {
                 )
               }
         
-              return 'no found'
+              return <NotFoundPage />
             }}
           />
         </Switch>

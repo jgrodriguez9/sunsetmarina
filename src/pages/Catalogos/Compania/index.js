@@ -14,7 +14,8 @@ import CellFormatEnable from "../../../components/Tables/CellFormatEnable";
 import Paginate from "../../../components/Tables/Paginate";
 import SimpleTable from "../../../components/Tables/SimpleTable";
 import { DELETE_SUCCESS, ERROR_SERVER } from "../../../constants/messages";
-import { deleteBoadType, getBoadTypeListPaginado } from "../../../helpers/catalogos/boadType";
+import { deleteBoadType } from "../../../helpers/catalogos/boadType";
+import { getCompaniaListPaginado } from "../../../helpers/catalogos/compania";
 import { addMessage } from "../../../redux/messageSlice";
 import extractMeaningfulMessage from "../../../utils/extractMeaningfulMessage";
 
@@ -34,18 +35,10 @@ function TipoBarco(){
     })
     const [filters, setFilters] = useState([
         {
-            label: 'Descripción',
-            field: 'description',
+            label: 'Nombre',
+            field: 'name',
             width: 3,
             control: 'input',
-            type: 'text',
-            value: ''
-        },
-        {
-            label: 'Tiene motor',
-            field: 'hasEngine',
-            width: 2,
-            control: 'checkbox',
             type: 'text',
             value: ''
         },
@@ -62,7 +55,7 @@ function TipoBarco(){
     const fetchList = async () => {
         let q = Object.keys(query).map(key=>`${key}=${query[key]}`).join("&")
         try {
-            const response = await getBoadTypeListPaginado(`?${q}`);
+            const response = await getCompaniaListPaginado(`?${q}`);
             //console.log(response)
             setItems(response.list)
             setTotalPaginas(response.pagination.totalPages)
@@ -87,28 +80,30 @@ function TipoBarco(){
     }, [JSON.stringify(query)])
 
     const editAction = (row) => {
-        history.push(`/boadtype/edit/${row.original.id}`)
+        history.push(`/company/edit/${row.original.id}`)
     }
 
     const columns = useMemo(
         () => [
           {
-            Header: 'Descripción',
-            accessor: 'description',
+            Header: 'Nombre',
+            accessor: 'name',
             style: {
-                width: '60%'
+                width: '50%'
             }
           },
           {
-            Header: 'Tiene motor',
-            accessor: 'hasEngine',
-            Cell: ({row, value}) => <CellFormatEnable 
-                                        value={value} 
-                                        okText="Tiene motor" 
-                                        failText="No tiene motor"
-                                        badge={false}/>,
+            Header: 'Teléfono',
+            accessor: 'phone',
             style: {
-                width: '15%'
+                width: '10%'
+            }
+          },
+          {
+            Header: 'Dirección',
+            accessor: 'address',
+            style: {
+                width: '20%'
             }
           },
           {
@@ -116,7 +111,7 @@ function TipoBarco(){
             accessor: 'enabled',
             Cell: ({row, value}) => <CellFormatEnable value={value} okText="Habilitado" failText="No habilitado"/>,
             style: {
-                width: '15%'
+                width: '10%'
             }
           },
           {
@@ -126,7 +121,7 @@ function TipoBarco(){
                 <>
                     <CellActions
                         edit={{"allow": true, action: editAction}} 
-                        del={{"allow": true, action: handleShowDialogDelete}}
+                        del={{"allow": false, action: handleShowDialogDelete}}
                         row={row}
                     />
                 </>
@@ -164,6 +159,7 @@ function TipoBarco(){
         const obj = activeFilters.reduce((accumulator, value) => {
             return {...accumulator, [value.name]: value.value};
           }, {});
+          console.log(obj)
 
           setQuery(prev=>({
             max: prev.max,
@@ -173,7 +169,7 @@ function TipoBarco(){
     }
 
     const goPageCreate = () => {
-        history.push("/boadtype/create")
+        history.push("/company/create")
     }
 
     const handleDelete = async () => {
@@ -202,7 +198,7 @@ function TipoBarco(){
         loading ?
         <Row>
             <Col xs="12" xl="12">
-                <TableLoader columns={[{name: "Descripción", width: '60%'}, {name: "Tiene motor", width: '15%'}, {name: "Habilitado", width: '15%'}, {name: "Acciones", width: '10%'}]} />
+                <TableLoader columns={[{name: "Nombre", width: '50%'}, {name: "Teléfono", width: '10%'}, {name: "Dirección", width: "20%" }, {name: "Habilitado", width: '10%'}, {name: "Acciones", width: '10%'}]} />
             </Col>
         </Row> :
         <Row>
@@ -244,11 +240,11 @@ function TipoBarco(){
             <Container fluid>
               {/* Render Breadcrumb */}
               <Breadcrumbs
-                title={'Embarcación'}
-                breadcrumbItem={"Tipo de embarcación"}
+                title={'Compañía'}
+                breadcrumbItem={"Compañía"}
                 add={{
                     allow: true,
-                    text: 'Crear Nuevo',
+                    text: 'Crear Nueva',
                     goPageCreate: goPageCreate
                 }}
               />

@@ -21,6 +21,12 @@ export const navigations = [
                 label: 'Tipo de embarcación',
                 route: '/boadtype',
                 classIcon: null,
+            },
+            {
+                id: 'compania',
+                label: 'Compañía',
+                route: '/company',
+                classIcon: null,
             }
         ]
     }
