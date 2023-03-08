@@ -1,3 +1,4 @@
+import moment from "moment/moment";
 import { Button, Col, Row } from "reactstrap";
 import ControlFilter from "./ControlFilter";
 
@@ -17,6 +18,22 @@ export default function FormFilter({filters, setFilters, fireSearch}){
                         filterCopy[idx].value = ''
                     }                    
                     break;
+            case 'date':
+                if(value.length > 0){
+                    filterCopy[idx].value = moment(value[0]).format('DD/MM/YYYY')
+                }else{
+                    filterCopy[idx].value = ''
+                }
+                filterCopy[idx].valueDate = value
+                break;
+            case 'select':
+                if(value){
+                    filterCopy[idx].value = value.value
+                }else{
+                    filterCopy[idx].value = ''
+                }
+                filterCopy[idx].valueSelect = value
+                break;
             default:
                 break;
         }

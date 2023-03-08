@@ -10,6 +10,7 @@
     "axios": "^1.2.2",
     "bootstrap": "^5.2.3",
     "classnames": "^2.3.2",
+    "country-state-city": "^3.1.2",
     "formik": "^2.2.9",
     "jwt-decode": "^3.1.2",
     "metismenujs": "^1.4.0",

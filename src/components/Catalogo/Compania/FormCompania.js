@@ -9,10 +9,20 @@ import { saveCompania, updateCompania } from "../../../helpers/catalogos/compani
 import { addMessage } from "../../../redux/messageSlice";
 import extractMeaningfulMessage from "../../../utils/extractMeaningfulMessage";
 import { SELECT_OPTION } from '../../../constants/messages'
+import { Country, State, City }  from 'country-state-city';
+import { useState } from "react";
+import { useEffect } from "react";
+import ButtonsDisabled from "../../Common/ButtonsDisabled";
 
 export default function FormCompania({item, btnTextSubmit="Aceptar"}){
     const history = useHistory();
     const dispatch = useDispatch();
+    const countryOpt = Country.getCountryByCode('MX')
+    const [countryDefault, setCountryDefault] = useState(item ? {label: item?.country, value: item?.country} : null)
+    const [statesOpt, setStatesOpt] = useState([])
+    const [statesDefault, setStatesDefault] = useState(item ? {label: item?.state, value: item?.state} : null)
+    const [citiesOpt, setCitiesOpt] = useState([])
+    const [citiesDefault, setCitiesDefault] = useState(item ? {label: item?.city, value: item?.city} : null)
     const formik = useFormik({
         initialValues: {
             id: item?.id ?? '',
@@ -83,6 +93,23 @@ export default function FormCompania({item, btnTextSubmit="Aceptar"}){
         }
     })
 
+    useEffect(() => {
+        if(countryDefault){
+            setStatesOpt(State.getStatesOfCountry(countryDefault.value))
+        }else{
+            setStatesOpt([])
+            setCitiesOpt([])
+        }      
+    },[countryDefault])
+
+    useEffect(() => {
+        if(statesDefault){
+            setCitiesOpt(City.getCitiesOfState(countryDefault.value ,statesDefault.value))
+        }else{
+            setCitiesOpt([])
+        }
+    },[statesDefault])
+
     return(
         <Form
             className="needs-validation"
@@ -143,35 +170,47 @@ export default function FormCompania({item, btnTextSubmit="Aceptar"}){
             </Row>
             <Row>
                 <Col xs="12" md="3">
-                    <Label htmlFor="city" className="mb-0">Ciudad</Label>
-                    <Select
-                        value={null}
-                        onChange={() => {}}
-                        //options={optionGroup}
-                        classNamePrefix="select2-selection"
-                        placeholder={SELECT_OPTION}
-                    />
-                </Col>
-                <Col xs="12" md="3">
-                    <Label htmlFor="state" className="mb-0">Estado</Label>
-                    <Select
-                        value={null}
-                        onChange={() => {}}
-                        //options={optionGroup}
-                        classNamePrefix="select2-selection"
-                        placeholder={SELECT_OPTION}
-                    />
-                </Col>
-                <Col xs="12" md="3">
                     <Label htmlFor="country" className="mb-0">País</Label>
                     <Select
-                        value={null}
-                        onChange={() => {}}
-                        //options={optionGroup}
+                        value={countryDefault}
+                        onChange={(value) => {
+                            setCountryDefault(value)
+                            formik.setFieldValue('country', value?.label ?? '')
+                            setStatesDefault(null)
+                            setCitiesDefault(null)  
+                        }}
+                        options={[{label: countryOpt.name, value: countryOpt.isoCode}]}
                         classNamePrefix="select2-selection"
                         placeholder={SELECT_OPTION}
                     />
                 </Col> 
+                <Col xs="12" md="3">
+                    <Label htmlFor="state" className="mb-0">Estado</Label>
+                    <Select
+                        value={statesDefault}
+                        onChange={value => {
+                            setStatesDefault(value)
+                            formik.setFieldValue('state', value?.label ?? '')
+                            setCitiesDefault(null)  
+                        }}
+                        options={statesOpt.map(s=>({label: s.name, value: s.isoCode}))}
+                        classNamePrefix="select2-selection"
+                        placeholder={SELECT_OPTION}
+                    />
+                </Col>
+                <Col xs="12" md="3">
+                    <Label htmlFor="city" className="mb-0">Ciudad</Label>
+                    <Select
+                        value={citiesDefault}
+                        onChange={(value) => {
+                            setCitiesDefault(value)
+                            formik.setFieldValue('city', value?.label ?? '')
+                        }}
+                        options={citiesOpt.map(c=>({label: c.name, value:c.isoCode}))}
+                        classNamePrefix="select2-selection"
+                        placeholder={SELECT_OPTION}
+                    />
+                </Col>                
             </Row>
             <Row>
                 <Col xs="12" md="9">
@@ -186,10 +225,15 @@ export default function FormCompania({item, btnTextSubmit="Aceptar"}){
                 </Col>
             </Row>
             <hr />
-            <div className="d-flex">
-                <Button color="primary" type="submit">{btnTextSubmit}</Button>
-                <Link to="/company" className="btn btn-link text-danger">Cancelar</Link>
-            </div>
+            {
+                formik.isSubmitting ?
+                <ButtonsDisabled buttons={[{text: btnTextSubmit, color: 'primary', className: '', loader: true}, {text: 'Cancelar', color: 'link', className: 'text-danger', loader: false}]}/> :
+                <div className="d-flex">
+                    <Button color="primary" type="submit">{btnTextSubmit}</Button>
+                    <Link to="/company" className="btn btn-link text-danger">Cancelar</Link>
+                </div>
+            }
+            
         </Form>
     )
 }

@@ -1,12 +1,12 @@
 export const classBadge = value => {
-    switch(value){
-        case 'pagado':
-            return 'success';
-        case 'pendiente':
-                return 'warning';
-        case 'cancelado':
-                return 'danger';
-        default:
-            return 'light';
+    const objBadge = {
+        pagado: 'success',
+        pendiente: 'warning',
+        cancelado: 'danger',
+        UPDATE: "warning",
+        CREATE: 'success',
+        DELETE: 'danger'
     }
+
+    return objBadge[value] || 'light'
 }

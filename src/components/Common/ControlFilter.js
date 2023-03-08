@@ -1,4 +1,7 @@
+import Select from "react-select";
 import { Input, Label } from "reactstrap";
+import { SELECT_OPTION } from "../../constants/messages";
+import SimpleDate from "../DatePicker/SimpleDate";
 
 export default function ControlFilter({field, handleChange}){
 
@@ -31,6 +34,31 @@ export default function ControlFilter({field, handleChange}){
                         checked={field.value || false}  
                     />
                     <Label htmlFor={field.field} className="mb-0 ms-2">{field.label}</Label>
+                </>
+            );
+        case 'date':
+            return (
+                <>
+                    <Label htmlFor={field.field} className="mb-0">{field.label}</Label>
+                    <SimpleDate 
+                        date={field.valueDate}
+                        setDate={value=>handleChange(field.field, value, 'date')}
+                        placeholder="dd-MM-YYYY"
+                    />
+                </>
+            );
+        case 'select':
+            return (
+                <>
+                    <Label htmlFor={field.field} className="mb-0">{field.label}</Label>
+                    <Select
+                        value={field.valueSelect}
+                        onChange={(value) => handleChange(field.field, value, 'select')}
+                        options={field.options}
+                        classNamePrefix="select2-selection"
+                        placeholder={SELECT_OPTION}
+                        isClearable
+                    />
                 </>
             );
         default:

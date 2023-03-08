@@ -12,10 +12,10 @@ export default function SimpleTable({columns, data}){
     return (
         <Row>
             <Col>
-                <div className="table-responsive">
-                    <div className="react-bootstrap-table table-responsive">
-                        <table {...getTableProps()} className="table align-middle table-nowrap table-bordered table-hover">
-                            <thead className="table-light table-nowrap">
+                <div className="table-rep-plugin">
+                    <div className="table-responsive">
+                        <table {...getTableProps()} className="table align-middle table-bordered table-hover responsiveTable">
+                            <thead className="table-light">
                                 {headerGroups.map(headerGroup => (
                                 <tr {...headerGroup.getHeaderGroupProps()}>
                                     {headerGroup.headers.map(column => (

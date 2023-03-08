@@ -7,6 +7,7 @@ import { ERROR_SERVER, FIELD_REQUIRED, SAVE_SUCCESS, UPDATE_SUCCESS } from "../.
 import { saveBoadType, updateBoadType } from "../../../helpers/catalogos/boadType";
 import { addMessage } from "../../../redux/messageSlice";
 import extractMeaningfulMessage from "../../../utils/extractMeaningfulMessage";
+import ButtonsDisabled from "../../Common/ButtonsDisabled";
 
 export default function FormTipoEmbarcacion({item, btnTextSubmit="Aceptar"}){
     const history = useHistory();
@@ -127,10 +128,14 @@ export default function FormTipoEmbarcacion({item, btnTextSubmit="Aceptar"}){
                 </Col>
             </Row>
             <hr />
-            <div className="d-flex">
-                <Button color="primary" type="submit">{btnTextSubmit}</Button>
-                <Link to="/boadtype" className="btn btn-link text-danger">Cancelar</Link>
-            </div>
+            {
+                formik.isSubmitting ?
+                <ButtonsDisabled buttons={[{text: btnTextSubmit, color: 'primary', className: '', loader: true}, {text: 'Cancelar', color: 'link', className: 'text-danger', loader: false}]}/> :
+                <div className="d-flex">
+                    <Button color="primary" type="submit">{btnTextSubmit}</Button>
+                    <Link to="/boadtype" className="btn btn-link text-danger">Cancelar</Link>
+                </div>
+            }            
         </Form>
     )
 }

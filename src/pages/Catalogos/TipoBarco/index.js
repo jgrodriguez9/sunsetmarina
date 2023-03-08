@@ -60,6 +60,7 @@ function TipoBarco(){
     ]);
 
     const fetchList = async () => {
+        setLoading(true)
         let q = Object.keys(query).map(key=>`${key}=${query[key]}`).join("&")
         try {
             const response = await getBoadTypeListPaginado(`?${q}`);

@@ -1,8 +1,9 @@
+import moment from "moment";
 import { useEffect } from "react";
 import { useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { withRouter } from "react-router-dom";
-import { Col, Container, Row } from "reactstrap";
+import { Badge, Col, Container, Row } from "reactstrap";
 import Breadcrumbs from "../../../components/Common/Breadcrumbs";
 import CardBasic from "../../../components/Common/CardBasic";
 import CardMain from "../../../components/Common/CardMain";
@@ -13,7 +14,10 @@ import SimpleTable from "../../../components/Tables/SimpleTable";
 import { ERROR_SERVER } from "../../../constants/messages";
 import { getLogsListPaginado } from "../../../helpers/seguridad/logs";
 import { addMessage } from "../../../redux/messageSlice";
+import { classBadge } from "../../../utils/classBadge";
 import extractMeaningfulMessage from "../../../utils/extractMeaningfulMessage";
+import { getTranslateAction } from "../../../utils/getTranslateAction";
+import { getTranslateModel } from "../../../utils/getTranslateModel";
 
 function Logs(){  
     const dispatch = useDispatch();
@@ -27,13 +31,54 @@ function Logs(){
     })
     const [filters, setFilters] = useState([
         {
-            label: 'Descripción',
-            field: 'description',
+            label: 'Fecha inicio',
+            field: 'startDate',
+            width: 3,
+            control: 'date',
+            type: '',
+            value: '',
+            valueDate: ''
+        },
+        {
+            label: 'Fecha fin',
+            field: 'endDate',
+            width: 3,
+            control: 'date',
+            type: '',
+            value: '',
+            valueDate: ''
+        },
+        {
+            label: 'Acción',
+            field: 'actionMethod',
+            width: 3,
+            control: 'select',
+            type: '',
+            value: '',
+            valueSelect: null,
+            options: [
+                {
+                    label: 'Actualizado',
+                    value: 'UPDATE'
+                },
+                {
+                    label: 'Creado',
+                    value: 'CREATE'
+                },
+                {
+                    label: 'Eliminado',
+                    value: 'DELETE'
+                }
+            ]
+        },
+        {
+            label: 'Usuario',
+            field: 'username',
             width: 3,
             control: 'input',
             type: 'text',
-            value: ''
-        }
+            value: '',
+        },
     ]);
 
     const fetchList = async () => {
@@ -66,31 +111,60 @@ function Logs(){
     const columns = useMemo(
         () => [
           {
-            Header: 'Descripción',
-            accessor: 'action',
+            Header: 'Modelo',
+            accessor: 'model',
+            Cell: ({value}) => getTranslateModel(value),
             style: {
-                width: '60%'
+                width: '15%'
+            }
+          },
+          {
+            Header: 'Acción',
+            accessor: 'action',
+            Cell: ({value}) => <Badge 
+                                    className={"font-size-12 badge-soft-"+classBadge(value)}
+                                    color={classBadge(value)}
+                                    pill
+                                >{getTranslateAction(value)}</Badge>,
+            style: {
+                width: '8%'
+            }
+          },
+          {
+            Header: 'Trace ID',
+            id: 'data-id',
+            Cell: ({row, value}) => JSON.parse(row.original.data)?.id,
+            style: {
+                width: '7%'
             }
           },
           {
             Header: 'Usuario',
-            accessor: 'user.id',
+            accessor: 'user.name',
             style: {
-                width: '15%'
+                width: '12%'
             }
           },
           {
             Header: 'Fecha',
             accessor: 'dateCreated',
+            Cell: ({value}) => moment(value, 'YYYY-MM-DDTHH:mm:ss').format("DD/MM/YYYY HH:mm:ss"),
             style: {
-                width: '15%'
+                width: '10%'
             }
           }, 
+          {
+            Header: 'Descripción técnica',
+            accessor: 'data',
+            style: {
+                width: '40%'
+            }
+          },
           {
             Header: 'IP',
             accessor: 'ipAddress',
             style: {
-                width: '10%'
+                width: '8%'
             }
           },         
         ],

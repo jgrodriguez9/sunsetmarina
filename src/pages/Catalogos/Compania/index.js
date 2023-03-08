@@ -18,6 +18,7 @@ import { deleteBoadType } from "../../../helpers/catalogos/boadType";
 import { getCompaniaListPaginado } from "../../../helpers/catalogos/compania";
 import { addMessage } from "../../../redux/messageSlice";
 import extractMeaningfulMessage from "../../../utils/extractMeaningfulMessage";
+import { Country, State }  from 'country-state-city';
 
 function TipoBarco(){  
     const dispatch = useDispatch();
@@ -43,16 +44,39 @@ function TipoBarco(){
             value: ''
         },
         {
-            label: 'Habilitado',
-            field: 'enabled',
-            width: 2,
-            control: 'checkbox',
-            type: 'text',
-            value: ''
+            label: 'País',
+            field: 'country',
+            width: 3,
+            control: 'select',
+            type: '',
+            value: '',
+            valueSelect: null,
+            options: [
+                {
+                    label: Country.getCountryByCode('MX').name,
+                    value: Country.getCountryByCode('MX').name
+                }
+            ]
+        },
+        {
+            label: 'Estado',
+            field: 'state',
+            width: 3,
+            control: 'select',
+            type: '',
+            value: '',
+            valueSelect: null,
+            options: State.getStatesOfCountry('MX').map(s=> (
+                {
+                    label: s.name,
+                    value: s.name
+                }
+            ))
         }
     ]);
 
     const fetchList = async () => {
+        setLoading(true)
         let q = Object.keys(query).map(key=>`${key}=${query[key]}`).join("&")
         try {
             const response = await getCompaniaListPaginado(`?${q}`);
