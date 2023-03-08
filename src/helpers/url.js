@@ -8,3 +8,6 @@ export const boatType = "/boatType"
 //Compania
 export const compania = "/company"
 
+//logs
+export const logs = "/logHistory"
+

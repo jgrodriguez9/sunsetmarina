@@ -5,17 +5,11 @@ import Compania from "../pages/Catalogos/Compania"
 import TipoBarco from "../pages/Catalogos/TipoBarco"
 import CreateTipoBarco from "../pages/Catalogos/TipoBarco/Create"
 import EditTipoBarco from "../pages/Catalogos/TipoBarco/Edit"
-import CicloEscolar from "../pages/CicloEscolar"
-import Cobranza from "../pages/Cobranza"
-import Colegiatura from "../pages/Colegiatura"
-import Concepto from "../pages/Concepto"
-import Configuracion from "../pages/Configuracion"
 import Dashboard from "../pages/Dashboard"
-import Documento from "../pages/Documento"
-import PasarelaPagos from "../pages/PasarelaPagos"
 import Slip from "../pages/Slip"
 import CreateCompania from '../pages/Catalogos/Compania/Create'
 import EditCompania from '../pages/Catalogos/Compania/Edit'
+import Logs from "../pages/Seguridad/Logs"
 
 const authProtectedRoutes = [
     { path: "/logout", component: Logout },
@@ -60,8 +54,11 @@ const adminRoutes = [
     // { path: "/user-add", exact: true, component: UserAdd },
     // { path: "/user-edit/:id", exact: true, component: UserEdit },
 
-    //catalogos
+    //seguridad
+    //logs
+    { path: "/logs", exact: true, component: Logs },
 
+    //catalogos
     //boadTypes
     { path: "/boadtype", exact: true, component: TipoBarco },
     { path: "/boadtype/edit/:id", exact: true, component: EditTipoBarco },
@@ -73,13 +70,6 @@ const adminRoutes = [
 ]
 const managerRoutes = [
      //satges
-    { path: "/cobranza", exact: true, component: Cobranza },
-    { path: "/documento", exact: true, component: Documento },
-    { path: "/configuracion", exact: true, component: Configuracion },
-    { path: "/cicloescolar", exact: true, component: CicloEscolar },
-    { path: "/concepto", exact: true, component: Concepto },
-    { path: "/colegiatura", exact: true, component: Colegiatura },
-    { path: "/pagos", exact: true, component: PasarelaPagos },
  
     //  //satges
     //  { path: "/relationship-list", exact: true, component: RelationshipList },

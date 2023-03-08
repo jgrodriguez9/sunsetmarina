@@ -10,6 +10,21 @@ export const navigations = [
         items: []
     },
     {
+        id: 'seguridad',
+        label: 'Seguridad',
+        classIcon: 'fas fa-shield-alt me-2',
+        route: '/#',
+        show: existsRole(sessionStorage.getItem('roles'), ['ROLE_ADMIN', 'ROLE_COMPANY_ADMIN']),
+        items: [
+            {
+                id: 'logs',
+                label: 'Bitácora',
+                route: '/logs',
+                classIcon: null,
+            },
+        ]
+    },
+    {
         id: 'catalogo',
         label: 'Catálogo',
         classIcon: 'fas fa-th me-2',
