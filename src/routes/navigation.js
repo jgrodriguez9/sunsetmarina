@@ -44,5 +44,20 @@ export const navigations = [
                 classIcon: null,
             }
         ]
+    },
+    {
+        id: 'cliente',
+        label: 'Cliente',
+        classIcon: 'fas fa-user-tie me-2',
+        route: '/#',
+        show: existsRole(sessionStorage.getItem('roles'), ['ROLE_ADMIN', 'ROLE_COMPANY_ADMIN']),
+        items: [
+            {
+                id: 'crearCliente',
+                label: 'Crear cliente',
+                route: '/client/create',
+                classIcon: null,
+            }
+        ]
     }
 ]

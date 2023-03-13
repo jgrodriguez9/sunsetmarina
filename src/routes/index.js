@@ -10,6 +10,7 @@ import Slip from "../pages/Slip"
 import CreateCompania from '../pages/Catalogos/Compania/Create'
 import EditCompania from '../pages/Catalogos/Compania/Edit'
 import Logs from "../pages/Seguridad/Logs"
+import CreateClient from '../pages/Client/Create'
 
 const authProtectedRoutes = [
     { path: "/logout", component: Logout },
@@ -67,6 +68,10 @@ const adminRoutes = [
     { path: "/company", exact: true, component: Compania },
     { path: "/company/create", exact: true, component: CreateCompania },
     { path: "/company/edit/:id", exact: true, component: EditCompania },
+    //end catalogos
+
+    //cliente
+    { path: "/client/create", exact: true, component: CreateClient },
 ]
 const managerRoutes = [
      //satges

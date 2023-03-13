@@ -12,7 +12,7 @@ function CreateCompania(){
 
                 <Breadcrumbs
                     title={'Compañía'}
-                    breadcrumbItem={"Compania"} 
+                    breadcrumbItem={"Compañía"} 
                 />
 
                 <Row className="pb-5">
