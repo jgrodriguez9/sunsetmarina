@@ -65,7 +65,7 @@ export default function DeleteDialog({handleDelete, show, setShow, isDeleting}){
                 </Col>
                 </Row>
             </ModalBody>
-            </Modal>
+        </Modal>
     )
 
 }

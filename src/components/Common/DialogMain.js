@@ -1,0 +1,18 @@
+import { Modal, ModalBody, ModalHeader } from "reactstrap";
+
+export default function DialogMain({open, setOpen, title, children=null}){
+
+    const onCloseClick = () => {
+        setOpen(false)
+    }
+
+    return (
+        <Modal isOpen={open} toggle={onCloseClick} centered={true} backdrop={'static'} keyboard={false} className="overflow-hidden">
+            <ModalHeader toggle={onCloseClick} className="py-2 bg-secondary bg-soft">{title}</ModalHeader>
+            <ModalBody className="py-3 px-5">
+                {children}
+            </ModalBody>
+        </Modal>
+    );
+
+}

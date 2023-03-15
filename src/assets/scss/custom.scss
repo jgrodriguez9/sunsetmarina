@@ -217,3 +217,34 @@
 .h-36px{
   height: 36px;
 }
+.dock-container{
+  width: auto;
+  overflow-x: auto;
+}
+.dock-map{
+  border-color: #6693CF;
+  border-width: 2px;
+  border-style: Solid;
+  height: 600px;
+  width: 1200px;
+}
+.slip{
+  margin: 0 2px 0 2px;
+  padding: 1px;
+  border: 1px solid #336699;
+  float: left;
+  overflow: hidden;
+  font-size: 12px;
+}
+.slip-white{
+  background-color: #fff;
+}
+.slip-1{
+  position: absolute;
+  z-index: 0;
+  opacity: 1;
+  left: 161px;
+  top: 153px;
+  width: 62px;
+  height: 25px;
+}

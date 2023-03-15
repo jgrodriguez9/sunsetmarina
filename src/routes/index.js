@@ -11,31 +11,13 @@ import CreateCompania from '../pages/Catalogos/Compania/Create'
 import EditCompania from '../pages/Catalogos/Compania/Edit'
 import Logs from "../pages/Seguridad/Logs"
 import CreateClient from '../pages/Client/Create'
+import Client from "../pages/Client"
+import Dock from "../pages/Dock"
 
 const authProtectedRoutes = [
     { path: "/logout", component: Logout },
     { path: "/dashboard", component: Dashboard },
     { path: "/", exact: true, component: () => <Redirect to="/dashboard" /> },
-
-    //slip
-    { path: "/slip", exact: true, component: Slip },
-
-    
-
-    // //satges
-    // { path: "/stage-list", exact: true, component: StagesList },
-    // { path: "/stage-add", exact: true, component: StagesAdd },
-    // { path: "/stage-edit/:id", exact: true, component: StagesEdit },
-
-    // //satges
-    // { path: "/relationship-list", exact: true, component: RelationshipList },
-    // { path: "/relationship-add", exact: true, component: RelationshipAdd },
-    // { path: "/relationship-edit/:id", exact: true, component: RelationshipEdit },
-
-    // //header report
-    // { path: "/topconfiguration-list", exact: true, component: HeaderReportList },
-    // { path: "/topconfiguration-add", exact: true, component: HeaderReportAdd },
-    // { path: "/topconfiguration-edit/:id", exact: true, component: HeaderReportEdit },
 
     // //user
     // { path: "/user-list", exact: true, component: UserList },
@@ -71,6 +53,7 @@ const adminRoutes = [
     //end catalogos
 
     //cliente
+    { path: "/client", exact: true, component: Client },
     { path: "/client/create", exact: true, component: CreateClient },
 ]
 const managerRoutes = [
@@ -93,7 +76,7 @@ const managerRoutes = [
 ]
 const agentRoutes = [
     //documents
-    // { path: "/case-list", exact: true, component: DocumentList },
+    { path: "/muelle", exact: true, component: Dock },
     // { path: "/case-add", exact: true, component: DocumentAdd },
     // { path: "/case-edit/:id", exact: true, component: DocumentEdit },
 ]
