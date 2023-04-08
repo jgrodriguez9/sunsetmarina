@@ -14,3 +14,6 @@ export const logs = "/logHistory"
 //muelle
 export const muelle = "/pier"
 
+//amarres
+export const amarre = "/slipType"
+

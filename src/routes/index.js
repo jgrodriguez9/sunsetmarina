@@ -16,6 +16,7 @@ import Dock from "../pages/Dock"
 import Muelle from "../pages/Catalogos/Muelle"
 import CreateMuelle from "../pages/Catalogos/Muelle/Create"
 import EditMUelle from "../pages/Catalogos/Muelle/Edit"
+import Amarre from "../pages/Catalogos/Amarre"
 
 const authProtectedRoutes = [
     { path: "/logout", component: Logout },
@@ -57,6 +58,10 @@ const adminRoutes = [
     { path: "/pier", exact: true, component: Muelle },
     { path: "/pier/create", exact: true, component: CreateMuelle },
     { path: "/pier/edit/:id", exact: true, component: EditMUelle },
+    //amarre
+    { path: "/sliptype", exact: true, component: Amarre },
+    // { path: "/pier/create", exact: true, component: CreateMuelle },
+    // { path: "/pier/edit/:id", exact: true, component: EditMUelle },
 
     //end catalogos
 

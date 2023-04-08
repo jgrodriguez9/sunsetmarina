@@ -6,7 +6,7 @@ import { navigations } from "../../routes/navigation";
 
 
 const Navbar = props => {
-  const [app, setapp] = useState(false);
+  const [app, setapp] = useState(null);
 
   useEffect(() => {
     var matchingMenuItem = null;
@@ -72,7 +72,11 @@ const Navbar = props => {
                         onClick={e => {
                             if(navigation.items.length > 0){
                               e.preventDefault();
-                              setapp(!app);
+                              if(app === navigation.id){
+                                setapp(null);
+                              }else{
+                                setapp(navigation.id);
+                              }                              
                             }                            
                           }}
                         className="nav-link dropdown-togglez arrow-none"
@@ -83,7 +87,7 @@ const Navbar = props => {
                       </Link>
                       {
                         navigation.items.length > 0 && 
-                        <div className={classname("dropdown-menu", { show: app })}>
+                        <div className={classname("dropdown-menu", { show: app===navigation.id })}>
                           {
                             navigation.items.map(item=>(
                               <Link to={item.route} className="dropdown-item" key={item.id}>
