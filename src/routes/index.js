@@ -13,6 +13,9 @@ import Logs from "../pages/Seguridad/Logs"
 import CreateClient from '../pages/Client/Create'
 import Client from "../pages/Client"
 import Dock from "../pages/Dock"
+import Muelle from "../pages/Catalogos/Muelle"
+import CreateMuelle from "../pages/Catalogos/Muelle/Create"
+import EditMUelle from "../pages/Catalogos/Muelle/Edit"
 
 const authProtectedRoutes = [
     { path: "/logout", component: Logout },
@@ -50,6 +53,11 @@ const adminRoutes = [
     { path: "/company", exact: true, component: Compania },
     { path: "/company/create", exact: true, component: CreateCompania },
     { path: "/company/edit/:id", exact: true, component: EditCompania },
+    //muelle
+    { path: "/pier", exact: true, component: Muelle },
+    { path: "/pier/create", exact: true, component: CreateMuelle },
+    { path: "/pier/edit/:id", exact: true, component: EditMUelle },
+
     //end catalogos
 
     //cliente

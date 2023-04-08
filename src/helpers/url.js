@@ -11,3 +11,6 @@ export const compania = "/company"
 //logs
 export const logs = "/logHistory"
 
+//muelle
+export const muelle = "/pier"
+

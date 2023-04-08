@@ -42,6 +42,12 @@ export const navigations = [
                 label: 'Compañía',
                 route: '/company',
                 classIcon: null,
+            },
+            {
+                id: 'muelle',
+                label: 'Muelle',
+                route: '/pier',
+                classIcon: null,
             }
         ]
     },
