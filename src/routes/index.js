@@ -21,6 +21,9 @@ import EditAmarre from "../pages/Catalogos/Amarre/Edit"
 import Slip from "../pages/Marina/Slip"
 import CreateSlip from "../pages/Marina/Slip/Create";
 import EditSlip from "../pages/Marina/Slip/Edit";
+import TipoDocumento from "../pages/Catalogos/TipoDocumento"
+import CreateTipoDocumento from "../pages/Catalogos/TipoDocumento/Create";
+import EditTipoDocumento from "../pages/Catalogos/TipoDocumento/Edit";
 
 const authProtectedRoutes = [
     { path: "/logout", component: Logout },
@@ -66,6 +69,10 @@ const adminRoutes = [
     { path: "/sliptype", exact: true, component: Amarre },
     { path: "/sliptype/create", exact: true, component: CreateAmarre },
     { path: "/sliptype/edit/:id", exact: true, component: EditAmarre },
+    //tipo documento
+    { path: "/documenttype", exact: true, component: TipoDocumento },
+    { path: "/documenttype/create", exact: true, component: CreateTipoDocumento },
+    { path: "/documenttype/edit/:id", exact: true, component: EditTipoDocumento },
 
     //end catalogos
 

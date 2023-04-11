@@ -20,3 +20,6 @@ export const amarre = "/slipType"
 //slip
 export const slip = "/slip"
 
+//amarres
+export const documentType = "/documentType"
+

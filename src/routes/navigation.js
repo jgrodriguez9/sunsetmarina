@@ -54,6 +54,12 @@ export const navigations = [
                 label: 'Tipo de Slip',
                 route: '/sliptype',
                 classIcon: null,
+            },
+            {
+                id: 'tipoDeDocumento',
+                label: 'Tipo de documento',
+                route: '/documenttype',
+                classIcon: null,
             }
         ]
     },
