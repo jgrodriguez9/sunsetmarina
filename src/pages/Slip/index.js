@@ -4,7 +4,7 @@ import { Col, Container, Row } from "reactstrap";
 import Breadcrumbs from "../../components/Common/Breadcrumbs";
 import MuelleMap from "../../components/Slip/MuelleMap";
 
-function Slip(){  
+function MapaMuelle(){  
     const [loading, setLoading] = useState(false)
     const [items, setItems] = useState([]);
 
@@ -31,4 +31,4 @@ function Slip(){
       );
   }
   
-  export default withRouter(Slip)
+  export default withRouter(MapaMuelle)

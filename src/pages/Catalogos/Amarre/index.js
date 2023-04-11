@@ -16,7 +16,8 @@ import { DELETE_SUCCESS, ERROR_SERVER } from "../../../constants/messages";
 import { addMessage } from "../../../redux/messageSlice";
 import extractMeaningfulMessage from "../../../utils/extractMeaningfulMessage";
 import { deleteMuelle } from "../../../helpers/catalogos/muelle";
-import { getAmarreListPaginado } from "../../../helpers/catalogos/amarres";
+import { deleteAmarre, getAmarreListPaginado } from "../../../helpers/catalogos/amarres";
+import CellFormatEnable from "../../../components/Tables/CellFormatEnable";
 
 function Amarre(){  
     const dispatch = useDispatch();
@@ -34,13 +35,21 @@ function Amarre(){
     })
     const [filters, setFilters] = useState([
         {
-            label: 'Nombre',
-            field: 'name',
+            label: 'Descripción',
+            field: 'description',
             width: 3,
             control: 'input',
             type: 'text',
             value: ''
         },
+        {
+            label: 'Habilitado',
+            field: 'enabled',
+            width: 2,
+            control: 'checkbox',
+            type: 'text',
+            value: ''
+        }
     ]);
 
     const fetchList = async () => {
@@ -48,8 +57,7 @@ function Amarre(){
         let q = Object.keys(query).map(key=>`${key}=${query[key]}`).join("&")
         try {
             const response = await getAmarreListPaginado(`?${q}`);
-            console.log(response)
-            //setItems(response.list)
+            setItems(response.list)
             setTotalPaginas(response.pagination.totalPages)
             setTotalRegistros(response.pagination.totalCount)
             setLoading(false)
@@ -78,24 +86,39 @@ function Amarre(){
     const columns = useMemo(
         () => [
           {
-            Header: 'Nombre',
-            accessor: 'name',
+            Header: 'Descripción',
+            accessor: 'description',
+            style: {
+                width: '40%'
+            }
+          },
+          {
+            Header: 'Habilitado',
+            accessor: 'enabled',
+            Cell: ({row, value}) => <CellFormatEnable value={value} okText="Habilitado" failText="No habilitado"/>,
             style: {
                 width: '20%'
             }
           },
           {
-            Header: 'Orden',
-            accessor: 'orderPosition',
+            Header: 'Manga',
+            accessor: 'beam',
             style: {
                 width: '10%'
             }
           },
           {
-            Header: 'Descripción',
-            accessor: 'description',
+            Header: 'Calado',
+            accessor: 'draught',
             style: {
-                width: '60%'
+                width: '10%'
+            }
+          },
+          {
+            Header: 'Eslora',
+            accessor: 'length',
+            style: {
+                width: '10%'
             }
           },
           {
@@ -143,8 +166,6 @@ function Amarre(){
         const obj = activeFilters.reduce((accumulator, value) => {
             return {...accumulator, [value.name]: value.value};
           }, {});
-          console.log(obj)
-
           setQuery(prev=>({
             max: prev.max,
             page: 1,
@@ -159,7 +180,7 @@ function Amarre(){
     const handleDelete = async () => {
         setDeleting(true)   
         try {
-            await deleteMuelle(selectedIdDelete);
+            await deleteAmarre(selectedIdDelete);
             fetchList()
             setDeleting(false)
             setShowDeleteDialog(false)
@@ -224,8 +245,8 @@ function Amarre(){
             <Container fluid>
               {/* Render Breadcrumb */}
               <Breadcrumbs
-                title={'Amarre'}
-                breadcrumbItem={"Amarre"}
+                title={'Tipo de Slip'}
+                breadcrumbItem={"Tipo de Slip"}
                 add={{
                     allow: true,
                     text: 'Crear Nuevo',

@@ -1,22 +1,22 @@
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useParams, withRouter } from "react-router-dom";
 import { Col, Container, Row } from "reactstrap";
-import FormMuelle from "../../../../components/Catalogo/Muelle/FormMuelle";
+import FormAmarre from "../../../../components/Catalogo/Amarre/FormAmarre";
 import Breadcrumbs from "../../../../components/Common/Breadcrumbs";
 import CardMain from "../../../../components/Common/CardMain";
 import ErrorEntity from "../../../../components/Common/ErrorEntity";
 import FormLoader from "../../../../components/Loader/FormLoader";
 import { ERROR_SERVER } from "../../../../constants/messages";
-import { getMuelle } from "../../../../helpers/catalogos/muelle";
+import { getAmarre } from "../../../../helpers/catalogos/amarres";
 import { addMessage } from "../../../../redux/messageSlice";
 import extractMeaningfulMessage from "../../../../utils/extractMeaningfulMessage";
 
 const fields = [
-        {label: 'Nombre', width: 4}, {label: 'Orden', width: 2}, {label: null, width: 6},
+        {label: 'Descripción', width: 3}, {label: 'Habilitado', width: 2}, {label: null, width: 7},
+        {label: 'Manga', width: 2},{label: 'Calado', width: 2},{label: 'Eslora', width: 2},{label: null, width: 6}
     ]
-function EditMuelle(){
+function EditAmarre(){
     const {id} = useParams();
     const dispatch = useDispatch();
     const [item, setItem] = useState(null)
@@ -29,7 +29,7 @@ function EditMuelle(){
 
     const fetchItem = async () => {
         try {
-            const response = await getMuelle(id);
+            const response = await getAmarre(id);
             setItem(response)            
             setStates(prev=>({...prev, loading: false, error: false, success: true}))
         } catch (error) {
@@ -60,16 +60,16 @@ function EditMuelle(){
             <Container fluid>
 
                 <Breadcrumbs
-                    title={'Compañía'}
-                    breadcrumbItem={"Compañía"} 
+                    title={'Tipo de Slip'}
+                    breadcrumbItem={"Tipo de Slip"} 
                 />
 
                 <Row className="pb-5">
                   <Col lg="12">
-                    {states.loading && <FormLoader fields={fields} titleCard='Editar Muelle' />}
+                    {states.loading && <FormLoader fields={fields} titleCard='Editar Tipo de Slip' />}
                     {states.success && <CardMain
-                                            title='Editar Muelle'
-                                            children={<FormMuelle item={item} btnTextSubmit="Actualizar"/>}
+                                            title='Editar Tipo de Slip'
+                                            children={<FormAmarre item={item} btnTextSubmit="Actualizar"/>}
                                         />}
                     {states.error && <ErrorEntity 
                                         text='En estos momentos no podemos obtener la información' 
@@ -83,4 +83,4 @@ function EditMuelle(){
 
 }
 
-export default withRouter(EditMuelle)
+export default withRouter(EditAmarre)

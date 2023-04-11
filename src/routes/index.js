@@ -6,7 +6,6 @@ import TipoBarco from "../pages/Catalogos/TipoBarco"
 import CreateTipoBarco from "../pages/Catalogos/TipoBarco/Create"
 import EditTipoBarco from "../pages/Catalogos/TipoBarco/Edit"
 import Dashboard from "../pages/Dashboard"
-import Slip from "../pages/Slip"
 import CreateCompania from '../pages/Catalogos/Compania/Create'
 import EditCompania from '../pages/Catalogos/Compania/Edit'
 import Logs from "../pages/Seguridad/Logs"
@@ -17,6 +16,11 @@ import Muelle from "../pages/Catalogos/Muelle"
 import CreateMuelle from "../pages/Catalogos/Muelle/Create"
 import EditMUelle from "../pages/Catalogos/Muelle/Edit"
 import Amarre from "../pages/Catalogos/Amarre"
+import CreateAmarre from "../pages/Catalogos/Amarre/Create"
+import EditAmarre from "../pages/Catalogos/Amarre/Edit"
+import Slip from "../pages/Marina/Slip"
+import CreateSlip from "../pages/Marina/Slip/Create";
+import EditSlip from "../pages/Marina/Slip/Edit";
 
 const authProtectedRoutes = [
     { path: "/logout", component: Logout },
@@ -60,14 +64,23 @@ const adminRoutes = [
     { path: "/pier/edit/:id", exact: true, component: EditMUelle },
     //amarre
     { path: "/sliptype", exact: true, component: Amarre },
-    // { path: "/pier/create", exact: true, component: CreateMuelle },
-    // { path: "/pier/edit/:id", exact: true, component: EditMUelle },
+    { path: "/sliptype/create", exact: true, component: CreateAmarre },
+    { path: "/sliptype/edit/:id", exact: true, component: EditAmarre },
 
     //end catalogos
 
+
+    //marina
     //cliente
     { path: "/client", exact: true, component: Client },
     { path: "/client/create", exact: true, component: CreateClient },
+
+    //slip
+    { path: "/slip", exact: true, component: Slip },
+    { path: "/slip/create", exact: true, component: CreateSlip },
+    { path: "/slip/edit/:id", exact: true, component: EditSlip },
+
+    //endmarina
 ]
 const managerRoutes = [
      //satges

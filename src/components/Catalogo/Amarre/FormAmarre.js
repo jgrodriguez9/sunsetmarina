@@ -7,33 +7,37 @@ import { ERROR_SERVER, FIELD_REQUIRED, SAVE_SUCCESS, UPDATE_SUCCESS } from "../.
 import { addMessage } from "../../../redux/messageSlice";
 import extractMeaningfulMessage from "../../../utils/extractMeaningfulMessage";
 import ButtonsDisabled from "../../Common/ButtonsDisabled";
-import { saveMuelle, updateMuelle } from "../../../helpers/catalogos/muelle";
+import { saveAmarre, updateAmarre } from "../../../helpers/catalogos/amarres";
 
-export default function FormMuelle({item, btnTextSubmit="Aceptar"}){
+export default function FormAmarre({item, btnTextSubmit="Aceptar"}){
     const history = useHistory();
     const dispatch = useDispatch();
 
+    
     const formik = useFormik({
         initialValues: {
             id: item?.id ?? '',
-            name: item?.name ?? '',
-            orderPosition: item?.orderPosition ?? '',
+            description: item?.description ?? '',
+            enabled: item?.enabled ?? true,
+            length: item?.length ?? '',
+            draught: item?.draught ?? '',
+            beam: item?.beam ?? '',                 
         },
         validationSchema: Yup.object({
-            name: Yup.string().required(FIELD_REQUIRED),
+            description: Yup.string().required(FIELD_REQUIRED),
         }),
         onSubmit: async (values) => {
             //validaciones antes de enviarlo
             if(values.id){
                 //update
                 try {
-                    let response = await updateMuelle(values.id, values)
+                    let response = await updateAmarre(values.id, values)
                     if(response){
                         dispatch(addMessage({
                             type: 'success',
                             message: UPDATE_SUCCESS
                         }))
-                        history.push('/pier')
+                        history.push('/sliptype')
                     }else{
                         dispatch(addMessage({
                             type: 'error',
@@ -51,13 +55,13 @@ export default function FormMuelle({item, btnTextSubmit="Aceptar"}){
             }else{
                 //save
                 try{
-                    let response = await saveMuelle(values)
+                    let response = await saveAmarre(values)
                     if(response){
                         dispatch(addMessage({
                             type: 'success',
                             message: SAVE_SUCCESS
                         }))
-                        history.push('/pier')
+                        history.push('/sliptype')
                     }else{
                         dispatch(addMessage({
                             type: 'error',
@@ -87,32 +91,67 @@ export default function FormMuelle({item, btnTextSubmit="Aceptar"}){
             }}
         >
             <Row>
-                <Col xs="12" md="4">
-                    <Label htmlFor="name" className="mb-0">Nombre</Label>
+                <Col xs="12" md="3">
+                    <Label htmlFor="description" className="mb-0">Descripción</Label>
                     <Input
-                        id="name"
-                        name="name"
-                        className={`form-control ${formik.errors.name ? 'is-invalid' : ''}`}
+                        id="description"
+                        name="description"
+                        className={`form-control ${formik.errors.description ? 'is-invalid' : ''}`}
                         onChange={formik.handleChange}
-                        value={formik.values.name}  
+                        value={formik.values.description}  
                     />
                     {
-                        formik.errors.name &&
-                        <div className="invalid-tooltip">{formik.errors.name}</div>
+                        formik.errors.description &&
+                        <div className="invalid-tooltip">{formik.errors.description}</div>
                     }
                 </Col>
                 <Col xs="12" md="2">
-                    <Label className="mb-0 d-block">Orden</Label>
+                    <Label className="mb-0 opacity-0 d-block">Habilitado</Label>
                     <Input
-                        id="orderPosition"
-                        name="orderPosition"
-                        type="number"
-                        min={0}
-                        className={`form-control`}
+                        id="enabled"
+                        name="enabled"
+                        type="checkbox"
+                        className={`form-check-Input form-check-input`}
                         onChange={formik.handleChange}
-                        value={formik.values.orderPosition}
+                        checked={formik.values.enabled || false}  
                     />
+                    <Label htmlFor={`enabled`} className="mb-0 ms-2">Habilitado</Label>
                 </Col>                
+            </Row>
+            <Row>
+                <Col xs="12" md="2">
+                    <Label htmlFor="beam" className="mb-0">Manga</Label>
+                    <Input
+                        id="beam"
+                        name="beam"
+                        className={`form-control ${formik.errors.beam ? 'is-invalid' : ''}`}
+                        onChange={formik.handleChange}
+                        value={formik.values.beam}
+                        type="number" 
+                    />
+                </Col>
+                <Col xs="12" md="2">
+                    <Label htmlFor="draught" className="mb-0">Calado</Label>
+                    <Input
+                        id="draught"
+                        name="draught"
+                        className={`form-control ${formik.errors.draught ? 'is-invalid' : ''}`}
+                        onChange={formik.handleChange}
+                        value={formik.values.draught}
+                        type="number" 
+                    />
+                </Col>
+                <Col xs="12" md="2">
+                    <Label htmlFor="length" className="mb-0">Eslora</Label>
+                    <Input
+                        id="length"
+                        name="length"
+                        className={`form-control ${formik.errors.length ? 'is-invalid' : ''}`}
+                        onChange={formik.handleChange}
+                        value={formik.values.length}
+                        type="number" 
+                    />
+                </Col> 
             </Row>
             <hr />
             {
@@ -120,7 +159,7 @@ export default function FormMuelle({item, btnTextSubmit="Aceptar"}){
                 <ButtonsDisabled buttons={[{text: btnTextSubmit, color: 'primary', className: '', loader: true}, {text: 'Cancelar', color: 'link', className: 'text-danger', loader: false}]}/> :
                 <div className="d-flex">
                     <Button color="primary" type="submit">{btnTextSubmit}</Button>
-                    <Link to="/pier" className="btn btn-link text-danger">Cancelar</Link>
+                    <Link to="/sliptype" className="btn btn-link text-danger">Cancelar</Link>
                 </div>
             }
             

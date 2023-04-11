@@ -15,9 +15,11 @@ import SimpleTable from "../../../components/Tables/SimpleTable";
 import { DELETE_SUCCESS, ERROR_SERVER } from "../../../constants/messages";
 import { addMessage } from "../../../redux/messageSlice";
 import extractMeaningfulMessage from "../../../utils/extractMeaningfulMessage";
-import { deleteMuelle, getMuelleListPaginado } from "../../../helpers/catalogos/muelle";
+import { deleteMuelle } from "../../../helpers/catalogos/muelle";
+import { deleteSlip, getSlipListPaginado } from "../../../helpers/marina/slip";
+import { numberFormat } from "../../../utils/numberFormat";
 
-function Muelle(){  
+function Slip(){  
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(true)
     const [items, setItems] = useState([]);
@@ -33,8 +35,8 @@ function Muelle(){
     })
     const [filters, setFilters] = useState([
         {
-            label: 'Nombre',
-            field: 'name',
+            label: 'Número',
+            field: 'number',
             width: 3,
             control: 'input',
             type: 'text',
@@ -46,7 +48,7 @@ function Muelle(){
         setLoading(true)
         let q = Object.keys(query).map(key=>`${key}=${query[key]}`).join("&")
         try {
-            const response = await getMuelleListPaginado(`?${q}`);
+            const response = await getSlipListPaginado(`?${q}`);
             setItems(response.list)
             setTotalPaginas(response.pagination.totalPages)
             setTotalRegistros(response.pagination.totalCount)
@@ -70,23 +72,31 @@ function Muelle(){
     }, [JSON.stringify(query)])
 
     const editAction = (row) => {
-        history.push(`/pier/edit/${row.original.id}`)
+        history.push(`/slip/edit/${row.original.id}`)
     }
 
     const columns = useMemo(
         () => [
           {
-            Header: 'Nombre',
-            accessor: 'name',
+            Header: 'Número',
+            accessor: 'number',
             style: {
-                width: '60%'
+                width: '40%'
             }
           },
           {
-            Header: 'Orden',
-            accessor: 'orderPosition',
+            Header: 'Muelle',
+            accessor: 'pier.name',
             style: {
-                width: '30%'
+                width: '40%'
+            }
+          },
+          {
+            Header: 'Precio',
+            accessor: 'price',
+            Cell: ({row}) => numberFormat(row.values.price),
+            style: {
+                width: '10%'
             }
           },
           {
@@ -143,13 +153,13 @@ function Muelle(){
     }
 
     const goPageCreate = () => {
-        history.push("/pier/create")
+        history.push("/slip/create")
     }
 
     const handleDelete = async () => {
         setDeleting(true)   
         try {
-            await deleteMuelle(selectedIdDelete);
+            await deleteSlip(selectedIdDelete);
             fetchList()
             setDeleting(false)
             setShowDeleteDialog(false)
@@ -172,7 +182,7 @@ function Muelle(){
         loading ?
         <Row>
             <Col xs="12" xl="12">
-                <TableLoader columns={[{name: "Nombre", width: '60%'}, {name: "Orden", width: '30%'}, {name: "Acciones", width: '10%'}]} />
+                <TableLoader columns={[{name: "Número", width: '20%'}, {name: "Muelle", width: '30%'}, {name: "Acciones", width: '10%'}]} />
             </Col>
         </Row> :
         <Row>
@@ -214,8 +224,8 @@ function Muelle(){
             <Container fluid>
               {/* Render Breadcrumb */}
               <Breadcrumbs
-                title={'Muelle'}
-                breadcrumbItem={"Muelle"}
+                title={'Slip'}
+                breadcrumbItem={"Slip"}
                 add={{
                     allow: true,
                     text: 'Crear Nuevo',
@@ -251,4 +261,4 @@ function Muelle(){
       );
   }
   
-  export default withRouter(Muelle)
+  export default withRouter(Slip)

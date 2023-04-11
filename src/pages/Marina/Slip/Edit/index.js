@@ -3,20 +3,22 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useParams, withRouter } from "react-router-dom";
 import { Col, Container, Row } from "reactstrap";
-import FormMuelle from "../../../../components/Catalogo/Muelle/FormMuelle";
 import Breadcrumbs from "../../../../components/Common/Breadcrumbs";
 import CardMain from "../../../../components/Common/CardMain";
 import ErrorEntity from "../../../../components/Common/ErrorEntity";
 import FormLoader from "../../../../components/Loader/FormLoader";
+import FormSlip from "../../../../components/Marina/Slip/FormSlip";
 import { ERROR_SERVER } from "../../../../constants/messages";
-import { getMuelle } from "../../../../helpers/catalogos/muelle";
+import { getSlip } from "../../../../helpers/marina/slip";
 import { addMessage } from "../../../../redux/messageSlice";
 import extractMeaningfulMessage from "../../../../utils/extractMeaningfulMessage";
 
 const fields = [
-        {label: 'Nombre', width: 4}, {label: 'Orden', width: 2}, {label: null, width: 6},
+        {label: 'Número', width: 3}, {label: 'Tipo de slip', width: 3}, {label: 'Muelle', width: 3},{label: null, width: 3},
+        {label: 'Precio', width: 3}, {label: 'Amperage', width: 2}, {label: 'Voltage', width: 2},{label: 'Posición X', width: 2},{label: 'Posición Y', width: 2},
+        {label: 'Observaciones', width: 5}
     ]
-function EditMuelle(){
+function EditSlip(){
     const {id} = useParams();
     const dispatch = useDispatch();
     const [item, setItem] = useState(null)
@@ -29,7 +31,7 @@ function EditMuelle(){
 
     const fetchItem = async () => {
         try {
-            const response = await getMuelle(id);
+            const response = await getSlip(id);
             setItem(response)            
             setStates(prev=>({...prev, loading: false, error: false, success: true}))
         } catch (error) {
@@ -69,7 +71,7 @@ function EditMuelle(){
                     {states.loading && <FormLoader fields={fields} titleCard='Editar Muelle' />}
                     {states.success && <CardMain
                                             title='Editar Muelle'
-                                            children={<FormMuelle item={item} btnTextSubmit="Actualizar"/>}
+                                            children={<FormSlip item={item} btnTextSubmit="Actualizar"/>}
                                         />}
                     {states.error && <ErrorEntity 
                                         text='En estos momentos no podemos obtener la información' 
@@ -83,4 +85,4 @@ function EditMuelle(){
 
 }
 
-export default withRouter(EditMuelle)
+export default withRouter(EditSlip)

@@ -51,7 +51,7 @@ export const navigations = [
             },
             {
                 id: 'amarre',
-                label: 'Amarre',
+                label: 'Tipo de Slip',
                 route: '/sliptype',
                 classIcon: null,
             }
@@ -66,8 +66,14 @@ export const navigations = [
         items: [
             {
                 id: 'dock',
-                label: 'Muelle',
+                label: 'Mapa de Muelle',
                 route: '/muelle',
+                classIcon: null,
+            },
+            {
+                id: 'slip',
+                label: 'Slip',
+                route: '/slip',
                 classIcon: null,
             },
             {

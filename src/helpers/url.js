@@ -17,3 +17,6 @@ export const muelle = "/pier"
 //amarres
 export const amarre = "/slipType"
 
+//slip
+export const slip = "/slip"
+
