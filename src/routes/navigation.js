@@ -60,6 +60,12 @@ export const navigations = [
                 label: 'Tipo de documento',
                 route: '/documenttype',
                 classIcon: null,
+            },
+            {
+                id: 'categoriaCliente',
+                label: 'Categoría de cliente',
+                route: '/clientcategory',
+                classIcon: null,
             }
         ]
     },

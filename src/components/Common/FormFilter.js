@@ -45,6 +45,17 @@ export default function FormFilter({filters, setFilters, fireSearch}){
         fireSearch(filters)
     }
 
+    const handleCleanFilter = () => {
+        const cleanFilter = filters.map(f => ({
+            ...f,
+            value: '',
+            valueDate: '',
+            valueSelect: ''
+        }))
+        setFilters(cleanFilter)
+        fireSearch(cleanFilter);
+    }
+
     return (
         <>
             <Row>
@@ -65,8 +76,15 @@ export default function FormFilter({filters, setFilters, fireSearch}){
                     <Button color="primary" size="sm"
                         outline
                         onClick={handleFilter}
+                        className="me-2"
                     >
                         <i className="fas fa-search" /> Buscar
+                    </Button>
+                    <Button color="link" size="sm"
+                        onClick={handleCleanFilter}
+                        className="text-danger"
+                    >
+                        <i className="fas fa-trash" /> Limpiar Filtros
                     </Button>
                 </Col>
             </Row>

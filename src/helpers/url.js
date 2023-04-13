@@ -23,3 +23,5 @@ export const slip = "/slip"
 //amarres
 export const documentType = "/documentType"
 
+export const clientCategory = "/customerCategory"
+

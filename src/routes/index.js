@@ -24,6 +24,9 @@ import EditSlip from "../pages/Marina/Slip/Edit";
 import TipoDocumento from "../pages/Catalogos/TipoDocumento"
 import CreateTipoDocumento from "../pages/Catalogos/TipoDocumento/Create";
 import EditTipoDocumento from "../pages/Catalogos/TipoDocumento/Edit";
+import CategoriaCliente from "../pages/Catalogos/CategoriaCliente"
+import CreateCategoriaCliente from '../pages/Catalogos/CategoriaCliente/Create';
+import EditCategoriaCliente from '../pages/Catalogos/CategoriaCliente/Edit';
 
 const authProtectedRoutes = [
     { path: "/logout", component: Logout },
@@ -74,6 +77,11 @@ const adminRoutes = [
     { path: "/documenttype/create", exact: true, component: CreateTipoDocumento },
     { path: "/documenttype/edit/:id", exact: true, component: EditTipoDocumento },
 
+    //categoria cliente
+    { path: "/clientcategory", exact: true, component: CategoriaCliente },
+    { path: "/clientcategory/create", exact: true, component: CreateCategoriaCliente },
+    { path: "/clientcategory/edit/:id", exact: true, component: EditCategoriaCliente },
+
     //end catalogos
 
 
@@ -89,29 +97,10 @@ const adminRoutes = [
 
     //endmarina
 ]
-const managerRoutes = [
-     //satges
- 
-    //  //satges
-    //  { path: "/relationship-list", exact: true, component: RelationshipList },
-    //  { path: "/relationship-add", exact: true, component: RelationshipAdd },
-    //  { path: "/relationship-edit/:id", exact: true, component: RelationshipEdit },
- 
-    //  //header report
-    //  { path: "/topconfiguration-list", exact: true, component: HeaderReportList },
-    //  { path: "/topconfiguration-add", exact: true, component: HeaderReportAdd },
-    //  { path: "/topconfiguration-edit/:id", exact: true, component: HeaderReportEdit },
-
-    //  //header report
-    //  { path: "/survey-list", exact: true, component: SurveyList },
-    //  { path: "/survey-add", exact: true, component: SurveyAdd },
-    //  { path: "/survey-edit/:id", exact: true, component: SurveyEdit },
-]
+const managerRoutes = []
 const agentRoutes = [
-    //documents
+    //mapa muelle
     { path: "/muelle", exact: true, component: Dock },
-    // { path: "/case-add", exact: true, component: DocumentAdd },
-    // { path: "/case-edit/:id", exact: true, component: DocumentEdit },
 ]
 
 export { 
