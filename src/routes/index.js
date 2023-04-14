@@ -9,8 +9,8 @@ import Dashboard from "../pages/Dashboard"
 import CreateCompania from '../pages/Catalogos/Compania/Create'
 import EditCompania from '../pages/Catalogos/Compania/Edit'
 import Logs from "../pages/Seguridad/Logs"
-import CreateClient from '../pages/Client/Create'
-import Client from "../pages/Client"
+import CreateClient from '../pages/Marina/Client/Create'
+import Client from "../pages/Marina/Client"
 import Dock from "../pages/Dock"
 import Muelle from "../pages/Catalogos/Muelle"
 import CreateMuelle from "../pages/Catalogos/Muelle/Create"

@@ -1,8 +1,8 @@
 import { withRouter } from "react-router-dom"
 import { Col, Container, Row } from "reactstrap"
-import FormCliente from "../../../components/Cliente/FormCliente"
-import Breadcrumbs from "../../../components/Common/Breadcrumbs"
-import CardMain from "../../../components/Common/CardMain";
+import FormCliente from "../../../../components/Cliente/FormCliente"
+import Breadcrumbs from "../../../../components/Common/Breadcrumbs"
+import CardMain from "../../../../components/Common/CardMain";
 
 function CreateClient(){
 
