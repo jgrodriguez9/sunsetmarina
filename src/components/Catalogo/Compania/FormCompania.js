@@ -10,8 +10,7 @@ import { addMessage } from "../../../redux/messageSlice";
 import extractMeaningfulMessage from "../../../utils/extractMeaningfulMessage";
 import { SELECT_OPTION } from '../../../constants/messages'
 import { Country, State, City }  from 'country-state-city';
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import ButtonsDisabled from "../../Common/ButtonsDisabled";
 
 export default function FormCompania({item, btnTextSubmit="Aceptar"}){

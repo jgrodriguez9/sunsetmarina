@@ -15,8 +15,6 @@ import SimpleTable from "../../../components/Tables/SimpleTable";
 import { DELETE_SUCCESS, ERROR_SERVER } from "../../../constants/messages";
 import { addMessage } from "../../../redux/messageSlice";
 import extractMeaningfulMessage from "../../../utils/extractMeaningfulMessage";
-import { deleteMuelle, getMuelleListPaginado } from "../../../helpers/catalogos/muelle";
-import { deleteDocumentType, getDocumentTypeListPaginado } from "../../../helpers/catalogos/documentType";
 import CellFormatEnable from "../../../components/Tables/CellFormatEnable";
 import { deleteClientCategory, getClientCategoryListPaginado } from "../../../helpers/catalogos/clientCategory";
 

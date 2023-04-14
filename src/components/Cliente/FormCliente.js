@@ -1,19 +1,28 @@
-import classNames from "classnames";
 import {useFormik } from "formik";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Form, Button, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
+import { Form, Button, NavItem, NavLink, TabContent, TabPane, Row, Col, Nav } from "reactstrap";
 import * as Yup from "yup";
 import { FIELD_REQUIRED } from "../../constants/messages";
+import ButtonsDisabled from "../Common/ButtonsDisabled";
 import { ResumenCliente } from "./ResumenCliente";
+import classnames from "classnames";
 import Wizard1 from "./Wizard/Wizard1";
 import Wizard2 from "./Wizard/Wizard2";
 import Wizard3 from "./Wizard/Wizard3";
+import DirectionClient from "./TabSection/DirectionClient";
+import PrincipalInfoClient from "./TabSection/PrincipalInfoClient";
 
 
 export default function FormCliente({item, btnTextSubmit="Aceptar"}){
     const [activeTab, setActiveTab] = useState(1)
-    const [passedSteps, setPassedSteps] = useState([1])
+    const [customActiveTab, setcustomActiveTab] = useState("1");
+
+    const toggleCustom = tab => {
+        if (customActiveTab !== tab) {
+          setcustomActiveTab(tab);
+        }
+      };
 
     const validationTab = {
         1: Yup.object({
@@ -31,20 +40,26 @@ export default function FormCliente({item, btnTextSubmit="Aceptar"}){
     const formik = useFormik({
         initialValues: {
             id: item?.id ?? '',
-            propietario: item?.propietario ?? '',
-            embarcacion: item?.embarcacion ?? '',
-            identificacion: item?.identificacion ?? '', 
-            nacionalidad: item?.nacionalidad ?? '',
-            status: item?.status ?? '',
-            
+            code: item?.code ?? '',
+            name: item?.name ?? '',
+            lastName: item?.lastName ?? '',
+            identification : item?.identification  ?? '',             
             country: item?.country ?? '',
             state: item?.state ?? '',
             city: item?.city ?? '',
-            codigoPostal: item?.codigoPostal ?? '',
-            direccion: item?.direccion ?? '',
-            colonia: item?.colonia ?? '',
+            address: item?.address ?? '',
+            email: item?.email ?? '',
+            phone: item?.phone ?? '',
+            rfc: item?.rfc ?? '', 
+            birthDate: item?.birthDate ?? '', 
+            customerCategory: item?.customerCategory ? {id: item.customerCategory?.id} : null,
         },
-        validationSchema: validationTab[activeTab],
+        validationSchema: Yup.object({
+            name: Yup.string().required(FIELD_REQUIRED),
+            lastName: Yup.string().required(FIELD_REQUIRED),
+            identification: Yup.string().required(FIELD_REQUIRED),
+            email: Yup.string().email("Correo electrónico inválido")
+        }),
         onSubmit: async (values) => {
             //validaciones antes de enviarlo
             console.log(values)
@@ -63,7 +78,57 @@ export default function FormCliente({item, btnTextSubmit="Aceptar"}){
         <>
             <ResumenCliente />
             <hr />
-            
+            <Form
+                className="needs-validation"
+                id="tooltipForm"
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    formik.handleSubmit();
+                    return false;
+                }}
+            >
+                <PrincipalInfoClient formik={formik} item={item} />
+                
+                <Row className="mt-2">
+                    <Col xs="12" md="12">
+                        <Nav tabs className="nav-tabs-custom">
+                            <NavItem>
+                                <NavLink
+                                    style={{ cursor: "pointer" }}
+                                    className={classnames({
+                                    active: customActiveTab === "1",
+                                    })}
+                                    onClick={() => {
+                                    toggleCustom("1");
+                                    }}
+                                >
+                                    <span className="d-block d-sm-none">
+                                    <i className="fas fa-home"></i>
+                                    </span>
+                                    <span className="d-none d-sm-block">Dirección de residencia</span>
+                                </NavLink>
+                            </NavItem>
+                        </Nav>
+                        <TabContent
+                            activeTab={customActiveTab}
+                            className="p-3 text-muted bg-light"
+                        >
+                            <TabPane tabId="1">
+                                <DirectionClient formik={formik} item={item}/>
+                            </TabPane>
+                        </TabContent>
+                    </Col>
+                </Row>
+                <hr />
+                {
+                formik.isSubmitting ?
+                <ButtonsDisabled buttons={[{text: btnTextSubmit, color: 'primary', className: '', loader: true}, {text: 'Cancelar', color: 'link', className: 'text-danger', loader: false}]}/> :
+                <div className="d-flex">
+                    <Button color="primary" type="submit">{btnTextSubmit}</Button>
+                    <Link to="/client" className="btn btn-link text-danger">Cancelar</Link>
+                </div>
+            }
+            </Form>
         </>
 
 
