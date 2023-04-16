@@ -1,16 +1,28 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Col, Input, Label, Row } from "reactstrap"
 import SimpleDate from "../../DatePicker/SimpleDate"
 import Select from "react-select";
 import { SELECT_OPTION } from "../../../constants/messages";
+import { getClientCategoryList } from "../../../helpers/catalogos/clientCategory";
+import { languages } from "../../../data/languages";
 
 export default function PrincipalInfoClient({formik, item}){
     const [clientsCategoryOpt, setClientsCategoryOpt] = useState([])
     const [clientsDefault, setClientsDefault] = useState(null)
+    const [languageDefault, setLanguageDefault] = useState(null)
 
-    const fecthClientsCategoryAPi = () => {
-        
+    const fecthClientsCategoryAPi = async () => {
+        try {
+            const response = await getClientCategoryList();
+            console.log(response)
+        } catch (error) {
+            console.log(error)
+        } 
     }
+
+    useEffect(() => {
+        fecthClientsCategoryAPi();
+    }, [])
 
     return (
         <Row>
@@ -146,6 +158,33 @@ export default function PrincipalInfoClient({formik, item}){
                             options={clientsCategoryOpt}
                             classNamePrefix="select2-selection"
                             placeholder={SELECT_OPTION}
+                        />
+                    </div>
+                </Row>
+                <Row className="align-items-center mb-2">
+                    <Label htmlFor="customerCategory" className="mb-0 col-md-3 col-12">Idioma</Label>
+                    <div className="col-md-9 col-12">
+                        <Select
+                            value={languageDefault}
+                            onChange={(value) => {
+                                setLanguageDefault(value)
+                                formik.setFieldValue('language', value?.value ?? '') 
+                            }}
+                            options={languages}
+                            classNamePrefix="select2-selection"
+                            placeholder={SELECT_OPTION}
+                        />
+                    </div>
+                </Row>
+                <Row className="align-items-center mb-2">
+                    <Label htmlFor="fax" className="mb-0 col-md-3 col-12">Fax</Label>
+                    <div className="col-md-9 col-12">
+                        <Input
+                            id="fax"
+                            name="fax"
+                            className={`form-control`}
+                            onChange={formik.handleChange}
+                            value={formik.values.fax}  
                         />
                     </div>
                 </Row>

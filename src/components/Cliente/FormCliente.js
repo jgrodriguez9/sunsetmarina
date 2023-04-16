@@ -12,6 +12,7 @@ import Wizard2 from "./Wizard/Wizard2";
 import Wizard3 from "./Wizard/Wizard3";
 import DirectionClient from "./TabSection/DirectionClient";
 import PrincipalInfoClient from "./TabSection/PrincipalInfoClient";
+import ObservationClient from "./TabSection/ObservationClient";
 
 
 export default function FormCliente({item, btnTextSubmit="Aceptar"}){
@@ -53,6 +54,8 @@ export default function FormCliente({item, btnTextSubmit="Aceptar"}){
             rfc: item?.rfc ?? '', 
             birthDate: item?.birthDate ?? '', 
             customerCategory: item?.customerCategory ? {id: item.customerCategory?.id} : null,
+            language: item?.language ?? '', 
+            fax: item?.fax ?? '', 
         },
         validationSchema: Yup.object({
             name: Yup.string().required(FIELD_REQUIRED),
@@ -108,13 +111,32 @@ export default function FormCliente({item, btnTextSubmit="Aceptar"}){
                                     <span className="d-none d-sm-block">Dirección de residencia</span>
                                 </NavLink>
                             </NavItem>
+                            <NavItem>
+                                <NavLink
+                                    style={{ cursor: "pointer" }}
+                                    className={classnames({
+                                    active: customActiveTab === "2",
+                                    })}
+                                    onClick={() => {
+                                    toggleCustom("2");
+                                    }}
+                                >
+                                    <span className="d-block d-sm-none">
+                                    <i className="fas fa-home"></i>
+                                    </span>
+                                    <span className="d-none d-sm-block">Observaciones</span>
+                                </NavLink>
+                            </NavItem>
                         </Nav>
                         <TabContent
                             activeTab={customActiveTab}
-                            className="p-3 text-muted bg-light"
+                            className="p-3 text-muted bg-light bg-soft"
                         >
                             <TabPane tabId="1">
                                 <DirectionClient formik={formik} item={item}/>
+                            </TabPane>
+                            <TabPane tabId="2">
+                                <ObservationClient formik={formik} item={item}/>
                             </TabPane>
                         </TabContent>
                     </Col>
