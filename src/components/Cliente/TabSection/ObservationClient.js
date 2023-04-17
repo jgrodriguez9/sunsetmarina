@@ -16,6 +16,7 @@ export default function ObservationClient({formik, item}){
                       data={obervation}
                       onChange={(event, editor) => {
                         setObservation(editor.getData())
+                        formik.setFieldValue('observation', editor.getData())
                       }}
                     />
                 </div>

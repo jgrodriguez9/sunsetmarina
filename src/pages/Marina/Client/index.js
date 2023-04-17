@@ -10,15 +10,13 @@ import DeleteDialog from "../../../components/Common/DeleteDialog";
 import FormFilter from "../../../components/Common/FormFilter";
 import TableLoader from "../../../components/Loader/TablaLoader";
 import CellActions from "../../../components/Tables/CellActions";
-import CellFormatEnable from "../../../components/Tables/CellFormatEnable";
 import Paginate from "../../../components/Tables/Paginate";
 import SimpleTable from "../../../components/Tables/SimpleTable";
 import { DELETE_SUCCESS, ERROR_SERVER } from "../../../constants/messages";
-import { deleteBoadType } from "../../../helpers/catalogos/boadType";
-import { getCompaniaListPaginado } from "../../../helpers/catalogos/compania";
 import { addMessage } from "../../../redux/messageSlice";
 import extractMeaningfulMessage from "../../../utils/extractMeaningfulMessage";
 import { Country, State }  from 'country-state-city';
+import { deleteClient, getClientListPaginado } from "../../../helpers/marina/client";
 
 function Client(){  
     const dispatch = useDispatch();
@@ -36,8 +34,24 @@ function Client(){
     })
     const [filters, setFilters] = useState([
         {
+            label: 'Código',
+            field: 'code',
+            width: 3,
+            control: 'input',
+            type: 'text',
+            value: ''
+        },
+        {
             label: 'Nombre',
             field: 'name',
+            width: 3,
+            control: 'input',
+            type: 'text',
+            value: ''
+        },
+        {
+            label: 'Apellido',
+            field: 'lastName',
             width: 3,
             control: 'input',
             type: 'text',
@@ -76,27 +90,27 @@ function Client(){
     ]);
 
     const fetchList = async () => {
-        // setLoading(true)
-        // let q = Object.keys(query).map(key=>`${key}=${query[key]}`).join("&")
-        // try {
-        //     const response = await getCompaniaListPaginado(`?${q}`);
-        //     //console.log(response)
-        //     setItems(response.list)
-        //     setTotalPaginas(response.pagination.totalPages)
-        //     setTotalRegistros(response.pagination.totalCount)
-        //     setLoading(false)
-        // } catch (error) {
-        //     let message  = ERROR_SERVER;
-        //     message = extractMeaningfulMessage(error, message)
-        //     dispatch(addMessage({
-        //         message: message,
-        //         type: 'error'
-        //     }))
-        //     setItems([])
-        //     setTotalPaginas(0)
-        //     setTotalRegistros(10)
-        //     setLoading(false)
-        // } 
+        setLoading(true)
+        let q = Object.keys(query).map(key=>`${key}=${query[key]}`).join("&")
+        try {
+            const response = await getClientListPaginado(`?${q}`);
+            //console.log(response)
+            setItems(response.list)
+            setTotalPaginas(response.pagination.totalPages)
+            setTotalRegistros(response.pagination.totalCount)
+            setLoading(false)
+        } catch (error) {
+            let message  = ERROR_SERVER;
+            message = extractMeaningfulMessage(error, message)
+            dispatch(addMessage({
+                message: message,
+                type: 'error'
+            }))
+            setItems([])
+            setTotalPaginas(0)
+            setTotalRegistros(10)
+            setLoading(false)
+        } 
     }
 
     useEffect(() => {
@@ -104,56 +118,63 @@ function Client(){
     }, [JSON.stringify(query)])
 
     const editAction = (row) => {
-        history.push(`/company/edit/${row.original.id}`)
+        history.push(`/client/edit/${row.original.id}`)
     }
 
     const columns = useMemo(
         () => [
-          {
-            Header: 'Nombre',
-            accessor: 'name',
-            style: {
-                width: '50%'
+            {
+                Header: 'Código',
+                accessor: 'code',            
+                style: {
+                    width: '10%'
+                }
+            },
+            {
+                Header: 'Nombre',
+                accessor: 'name',
+                Cell: ({row}) => `${row.original.name} ${row.original.lastName}`,
+                style: {
+                    width: '35%'
+                }
+            },
+            {
+                Header: 'Correo electrónico',
+                accessor: 'email',            
+                style: {
+                    width: '15%'
+                }
+            },
+            {
+                Header: 'Teléfono',
+                accessor: 'phone',
+                style: {
+                    width: '10%'
+                }
+            },
+            {
+                Header: 'Dirección',
+                accessor: 'address',
+                style: {
+                    width: '20%'
+                }
+            },          
+            {
+                id: 'acciones',
+                Header: "Acciones",
+                Cell: ({row}) => (
+                    <>
+                        <CellActions
+                            edit={{"allow": true, action: editAction}} 
+                            del={{"allow": false, action: handleShowDialogDelete}}
+                            row={row}
+                        />
+                    </>
+                ), 
+                style: {
+                    width: '10%'
+                }         
             }
-          },
-          {
-            Header: 'Teléfono',
-            accessor: 'phone',
-            style: {
-                width: '10%'
-            }
-          },
-          {
-            Header: 'Dirección',
-            accessor: 'address',
-            style: {
-                width: '20%'
-            }
-          },
-          {
-            Header: 'Habilitado',
-            accessor: 'enabled',
-            Cell: ({row, value}) => <CellFormatEnable value={value} okText="Habilitado" failText="No habilitado"/>,
-            style: {
-                width: '10%'
-            }
-          },
-          {
-            id: 'acciones',
-            Header: "Acciones",
-            Cell: ({row}) => (
-                <>
-                    <CellActions
-                        edit={{"allow": true, action: editAction}} 
-                        del={{"allow": false, action: handleShowDialogDelete}}
-                        row={row}
-                    />
-                </>
-            ), 
-            style: {
-                width: '10%'
-            }         
-          }
         ],
         []
     );
@@ -199,7 +220,7 @@ function Client(){
     const handleDelete = async () => {
         setDeleting(true)   
         try {
-            await deleteBoadType(selectedIdDelete);
+            await deleteClient(selectedIdDelete);
             fetchList()
             setDeleting(false)
             setShowDeleteDialog(false)
@@ -222,7 +243,7 @@ function Client(){
         loading ?
         <Row>
             <Col xs="12" xl="12">
-                <TableLoader columns={[{name: "Nombre", width: '50%'}, {name: "Teléfono", width: '10%'}, {name: "Dirección", width: "20%" }, {name: "Habilitado", width: '10%'}, {name: "Acciones", width: '10%'}]} />
+                <TableLoader columns={[{name: "Código", width: '10%'}, {name: "Nombre", width: '35%'}, {name: 'Correo electrónico', with: '15%'}, {name: "Teléfono", width: '10%'}, {name: "Dirección", width: "20%" }, {name: "Acciones", width: '10%'}]} />
             </Col>
         </Row> :
         <Row>

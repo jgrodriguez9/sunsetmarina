@@ -10,6 +10,7 @@ export default function PrincipalInfoClient({formik, item}){
     const [clientsCategoryOpt, setClientsCategoryOpt] = useState([])
     const [clientsDefault, setClientsDefault] = useState(null)
     const [languageDefault, setLanguageDefault] = useState(null)
+    const [selectedImage, setSelectedImage] = useState(null);
 
     const fecthClientsCategoryAPi = async () => {
         try {
@@ -26,6 +27,29 @@ export default function PrincipalInfoClient({formik, item}){
 
     return (
         <Row>
+            <Col xs="12" md="12">
+            <div className="text-center">
+                {selectedImage ?
+                    <>
+                        <img
+                            className="btn-image-profile"
+                            alt="not found"
+                            src={URL.createObjectURL(selectedImage)}
+                        />
+                        <i className="bx bxs-pencil icon-image-upload"/>
+                    </> :
+                    <button type="button" className="btn-block btn-image-profile">
+                        <i className="fas fa-camera icon-file-upload"/>
+                    </button>
+                }
+                <input
+                    type="file"
+                    accept="image/*"
+                    className="input-file"
+                    onChange={e=>setSelectedImage(e.target.files[0])}
+                /> 
+            </div>            
+            </Col>
             <Col xs="12" md="5">
                 <Row className="align-items-center mb-2 ">
                     <Label htmlFor="code" className="mb-0 col-md-3 col-12">Código</Label>

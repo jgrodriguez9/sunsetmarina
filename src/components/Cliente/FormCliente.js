@@ -1,42 +1,32 @@
 import {useFormik } from "formik";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { Form, Button, NavItem, NavLink, TabContent, TabPane, Row, Col, Nav } from "reactstrap";
 import * as Yup from "yup";
-import { FIELD_REQUIRED } from "../../constants/messages";
+import { ERROR_SERVER, FIELD_REQUIRED, SAVE_SUCCESS, UPDATE_SUCCESS } from "../../constants/messages";
 import ButtonsDisabled from "../Common/ButtonsDisabled";
 import { ResumenCliente } from "./ResumenCliente";
 import classnames from "classnames";
-import Wizard1 from "./Wizard/Wizard1";
-import Wizard2 from "./Wizard/Wizard2";
-import Wizard3 from "./Wizard/Wizard3";
 import DirectionClient from "./TabSection/DirectionClient";
 import PrincipalInfoClient from "./TabSection/PrincipalInfoClient";
 import ObservationClient from "./TabSection/ObservationClient";
+import moment from "moment/moment";
+import { saveClient, updateClient } from "../../helpers/marina/client";
+import { addMessage } from "../../redux/messageSlice";
+import { useDispatch } from "react-redux";
+import extractMeaningfulMessage from "../../utils/extractMeaningfulMessage";
 
 
 export default function FormCliente({item, btnTextSubmit="Aceptar"}){
-    const [activeTab, setActiveTab] = useState(1)
+    const history = useHistory();
+    const dispatch = useDispatch();
     const [customActiveTab, setcustomActiveTab] = useState("1");
 
     const toggleCustom = tab => {
         if (customActiveTab !== tab) {
           setcustomActiveTab(tab);
         }
-      };
-
-    const validationTab = {
-        1: Yup.object({
-                propietario: Yup.string().required(FIELD_REQUIRED),
-                embarcacion: Yup.string().required(FIELD_REQUIRED),
-            }),
-        2: Yup.object({
-                country: Yup.string().required(FIELD_REQUIRED),
-            }),
-        3: Yup.object({
-                foto: Yup.string().required(FIELD_REQUIRED),
-            }),
-    }
+    };
 
     const formik = useFormik({
         initialValues: {
@@ -65,11 +55,57 @@ export default function FormCliente({item, btnTextSubmit="Aceptar"}){
         }),
         onSubmit: async (values) => {
             //validaciones antes de enviarlo
+            values.birthDate = moment(values.birthDate).format('YYYY-MM-DD')
             console.log(values)
-            if(activeTab === 3){
-                console.log('submit')
+            console.log('submit')
+            if(values.id){
+                //update
+                try {
+                    let response = await updateClient(values.id, values)
+                    if(response){
+                        dispatch(addMessage({
+                            type: 'success',
+                            message: UPDATE_SUCCESS
+                        }))
+                        history.push('/client')
+                    }else{
+                        dispatch(addMessage({
+                            type: 'error',
+                            message: ERROR_SERVER
+                        }))
+                    }
+                } catch (error) {
+                    let message  = ERROR_SERVER;
+                    message = extractMeaningfulMessage(error, message)
+                    dispatch(addMessage({
+                        type: 'error',
+                        message: message
+                    })) 
+                }
             }else{
-                setActiveTab(activeTab+1)
+                //save
+                try{
+                    let response = await saveClient(values)
+                    if(response){
+                        dispatch(addMessage({
+                            type: 'success',
+                            message: SAVE_SUCCESS
+                        }))
+                        history.push('/client')
+                    }else{
+                        dispatch(addMessage({
+                            type: 'error',
+                            message: ERROR_SERVER
+                        }))
+                    }
+                }catch(error){
+                    let message  = ERROR_SERVER;
+                    message = extractMeaningfulMessage(error, message)
+                    dispatch(addMessage({
+                        type: 'error',
+                        message: message
+                    }))
+                }
             }
         }
     })

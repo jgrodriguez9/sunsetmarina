@@ -248,3 +248,31 @@
   width: 62px;
   height: 25px;
 }
+.input-file{
+  position: absolute;
+  width: 100%;
+  opacity: 0;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  text-transform: none;
+  display: block;
+}
+.btn-image-profile{
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: none;
+}
+.icon-file-upload{
+  color: #999;
+  font-size: 1rem;
+}
+.icon-image-upload{
+  position: absolute;
+  top: 80%;
+  left: 50%;
+  transform: translate(-50%, -80%);
+  color: #fff;
+}
