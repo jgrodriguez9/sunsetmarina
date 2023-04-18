@@ -55,7 +55,8 @@ export default function FormCliente({item, btnTextSubmit="Aceptar"}){
         }),
         onSubmit: async (values) => {
             //validaciones antes de enviarlo
-            values.birthDate = moment(values.birthDate).format('YYYY-MM-DD')
+            values.birthDate = values.birthDate ? moment(values.birthDate).format('YYYY-MM-DD') : null
+            delete values.code;
             console.log(values)
             console.log('submit')
             if(values.id){
@@ -158,11 +159,140 @@ export default function FormCliente({item, btnTextSubmit="Aceptar"}){
                                     }}
                                 >
                                     <span className="d-block d-sm-none">
-                                    <i className="fas fa-home"></i>
+                                    <i className="fas fa-calendar-alt"></i>
                                     </span>
-                                    <span className="d-none d-sm-block">Observaciones</span>
+                                    <span className="d-none d-sm-block">Reservas</span>
                                 </NavLink>
                             </NavItem>
+                            <NavItem>
+                                <NavLink
+                                    style={{ cursor: "pointer" }}
+                                    className={classnames({
+                                    active: customActiveTab === "3",
+                                    })}
+                                    onClick={() => {
+                                    toggleCustom("3");
+                                    }}
+                                >
+                                    <span className="d-block d-sm-none">
+                                    <i className="fas fa-credit-card"></i>
+                                    </span>
+                                    <span className="d-none d-sm-block">Pagos</span>
+                                </NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink
+                                    style={{ cursor: "pointer" }}
+                                    className={classnames({
+                                    active: customActiveTab === "4",
+                                    })}
+                                    onClick={() => {
+                                    toggleCustom("4");
+                                    }}
+                                >
+                                    <span className="d-block d-sm-none">
+                                    <i className="fas fa-anchor"></i>
+                                    </span>
+                                    <span className="d-none d-sm-block">Slips</span>
+                                </NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink
+                                    style={{ cursor: "pointer" }}
+                                    className={classnames({
+                                    active: customActiveTab === "5",
+                                    })}
+                                    onClick={() => {
+                                    toggleCustom("5");
+                                    }}
+                                >
+                                    <span className="d-block d-sm-none">
+                                    <i className="fas fa-ship"></i>
+                                    </span>
+                                    <span className="d-none d-sm-block">Barcos</span>
+                                </NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink
+                                    style={{ cursor: "pointer" }}
+                                    className={classnames({
+                                    active: customActiveTab === "6",
+                                    })}
+                                    onClick={() => {
+                                    toggleCustom("6");
+                                    }}
+                                >
+                                    <span className="d-block d-sm-none">
+                                    <i className="fas fa-file-alt"></i>
+                                    </span>
+                                    <span className="d-none d-sm-block">Documentos</span>
+                                </NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink
+                                    style={{ cursor: "pointer" }}
+                                    className={classnames({
+                                    active: customActiveTab === "7",
+                                    })}
+                                    onClick={() => {
+                                    toggleCustom("7");
+                                    }}
+                                >
+                                    <span className="d-block d-sm-none">
+                                    <i className="fas fa-file-alt"></i>
+                                    </span>
+                                    <span className="d-none d-sm-block">Notas</span>
+                                </NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink
+                                    style={{ cursor: "pointer" }}
+                                    className={classnames({
+                                    active: customActiveTab === "8",
+                                    })}
+                                    onClick={() => {
+                                    toggleCustom("8");
+                                    }}
+                                >
+                                    <span className="d-block d-sm-none">
+                                    <i className="fas fa-address-book"></i>
+                                    </span>
+                                    <span className="d-none d-sm-block">Contactos</span>
+                                </NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink
+                                    style={{ cursor: "pointer" }}
+                                    className={classnames({
+                                    active: customActiveTab === "9",
+                                    })}
+                                    onClick={() => {
+                                    toggleCustom("9");
+                                    }}
+                                >
+                                    <span className="d-block d-sm-none">
+                                    <i className="fas fa-cogs"></i>
+                                    </span>
+                                    <span className="d-none d-sm-block">Servicios</span>
+                                </NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink
+                                    style={{ cursor: "pointer" }}
+                                    className={classnames({
+                                    active: customActiveTab === "10",
+                                    })}
+                                    onClick={() => {
+                                    toggleCustom("10");
+                                    }}
+                                >
+                                    <span className="d-block d-sm-none">
+                                    <i className="fas fa-sticky-note"></i>
+                                    </span>
+                                    <span className="d-none d-sm-block">Observación</span>
+                                </NavLink>
+                            </NavItem>
+                            
                         </Nav>
                         <TabContent
                             activeTab={customActiveTab}
@@ -172,6 +302,30 @@ export default function FormCliente({item, btnTextSubmit="Aceptar"}){
                                 <DirectionClient formik={formik} item={item}/>
                             </TabPane>
                             <TabPane tabId="2">
+                                Reservas
+                            </TabPane>
+                            <TabPane tabId="3">
+                                Pagos
+                            </TabPane>
+                            <TabPane tabId="4">
+                                Slips
+                            </TabPane>
+                            <TabPane tabId="5">
+                                Barcos
+                            </TabPane>
+                            <TabPane tabId="6">
+                                Documentos
+                            </TabPane>
+                            <TabPane tabId="7">
+                                Nota
+                            </TabPane>
+                            <TabPane tabId="8">
+                                Contactos
+                            </TabPane>
+                            <TabPane tabId="9">
+                                Servicios
+                            </TabPane>
+                            <TabPane tabId="10">
                                 <ObservationClient formik={formik} item={item}/>
                             </TabPane>
                         </TabContent>

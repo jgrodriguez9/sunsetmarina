@@ -27,42 +27,36 @@ export default function PrincipalInfoClient({formik, item}){
 
     return (
         <Row>
-            <Col xs="12" md="12">
-            <div className="text-center">
-                {selectedImage ?
-                    <>
-                        <img
-                            className="btn-image-profile"
-                            alt="not found"
-                            src={URL.createObjectURL(selectedImage)}
-                        />
-                        <i className="bx bxs-pencil icon-image-upload"/>
-                    </> :
-                    <button type="button" className="btn-block btn-image-profile">
-                        <i className="fas fa-camera icon-file-upload"/>
-                    </button>
-                }
-                <input
-                    type="file"
-                    accept="image/*"
-                    className="input-file"
-                    onChange={e=>setSelectedImage(e.target.files[0])}
-                /> 
-            </div>            
+            <Col xs="12" md="12">          
             </Col>
             <Col xs="12" md="5">
                 <Row className="align-items-center mb-2 ">
-                    <Label htmlFor="code" className="mb-0 col-md-3 col-12">Código</Label>
-                    <div className="col-md-9 col-12">
-                        <Input
-                            id="code"
-                            name="code"
-                            disabled
-                            className={`form-control`}
-                            onChange={formik.handleChange}
-                            value={formik.values.code}  
-                        />
-                    </div>
+                    <div className="d-flex align-items-center">
+                        <div className="me-3">
+                            {selectedImage ?
+                                <>
+                                    <img
+                                        className="btn-image-profile"
+                                        alt="not found"
+                                        src={URL.createObjectURL(selectedImage)}
+                                    />
+                                    <i className="bx bxs-pencil icon-image-upload"/>
+                                </> :
+                                <button type="button" className="btn-block btn-image-profile">
+                                    <i className="fas fa-camera icon-file-upload"/>
+                                </button>
+                            }
+                            <input
+                                type="file"
+                                accept="image/*"
+                                className="input-file"
+                                onChange={e=>setSelectedImage(e.target.files[0])}
+                            />
+                        </div>
+                        <div>
+                            {formik.values.code}
+                        </div>
+                    </div>                    
                 </Row>
                 <Row className="align-items-center mb-2">
                     <Label htmlFor="name" className="mb-0 col-md-3 col-12">Nombre</Label>
@@ -128,6 +122,8 @@ export default function PrincipalInfoClient({formik, item}){
                         }
                     </div>
                 </Row>
+            </Col>
+            <Col xs="12" md={{size: 5, offset: 2}}>
                 <Row className="align-items-center mb-2">
                     <Label htmlFor="phone" className="mb-0 col-md-3 col-12">Teléfono</Label>
                     <div className="col-md-9 col-12">
@@ -140,8 +136,6 @@ export default function PrincipalInfoClient({formik, item}){
                         />
                     </div>
                 </Row>
-            </Col>
-            <Col xs="12" md={{size: 5, offset: 2}}>
                 <Row className="align-items-center mb-2">
                     <Label htmlFor="rfc" className="mb-0 col-md-3 col-12">RFC</Label>
                     <div className="col-md-9 col-12">
