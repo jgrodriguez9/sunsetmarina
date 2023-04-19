@@ -5,8 +5,10 @@ import Select from "react-select";
 import { SELECT_OPTION } from "../../../constants/messages";
 import { getClientCategoryList } from "../../../helpers/catalogos/clientCategory";
 import { languages } from "../../../data/languages";
+import moment from "moment";
 
 export default function PrincipalInfoClient({formik, item}){
+    const [fecha, setFecha] = useState(item.birthDate ? moment(item.birthDate, "YYYY-MM-DD").toDate() : null)
     const [clientsCategoryOpt, setClientsCategoryOpt] = useState([])
     const [clientsDefault, setClientsDefault] = useState(null)
     const [languageDefault, setLanguageDefault] = useState(null)
@@ -32,7 +34,7 @@ export default function PrincipalInfoClient({formik, item}){
             <Col xs="12" md="5">
                 <Row className="align-items-center mb-2 ">
                     <div className="d-flex align-items-center">
-                        <div className="me-3">
+                        <div className="me-5">
                             {selectedImage ?
                                 <>
                                     <img
@@ -54,7 +56,8 @@ export default function PrincipalInfoClient({formik, item}){
                             />
                         </div>
                         <div>
-                            {formik.values.code}
+                            <span className="fw-bold bg-light p-2 rounded">{formik.values.code}</span>
+                            
                         </div>
                     </div>                    
                 </Row>
@@ -152,8 +155,9 @@ export default function PrincipalInfoClient({formik, item}){
                     <Label htmlFor="birthDate" className="mb-0 col-md-3 col-12">Fecha nacimiento</Label>
                     <div className="col-md-9 col-12">
                         <SimpleDate 
-                            date={formik.values.birthDate}
+                            date={fecha}
                             setDate={value=>{ 
+                                setFecha(value[0])
                                 if(value.length > 0){
                                 formik.setFieldValue(`birthDate`, value[0])
                                 }else{

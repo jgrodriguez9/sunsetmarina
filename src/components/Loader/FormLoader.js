@@ -13,7 +13,7 @@ export default function FormLoader({fields, titleCard}){
                             <>
                                 <Label className="mb-0 d-block">{field.label}</Label>
                                 <span className="placeholder-glow w-100">
-                                    <span className="placeholder h-36px w-100"></span>
+                                    <span className="placeholder w-100" style={{height: field.height || '36px'}}></span>
                                 </span>
                             </>
                         }                        

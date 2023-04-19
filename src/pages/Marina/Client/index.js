@@ -127,7 +127,7 @@ function Client(){
                 Header: 'Código',
                 accessor: 'code',            
                 style: {
-                    width: '10%'
+                    width: '15%'
                 }
             },
             {
@@ -135,14 +135,14 @@ function Client(){
                 accessor: 'name',
                 Cell: ({row}) => `${row.original.name} ${row.original.lastName}`,
                 style: {
-                    width: '35%'
+                    width: '25%'
                 }
             },
             {
                 Header: 'Correo electrónico',
                 accessor: 'email',            
                 style: {
-                    width: '15%'
+                    width: '20%'
                 }
             },
             {
@@ -153,10 +153,17 @@ function Client(){
                 }
             },
             {
-                Header: 'Dirección',
-                accessor: 'address',
+                Header: 'Estado',
+                accessor: 'state',
                 style: {
-                    width: '20%'
+                    width: '10%'
+                }
+            },
+            {
+                Header: 'País',
+                accessor: 'country',
+                style: {
+                    width: '10%'
                 }
             },          
             {
@@ -243,7 +250,7 @@ function Client(){
         loading ?
         <Row>
             <Col xs="12" xl="12">
-                <TableLoader columns={[{name: "Código", width: '10%'}, {name: "Nombre", width: '35%'}, {name: 'Correo electrónico', with: '15%'}, {name: "Teléfono", width: '10%'}, {name: "Dirección", width: "20%" }, {name: "Acciones", width: '10%'}]} />
+                <TableLoader columns={[{name: "Código", width: '15%'}, {name: "Nombre", width: '25%'}, {name: 'Correo electrónico', with: '20%'}, {name: "Teléfono", width: '10%'}, {name: "Estado", width: "10%" }, {name: "País", width: "10%" }, {name: "Acciones", width: '10%'}]} />
             </Col>
         </Row> :
         <Row>
