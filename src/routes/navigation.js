@@ -79,7 +79,7 @@ export const navigations = [
             {
                 id: 'dock',
                 label: 'Mapa de Muelle',
-                route: '/muelle',
+                route: '/map',
                 classIcon: null,
             },
             {

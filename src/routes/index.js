@@ -102,7 +102,7 @@ const adminRoutes = [
 const managerRoutes = []
 const agentRoutes = [
     //mapa muelle
-    { path: "/muelle", exact: true, component: Dock },
+    { path: "/map", exact: true, component: Dock },
 ]
 
 export { 

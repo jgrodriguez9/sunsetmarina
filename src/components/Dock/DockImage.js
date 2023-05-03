@@ -1,9 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Col, Row } from "reactstrap";
-import marinaMap from '../../assets/images/dock/MarinaMap.jpg'
+import marinaMap from '../../assets/images/dock/map.svg'
 import DialogMain from "../Common/DialogMain";
+import { ERROR_SERVER } from "../../constants/messages";
+import extractMeaningfulMessage from "../../utils/extractMeaningfulMessage";
+import { addMessage } from "../../redux/messageSlice";
+import { useDispatch } from "react-redux";
+import { getSlipList } from "../../helpers/marina/slip";
 
 export default function DockImage(){
+    const dispatch = useDispatch();
+    const [slips, setSlips] =useState([])
     const [showDialog, setShowDialog] = useState(false)
     const [slipInfo, setSlipInfo] = useState(null)
     const children = (
@@ -26,13 +33,30 @@ export default function DockImage(){
         setShowDialog(true);
     }
 
+    const fecthSlipsAllApi = async () => {
+        try {
+            const response = await getSlipList();
+            console.log(response)
+        } catch (error) {
+            let message  = ERROR_SERVER;
+            message = extractMeaningfulMessage(error, message)
+            dispatch(addMessage({
+                message: message,
+                type: 'error'
+            }))
+        }
+    }
+    useEffect(() => {
+        fecthSlipsAllApi();
+    }, [])
+
     return(
         <>
             <Row>
                 <Col>
                     <div className="dock-container">
                         <div className="position-relative">
-                            <div className="slip slip-white slip-1" onClick={showDialogInfo}/>
+                            <div className="slip slip-ocupado slip-1" title="No 25" onClick={showDialogInfo}/>
                             <img src={marinaMap} alt="imagen  del muelle" className="dock-map"/>
                         </div>                    
                     </div>

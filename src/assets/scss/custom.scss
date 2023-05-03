@@ -225,28 +225,28 @@
   border-color: #6693CF;
   border-width: 2px;
   border-style: Solid;
-  height: 600px;
+  //height: 600px;
   width: 1200px;
 }
 .slip{
   margin: 0 2px 0 2px;
   padding: 1px;
-  border: 1px solid #336699;
+  border: 1px;
   float: left;
   overflow: hidden;
   font-size: 12px;
 }
-.slip-white{
-  background-color: #fff;
+.slip-ocupado{
+  background-color: #34c38f;
 }
 .slip-1{
   position: absolute;
   z-index: 0;
   opacity: 1;
-  left: 161px;
-  top: 153px;
-  width: 62px;
-  height: 25px;
+  left: 216px;
+  top: 145px;
+  width: 42px;
+  height: 35px;;
 }
 .input-file{
   position: absolute;

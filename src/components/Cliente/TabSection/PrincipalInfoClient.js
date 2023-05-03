@@ -8,7 +8,7 @@ import { languages } from "../../../data/languages";
 import moment from "moment";
 
 export default function PrincipalInfoClient({formik, item}){
-    const [fecha, setFecha] = useState(item.birthDate ? moment(item.birthDate, "YYYY-MM-DD").toDate() : null)
+    const [fecha, setFecha] = useState(item?.birthDate ? moment(item?.birthDate, "YYYY-MM-DD").toDate() : null)
     const [clientsCategoryOpt, setClientsCategoryOpt] = useState([])
     const [clientsDefault, setClientsDefault] = useState(null)
     const [languageDefault, setLanguageDefault] = useState(null)
@@ -55,10 +55,9 @@ export default function PrincipalInfoClient({formik, item}){
                                 onChange={e=>setSelectedImage(e.target.files[0])}
                             />
                         </div>
-                        <div>
-                            <span className="fw-bold bg-light p-2 rounded">{formik.values.code}</span>
-                            
-                        </div>
+                        {formik.values.code && <div>
+                            <span className="fw-bold bg-light p-2 rounded">{formik.values.code}</span>                            
+                        </div>}
                     </div>                    
                 </Row>
                 <Row className="align-items-center mb-2">
