@@ -29,3 +29,6 @@ export const clientCategory = "/customerCategory"
 //clients
 export const client = '/customer'
 
+//barcos
+export const boat = "/boat"
+

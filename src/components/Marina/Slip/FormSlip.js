@@ -24,8 +24,8 @@ export default function FormSlip({item, btnTextSubmit="Aceptar"}){
     useEffect(() => {
         if(item && tipoSlipOpt.length > 0){
             setTipoSlipDefault({
-                value: item.slipType.id,
-                label: tipoSlipOpt.find(c=>c.value===item.slipType.id)?.label
+                value: item.slipType?.id ?? null,
+                label: tipoSlipOpt.find(c=>c.value===item.slipType?.id)?.label ?? null
             })
         }
         if(item && muelleOpt.length > 0){
@@ -74,6 +74,9 @@ export default function FormSlip({item, btnTextSubmit="Aceptar"}){
             observations: item?.observations ?? '',
             xPosition: item?.xPosition ?? '',
             yPosition: item?.yPosition ?? '', 
+            height: item?.height ?? '', 
+            width: item?.width ?? '', 
+            status: item?.status ?? 'AVAILABLE', 
         },
         validationSchema: Yup.object({
             number: Yup.string().required(FIELD_REQUIRED),
@@ -84,6 +87,10 @@ export default function FormSlip({item, btnTextSubmit="Aceptar"}){
                 id: Yup.number().required(FIELD_REQUIRED)
             }),
             price: Yup.number().typeError(FIELD_NUMERIC).required(FIELD_REQUIRED),
+            xPosition: Yup.number().typeError(FIELD_NUMERIC).required(FIELD_REQUIRED),
+            yPosition: Yup.number().typeError(FIELD_NUMERIC).required(FIELD_REQUIRED),
+            height: Yup.number().typeError(FIELD_NUMERIC).required(FIELD_REQUIRED),
+            width: Yup.number().typeError(FIELD_NUMERIC).required(FIELD_REQUIRED),
         }),
         onSubmit: async (values) => {
             //validaciones antes de enviarlo
@@ -138,7 +145,6 @@ export default function FormSlip({item, btnTextSubmit="Aceptar"}){
             }
         }
     })
-
     return(
         <Form
             className="needs-validation"
@@ -198,9 +204,13 @@ export default function FormSlip({item, btnTextSubmit="Aceptar"}){
                         <div className="invalid-tooltip d-block">{formik.errors.pier?.id}</div>
                     }
                 </Col>
+                <Col xs="12" md="3">
+                    <Label htmlFor="status" className="mb-0">Estado</Label>
+                    <div className="form-control bg-light">{formik.values?.status || 'AVAILABLE'}</div>
+                </Col>
             </Row>
             <Row>
-                <Col xs="12" md="3">
+                <Col xs="12" md="2">
                     <Label htmlFor="price" className="mb-0">Precio</Label>
                     <Input
                         id="price"
@@ -234,6 +244,7 @@ export default function FormSlip({item, btnTextSubmit="Aceptar"}){
                         value={formik.values.voltage}
                     />
                 </Col>
+                
                 <Col xs="12" md="2">
                     <Label htmlFor="xPosition" className="mb-0">Posición X</Label>
                     <Input
@@ -243,6 +254,10 @@ export default function FormSlip({item, btnTextSubmit="Aceptar"}){
                         onChange={formik.handleChange}
                         value={formik.values.xPosition}
                     />
+                    {
+                        formik.errors.xPosition &&
+                        <div className="invalid-tooltip d-block">{formik.errors.xPosition}</div>
+                    }
                 </Col>
                 <Col xs="12" md="2">
                     <Label htmlFor="yPosition" className="mb-0">Posición Y</Label>
@@ -253,6 +268,38 @@ export default function FormSlip({item, btnTextSubmit="Aceptar"}){
                         onChange={formik.handleChange}
                         value={formik.values.yPosition}
                     />
+                    {
+                        formik.errors.yPosition &&
+                        <div className="invalid-tooltip d-block">{formik.errors.yPosition}</div>
+                    }
+                </Col>
+                <Col xs="12" md="1">
+                    <Label htmlFor="yPosition" className="mb-0">Altura</Label>
+                    <Input
+                        id="height"
+                        name="height"
+                        className={`form-control`}
+                        onChange={formik.handleChange}
+                        value={formik.values.height}
+                    />
+                    {
+                        formik.errors.height &&
+                        <div className="invalid-tooltip d-block">{formik.errors.height}</div>
+                    }
+                </Col>
+                <Col xs="12" md="1">
+                    <Label htmlFor="yPosition" className="mb-0">Ancho</Label>
+                    <Input
+                        id="width"
+                        name="width"
+                        className={`form-control`}
+                        onChange={formik.handleChange}
+                        value={formik.values.width}
+                    />
+                    {
+                        formik.errors.width &&
+                        <div className="invalid-tooltip d-block">{formik.errors.width}</div>
+                    }
                 </Col>
             </Row>
             <Row>
@@ -273,8 +320,8 @@ export default function FormSlip({item, btnTextSubmit="Aceptar"}){
                 formik.isSubmitting ?
                 <ButtonsDisabled buttons={[{text: btnTextSubmit, color: 'primary', className: '', loader: true}, {text: 'Cancelar', color: 'link', className: 'text-danger', loader: false}]}/> :
                 <div className="d-flex">
-                    <Button color="primary" type="submit">{btnTextSubmit}</Button>
-                    <Link to="/slip" className="btn btn-link text-danger">Cancelar</Link>
+                    <Button color="primary" type="submit" className="me-2">{btnTextSubmit}</Button>
+                    <Link to="/slip" className="btn btn-danger">Cancelar</Link>
                 </div>
             }
             

@@ -80,7 +80,8 @@ export default function FormFilter({filters, setFilters, fireSearch}){
                     >
                         <i className="fas fa-search" /> Buscar
                     </Button>
-                    <Button color="link" size="sm"
+                    <Button color="danger" size="sm"
+                        outline
                         onClick={handleCleanFilter}
                         className="text-danger"
                     >

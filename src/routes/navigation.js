@@ -93,6 +93,12 @@ export const navigations = [
                 label: 'Cliente',
                 route: '/client',
                 classIcon: null,
+            },
+            {
+                id: 'boat',
+                label: 'Barco',
+                route: '/boat',
+                classIcon: null,
             }
         ]
     }

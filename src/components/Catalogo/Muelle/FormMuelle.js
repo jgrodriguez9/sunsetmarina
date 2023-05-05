@@ -119,8 +119,8 @@ export default function FormMuelle({item, btnTextSubmit="Aceptar"}){
                 formik.isSubmitting ?
                 <ButtonsDisabled buttons={[{text: btnTextSubmit, color: 'primary', className: '', loader: true}, {text: 'Cancelar', color: 'link', className: 'text-danger', loader: false}]}/> :
                 <div className="d-flex">
-                    <Button color="primary" type="submit">{btnTextSubmit}</Button>
-                    <Link to="/pier" className="btn btn-link text-danger">Cancelar</Link>
+                    <Button color="primary" type="submit" className="me-2">{btnTextSubmit}</Button>
+                    <Link to="/pier" className="btn btn-danger">Cancelar</Link>
                 </div>
             }
             

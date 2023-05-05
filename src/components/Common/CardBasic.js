@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Card, CardBody, Collapse } from "reactstrap";
 
 export default function CardBasic({title, children}){
-    const [accordionSearch, setAccordionSearch] = useState(false);
+    const [accordionSearch, setAccordionSearch] = useState(true);
 
     return (
         <Card>
