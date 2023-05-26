@@ -21,7 +21,8 @@ axiosApi.interceptors.response.use(
             //return Promise.reject(error);
         }else if(error.response.status===403 || error.response.status===401){
             window.sessionStorage.removeItem('sunsetadmiralauth');
-            window.location.reload();
+            //window.location.reload();
+            return Promise.reject(error);
         }else{
             return Promise.reject(error);
         }        
