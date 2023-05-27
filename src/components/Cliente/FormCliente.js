@@ -15,6 +15,7 @@ import { saveClient, updateClient } from "../../helpers/marina/client";
 import { addMessage } from "../../redux/messageSlice";
 import { useDispatch } from "react-redux";
 import extractMeaningfulMessage from "../../utils/extractMeaningfulMessage";
+import BoatClient from "./TabSection/BoatClient";
 
 
 export default function FormCliente({item, btnTextSubmit="Aceptar"}){
@@ -311,7 +312,7 @@ export default function FormCliente({item, btnTextSubmit="Aceptar"}){
                                 Slips
                             </TabPane>
                             <TabPane tabId="5">
-                                Barcos
+                                <BoatClient formik={formik} />
                             </TabPane>
                             <TabPane tabId="6">
                                 Documentos

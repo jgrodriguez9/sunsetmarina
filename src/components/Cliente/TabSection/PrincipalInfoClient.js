@@ -17,7 +17,7 @@ export default function PrincipalInfoClient({formik, item}){
     const fecthClientsCategoryAPi = async () => {
         try {
             const response = await getClientCategoryList();
-            console.log(response)
+            //console.log(response)
         } catch (error) {
             console.log(error)
         } 

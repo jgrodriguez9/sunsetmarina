@@ -8,6 +8,7 @@ const getBoatListPaginado = query => get(`${url.boat}${query}`)
 const saveBoat = (data) => post(url.boat, data)
 const updateBoat = (id, data) => put(`${url.boat}/${id}`, data)
 const deleteBoat = (id) => del(`${url.boat}/${id}`)
+const getBoatByClient = id => get(`${url.boat}/findAllByCustomer/${id}`)
 
 export {
      getBoatList,
@@ -15,5 +16,6 @@ export {
      getBoatListPaginado,
      saveBoat,
      updateBoat,
-     deleteBoat
+     deleteBoat,
+     getBoatByClient
 }
