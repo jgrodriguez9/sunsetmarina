@@ -18,6 +18,7 @@ import extractMeaningfulMessage from "../../../utils/extractMeaningfulMessage";
 import { deleteSlip } from "../../../helpers/marina/slip";
 import { numberFormat } from "../../../utils/numberFormat";
 import { deleteBoat, getBoatListPaginado } from "../../../helpers/marina/boat";
+import moment from "moment";
 
 function Boat(){  
     const dispatch = useDispatch();
@@ -37,6 +38,14 @@ function Boat(){
         {
             label: 'Nombre',
             field: 'name',
+            width: 3,
+            control: 'input',
+            type: 'text',
+            value: ''
+        },
+        {
+            label: 'Número de registro',
+            field: 'registrationNumber',
             width: 3,
             control: 'input',
             type: 'text',
@@ -77,36 +86,52 @@ function Boat(){
 
     const columns = useMemo(
         () => [
-          {
-            Header: 'Nombre',
-            accessor: 'name',
-            style: {
-                width: '40%'
+            {
+                Header: 'Nombre',
+                accessor: 'name',
+                style: {
+                    width: '20%'
+                }
+            },
+            {
+                Header: 'Cliente',
+                accessor: 'customer.name',
+                Cell: ({row, value}) => `${row.original.customer.name} ${row.original.customer.lastName}`,
+                style: {
+                    width: '30%'
+                }
+            },
+            {
+                Header: 'Número de registro',
+                accessor: 'registrationNumber',
+                style: {
+                    width: '20%'
+                }
+            },
+            {
+                Header: 'Fecha expiración seguro',
+                accessor: 'insuranceExpirationDate',
+                style: {
+                    width: '20%'
+                },
+                Cell: ({row, value}) => moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY')
+            },
+            {
+                id: 'acciones',
+                Header: "Acciones",
+                Cell: ({row}) => (
+                    <>
+                        <CellActions
+                            edit={{"allow": true, action: editAction}} 
+                            del={{"allow": true, action: handleShowDialogDelete}}
+                            row={row}
+                        />
+                    </>
+                ), 
+                style: {
+                    width: '10%'
+                }         
             }
-          },
-          {
-            Header: 'Número de poliza',
-            accessor: 'insuranceNumber ',
-            style: {
-                width: '40%'
-            }
-          },
-          {
-            id: 'acciones',
-            Header: "Acciones",
-            Cell: ({row}) => (
-                <>
-                    <CellActions
-                        edit={{"allow": true, action: editAction}} 
-                        del={{"allow": true, action: handleShowDialogDelete}}
-                        row={row}
-                    />
-                </>
-            ), 
-            style: {
-                width: '20%'
-            }         
-          }
         ],
         []
     );
@@ -174,7 +199,7 @@ function Boat(){
         loading ?
         <Row>
             <Col xs="12" xl="12">
-                <TableLoader columns={[{name: "Nombre", width: '40%'}, {name: "Número de poliza", width: '40%'}, {name: "Acciones", width: '20%'}]} />
+                <TableLoader columns={[{name: "Nombre", width: '20%'}, {name: "Cliente", width: '30%'}, {name: "Número de registro", width: '20%'}, {name: "Fecha expiración seguro", width: '20%'}, {name: "Acciones", width: '10%'}]} />
             </Col>
         </Row> :
         <Row>

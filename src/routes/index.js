@@ -29,6 +29,8 @@ import CreateCategoriaCliente from '../pages/Catalogos/CategoriaCliente/Create';
 import EditCategoriaCliente from '../pages/Catalogos/CategoriaCliente/Edit';
 import EditCliente from '../pages/Marina/Client/Edit';
 import Boat from "../pages/Marina/Boat"
+import CreateBoat from '../pages/Marina/Boat/Create';
+import EditBoat from '../pages/Marina/Boat/Edit';
 
 const authProtectedRoutes = [
     { path: "/logout", component: Logout },
@@ -100,6 +102,8 @@ const adminRoutes = [
 
     //boat
     { path: "/boat", exact: true, component: Boat },
+    { path: "/boat/create", exact: true, component: CreateBoat },
+    { path: "/boat/edit/:id", exact: true, component: EditBoat },
 
     //endmarina
 ]

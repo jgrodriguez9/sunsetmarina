@@ -1,49 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFormik } from "formik"
-import { useDispatch } from "react-redux";
-import { Link, useHistory } from "react-router-dom";
-import { Button, Col, Form, Input, Label, Row } from "reactstrap";
+import { Button, Col, Input, Label, Row } from "reactstrap";
 import * as Yup from "yup";
 import { ERROR_SERVER, FIELD_NUMERIC, FIELD_REQUIRED, SAVE_SUCCESS, SELECT_OPTION, UPDATE_SUCCESS } from "../../../constants/messages";
+import ButtonsDisabled from "../../Common/ButtonsDisabled";
+import { getBoadTypeAll } from "../../../helpers/catalogos/boadType";
+import Select from "react-select";
+import SimpleDate from "../../DatePicker/SimpleDate";
+import { saveBoat, updateBoat } from "../../../helpers/marina/boat";
+import { useDispatch } from "react-redux";
 import { addMessage } from "../../../redux/messageSlice";
 import extractMeaningfulMessage from "../../../utils/extractMeaningfulMessage";
-import ButtonsDisabled from "../../Common/ButtonsDisabled";
-import { useEffect } from "react";
-import Select from "react-select";
-import { getBoadTypeAll } from "../../../helpers/catalogos/boadType";
 import moment from "moment";
-import { saveBoat, updateBoat } from "../../../helpers/marina/boat";
-import SimpleDate from "../../DatePicker/SimpleDate";
-import { getClientList } from "../../../helpers/marina/client";
 
-export default function FormBoat({item, btnTextSubmit="Aceptar"}){
-    const history = useHistory();
+
+export default function FormBoatClient({item, setOpenModalAdd, setRefetch}){
     const dispatch = useDispatch();
-    const [boatTypeOpt, setBoatTypeOpt] = useState([])
-    const [boatTypeDefault, setBoatTypeDefault] = useState(null)
     const [fecha, setFecha] = useState(item?.insuranceExpirationDate ? moment(item?.insuranceExpirationDate, 'YYYY-MM-DD').toDate() : null)
-    const [clientOpt, setClientOpt] = useState([])
-    const [clientDefault, setClientDefault] = useState(null)
-    console.log(item)
-    useEffect(() => {
-        if(item && clientOpt.length > 0){
-            const client = clientOpt.find(c=>c.value===item.customer?.id);
-            setClientDefault({
-                value: item.customer?.id ?? null,
-                label: `${client.code} - ${client.name} ${client.lastName}`,
-                code: client.code,
-                name: client.name,
-                lastName: client.lastName
-            })
-        }
-        if(item && boatTypeOpt.length > 0){
-            setBoatTypeDefault({
-                value: item.boatType.id,
-                label: boatTypeOpt.find(c=>c.value===item.boatType.id)?.label
-            })
-        }
-    }, [item, clientOpt, boatTypeOpt])
-
+    const [boatTypeOpt, setBoatTypeOpt] = useState([])
     const fetchBoatTypeAllApi = async () => {
         try {
             const response = await getBoadTypeAll()
@@ -53,24 +27,8 @@ export default function FormBoat({item, btnTextSubmit="Aceptar"}){
         }
     }
 
-    const fetchClientAllApi = async () => {
-        try {
-            const response = await getClientList()
-            setClientOpt(response.map((clt) => ({
-                label: `${clt.code} - ${clt.name} ${clt.lastName}`,
-                value: clt.id,
-                code: clt.code,
-                name: clt.name,
-                lastName: clt.lastName
-            })))
-        } catch (error) {
-            setBoatTypeOpt([])
-        }
-    }
-
     useEffect(() => {
         fetchBoatTypeAllApi();
-        fetchClientAllApi()
     }, [])
 
     const formik = useFormik({
@@ -90,9 +48,6 @@ export default function FormBoat({item, btnTextSubmit="Aceptar"}){
         validationSchema: Yup.object({
             name: Yup.string().required(FIELD_REQUIRED),
             registrationNumber: Yup.string().required(FIELD_REQUIRED),
-            customer: Yup.object({
-                id: Yup.number().required(FIELD_REQUIRED)
-            }), 
             boatType: Yup.object({
                 id: Yup.number().required(FIELD_REQUIRED)
             }),            
@@ -100,7 +55,6 @@ export default function FormBoat({item, btnTextSubmit="Aceptar"}){
             beam: Yup.number().typeError(FIELD_NUMERIC).required(FIELD_REQUIRED),
             draught: Yup.number().typeError(FIELD_NUMERIC).required(FIELD_REQUIRED),
             markEngine: Yup.string().required(FIELD_REQUIRED),
-            insuranceExpirationDate: Yup.string().required(FIELD_REQUIRED),
         }),
         onSubmit: async (values) => {
             //validaciones antes de enviarlo
@@ -114,7 +68,8 @@ export default function FormBoat({item, btnTextSubmit="Aceptar"}){
                             type: 'success',
                             message: UPDATE_SUCCESS
                         }))
-                        history.push('/boat')
+                        setOpenModalAdd(false)
+                        setRefetch(true)
                     }else{
                         dispatch(addMessage({
                             type: 'error',
@@ -140,7 +95,8 @@ export default function FormBoat({item, btnTextSubmit="Aceptar"}){
                             type: 'success',
                             message: SAVE_SUCCESS
                         }))
-                        history.push('/boat')
+                        setOpenModalAdd(false)
+                        setRefetch(true)
                     }else{
                         dispatch(addMessage({
                             type: 'error',
@@ -160,18 +116,8 @@ export default function FormBoat({item, btnTextSubmit="Aceptar"}){
         }
     })
 
-    console.log(formik.values)
-
     return(
-        <Form
-            className="needs-validation"
-            id="tooltipForm"
-            onSubmit={(e) => {
-                e.preventDefault();
-                formik.handleSubmit();
-                return false;
-            }}
-        >
+        <div className="needs-validation">
             <Row>
                 <Col xs="12" md="3">
                     <Label htmlFor="name" className="mb-0">Nombre</Label>
@@ -201,32 +147,11 @@ export default function FormBoat({item, btnTextSubmit="Aceptar"}){
                         <div className="invalid-tooltip">{formik.errors.registrationNumber}</div>
                     }
                 </Col>
-                <Col xs="12" md="5">
-                    <Label htmlFor="customer" className="mb-0">Client</Label>
-                    <Select
-                        value={clientDefault}
-                        onChange={(value) => {
-                            setClientDefault(value)
-                            formik.setFieldValue('customer.id', value?.value ?? '')
-                            formik.setFieldValue('customer.code', value?.code ?? '') 
-                            formik.setFieldValue('customer.name', value?.name ?? '') 
-                            formik.setFieldValue('customer.lastName', value?.lastName ?? '')
-                        }}
-                        options={clientOpt}
-                        classNamePrefix="select2-selection"
-                        placeholder={SELECT_OPTION}
-                    />
-                    {
-                        formik.errors.customer &&
-                        <div className="invalid-tooltip d-block">{formik.errors.customer?.id}</div>
-                    }
-                </Col>
                 <Col xs="12" md="3">
                     <Label htmlFor="boatType" className="mb-0">Tipo de barco</Label>
                     <Select
-                        value={boatTypeDefault}
+                        value={formik.values.boatType?.id ? {label: formik.values.boatType.description, value: formik.values.boatType.id} : null}
                         onChange={(value) => {
-                            setBoatTypeDefault(value)
                             formik.setFieldValue('boatType.id', value?.value ?? '')
                             formik.setFieldValue('boatType.description', value?.label ?? '') 
                         }}
@@ -258,20 +183,6 @@ export default function FormBoat({item, btnTextSubmit="Aceptar"}){
                         <div className="invalid-tooltip d-block">{formik.errors.insuranceExpirationDate}</div>
                     }
                 </Col>
-                <Col xs="12" md="3">
-                    <Label htmlFor="markEngine" className="mb-0">Marca del motor</Label>
-                    <Input
-                        id="markEngine"
-                        name="markEngine"
-                        className={`form-control ${formik.errors.markEngine ? 'is-invalid' : ''}`}
-                        onChange={formik.handleChange}
-                        value={formik.values.markEngine}  
-                    />
-                    {
-                        formik.errors.markEngine &&
-                        <div className="invalid-tooltip">{formik.errors.markEngine}</div>
-                    }
-                </Col>                
             </Row>
             <Row>
                 <Col xs="12" md="2">
@@ -316,6 +227,20 @@ export default function FormBoat({item, btnTextSubmit="Aceptar"}){
                         <div className="invalid-tooltip">{formik.errors.draught}</div>
                     }
                 </Col>
+                <Col xs="12" md="3">
+                    <Label htmlFor="markEngine" className="mb-0">Marca del motor</Label>
+                    <Input
+                        id="markEngine"
+                        name="markEngine"
+                        className={`form-control ${formik.errors.markEngine ? 'is-invalid' : ''}`}
+                        onChange={formik.handleChange}
+                        value={formik.values.markEngine}  
+                    />
+                    {
+                        formik.errors.markEngine &&
+                        <div className="invalid-tooltip">{formik.errors.markEngine}</div>
+                    }
+                </Col>
                 <Col xs="12" md="2">
                     <Label className="mb-0 opacity-0 d-block">Es turistico</Label>
                     <Input
@@ -332,13 +257,14 @@ export default function FormBoat({item, btnTextSubmit="Aceptar"}){
             <hr />
             {
                 formik.isSubmitting ?
-                <ButtonsDisabled buttons={[{text: btnTextSubmit, color: 'primary', className: '', loader: true}, {text: 'Cancelar', color: 'link', className: 'text-danger', loader: false}]}/> :
-                <div className="d-flex">
-                    <Button color="primary" type="submit" className="me-2">{btnTextSubmit}</Button>
-                    <Link to="/boat" className="btn btn-danger">Cancelar</Link>
-                </div>
+                <ButtonsDisabled buttons={[{text: 'Aceptar', color: 'primary', className: '', loader: true}]}/> :
+                <Button color="primary" type="button" className="me-2" onClick={() => formik.handleSubmit()}>
+                    {
+                        formik.values.id ? 'Actualizar' : 'Aceptar'
+                    }
+                </Button>
             }
             
-        </Form>
+        </div>
     )
 }

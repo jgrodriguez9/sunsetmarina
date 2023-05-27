@@ -2,15 +2,17 @@ import { Col, Row } from "reactstrap";
 import TabActionHeader from "../Common/TabActionHeader";
 import DialogMain from "../../Common/DialogMain";
 import { useEffect, useMemo, useState } from "react";
-import FormBoat from "../../Marina/Boat/FormBoat";
-import { getBoatByClient } from "../../../helpers/marina/boat";
+import FormBoatClient from "../../Marina/Boat/FormBoatClient";
+import { deleteBoat, getBoatByClient } from "../../../helpers/marina/boat";
 import SimpleTable from "../../Tables/SimpleTable";
-import { ERROR_SERVER } from "../../../constants/messages";
+import { DELETE_SUCCESS, ERROR_SERVER } from "../../../constants/messages";
 import extractMeaningfulMessage from "../../../utils/extractMeaningfulMessage";
 import { addMessage } from "../../../redux/messageSlice";
 import { useDispatch } from "react-redux";
 import TableLoader from "../../Loader/TablaLoader";
 import moment from "moment";
+import CellActions from "../../Tables/CellActions";
+import DeleteDialog from "../../Common/DeleteDialog";
 
 export default function BoatClient({formik}){
     const dispatch = useDispatch();
@@ -18,10 +20,32 @@ export default function BoatClient({formik}){
     const [openModalAdd, setOpenModalAdd] = useState(false)
     const [boats, setBoats] = useState([])
     const [refetch, setRefetch] = useState(true)
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+    const [isDeleting, setDeleting] = useState(false)
+    const [selectedIdDelete, setSelectedIdDeleted] = useState(null)
     const [item, setItem] = useState({
         customer: {id: formik.values.id}
     })
     const addNewBoatModal = () => {
+        setItem({customer: {id: formik.values.id}})
+        setOpenModalAdd(true)
+    }
+
+    const editAction = (row) => {
+        const boat = row.original
+        setItem((prev) => ({
+            ...prev,
+            id: boat.id,
+            name: boat.name, 
+            registrationNumber: boat.registrationNumber, 
+            length: boat.length,
+            beam: boat.beam,
+            draught: boat.draught,
+            markEngine: boat.markEngine,
+            nauticalTouristic: boat.nauticalTouristic, 
+            insuranceExpirationDate: boat.insuranceExpirationDate, 
+            boatType: boat.boatType, 
+        }))
         setOpenModalAdd(true)
     }
 
@@ -31,21 +55,21 @@ export default function BoatClient({formik}){
             Header: 'Nombre',
             accessor: 'name',
             style: {
-                width: '20%'
+                width: '30%'
             }
           },
           {
             Header: 'Número de registro',
             accessor: 'registrationNumber',
             style: {
-                width: '20%'
+                width: '30%'
             }
           },
           {
             Header: 'Fecha expiración seguro',
             accessor: 'insuranceExpirationDate',
             style: {
-                width: '20%'
+                width: '30%'
             },
             Cell: ({row, value}) => moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY')
           },
@@ -54,11 +78,11 @@ export default function BoatClient({formik}){
             Header: "Acciones",
             Cell: ({row}) => (
                 <>
-                    {/* <CellActions
+                    <CellActions
                         edit={{"allow": true, action: editAction}} 
                         del={{"allow": true, action: handleShowDialogDelete}}
                         row={row}
-                    /> */}
+                    />
                 </>
             ), 
             style: {
@@ -68,6 +92,11 @@ export default function BoatClient({formik}){
         ],
         []
     );
+
+    const handleShowDialogDelete = (row) => {
+        setShowDeleteDialog(true)
+        setSelectedIdDeleted(row.original.id)
+    }
     
 
     const fetchBoatForClientApi = async () => {
@@ -76,7 +105,6 @@ export default function BoatClient({formik}){
             setBoats(response.list)
             setLoadingBoats(false)
         } catch (error) {
-            console.log(error)
             let message  = ERROR_SERVER;
             message = extractMeaningfulMessage(error, message)
             dispatch(addMessage({
@@ -95,6 +123,28 @@ export default function BoatClient({formik}){
             setRefetch(false)
         }        
     }, [refetch]);
+
+    const handleDelete = async () => {
+        setDeleting(true)   
+        try {
+            await deleteBoat(selectedIdDelete);
+            setRefetch(true)
+            setDeleting(false)
+            setShowDeleteDialog(false)
+            dispatch(addMessage({
+                message: DELETE_SUCCESS,
+                type: 'success'
+            }))
+        } catch (error) {
+            let message  = ERROR_SERVER;
+            message = extractMeaningfulMessage(error, message)
+            dispatch(addMessage({
+                message: message,
+                type: 'error'
+            }))
+            setDeleting(false)
+        }      
+    }
 
 
     return (
@@ -125,13 +175,20 @@ export default function BoatClient({formik}){
             <DialogMain 
                 open={openModalAdd}
                 setOpen={setOpenModalAdd}
-                title={"Agregar embarcación"}
+                title={item?.id ? "Actualizar embarcación" : "Agregar embarcación"}
                 size="xl"
-                children={<FormBoat 
+                children={<FormBoatClient 
                             item={item}
                             setOpenModalAdd={setOpenModalAdd}
                             setRefetch={setRefetch}
                         />}
+            />
+
+            <DeleteDialog 
+                handleDelete={handleDelete}
+                show={showDeleteDialog}
+                setShow={setShowDeleteDialog}
+                isDeleting={isDeleting}
             />
         </>
     )
