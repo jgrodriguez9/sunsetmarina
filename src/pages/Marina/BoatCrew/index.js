@@ -15,10 +15,13 @@ import SimpleTable from "../../../components/Tables/SimpleTable";
 import { DELETE_SUCCESS, ERROR_SERVER } from "../../../constants/messages";
 import { addMessage } from "../../../redux/messageSlice";
 import extractMeaningfulMessage from "../../../utils/extractMeaningfulMessage";
+import { deleteSlip } from "../../../helpers/marina/slip";
+import { numberFormat } from "../../../utils/numberFormat";
 import { deleteBoat, getBoatListPaginado } from "../../../helpers/marina/boat";
 import moment from "moment";
+import { deleteBoatCrew, getBoatCrewListPaginado } from "../../../helpers/marina/boatCrew";
 
-function Boat(){  
+function BoatCrew(){  
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(true)
     const [items, setItems] = useState([]);
@@ -42,8 +45,16 @@ function Boat(){
             value: ''
         },
         {
-            label: 'Número de registro',
-            field: 'registrationNumber',
+            label: 'Apellidos',
+            field: 'lastName',
+            width: 3,
+            control: 'input',
+            type: 'text',
+            value: ''
+        },
+        {
+            label: 'Identificación',
+            field: 'identification',
             width: 3,
             control: 'input',
             type: 'text',
@@ -55,7 +66,7 @@ function Boat(){
         setLoading(true)
         let q = Object.keys(query).map(key=>`${key}=${query[key]}`).join("&")
         try {
-            const response = await getBoatListPaginado(`?${q}`);
+            const response = await getBoatCrewListPaginado(`?${q}`);
             setItems(response.list)
             setTotalPaginas(response.pagination.totalPages)
             setTotalRegistros(response.pagination.totalCount)
@@ -79,40 +90,53 @@ function Boat(){
     }, [JSON.stringify(query)])
 
     const editAction = (row) => {
-        history.push(`/boat/edit/${row.original.id}`)
+        history.push(`/boatcrew/edit/${row.original.id}`)
     }
 
     const columns = useMemo(
         () => [
             {
+                Header: 'Bote',
+                accessor: 'boat.name',
+                style: {
+                    width: '20%'
+                }
+            },
+            {
                 Header: 'Nombre',
                 accessor: 'name',
                 style: {
-                    width: '20%'
+                    width: '10%'
                 }
             },
             {
-                Header: 'Cliente',
-                accessor: 'customer.name',
-                Cell: ({row, value}) => `${row.original.customer.name} ${row.original.customer.lastName}`,
-                style: {
-                    width: '30%'
-                }
-            },
-            {
-                Header: 'Número de registro',
-                accessor: 'registrationNumber',
+                Header: 'Apellidos',
+                accessor: 'lastName',
                 style: {
                     width: '20%'
                 }
             },
             {
-                Header: 'Fecha expiración seguro',
-                accessor: 'insuranceExpirationDate',
+                Header: 'Identificación',
+                accessor: 'identification',
                 style: {
-                    width: '20%'
+                    width: '15%'
+                }
+            },
+            {
+                Header: 'Teléfono',
+                accessor: 'phone',
+                style: {
+                    width: '15%'
+                }
+            },
+            {
+                Header: 'Es Capitán',
+                accessor: 'isCaptain',
+                style: {
+                    width: '10%'
                 },
-                Cell: ({row, value}) => moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY')
+                Cell: ({row, value}) => value ? 'Si' : 'No'
             },
             {
                 id: 'acciones',
@@ -168,13 +192,13 @@ function Boat(){
     }
 
     const goPageCreate = () => {
-        history.push("/boat/create")
+        history.push("/boatcrew/create")
     }
 
     const handleDelete = async () => {
         setDeleting(true)   
         try {
-            await deleteBoat(selectedIdDelete);
+            await deleteBoatCrew(selectedIdDelete);
             fetchList()
             setDeleting(false)
             setShowDeleteDialog(false)
@@ -197,7 +221,14 @@ function Boat(){
         loading ?
         <Row>
             <Col xs="12" xl="12">
-                <TableLoader columns={[{name: "Nombre", width: '20%'}, {name: "Cliente", width: '30%'}, {name: "Número de registro", width: '20%'}, {name: "Fecha expiración seguro", width: '20%'}, {name: "Acciones", width: '10%'}]} />
+                <TableLoader columns={[
+                    {name: "Bote", width: '15%'}, 
+                    {name: "Nombre", width: '15%'}, 
+                    {name: "Apellido", width: '20%'},
+                    {name: "Identificación", width: '15%'}, 
+                    {name: "Teléfono", width: '15%'}, 
+                    {name: "Es Capitán", width: '10%'}, 
+                    {name: "Acciones", width: '10%'}]} />
             </Col>
         </Row> :
         <Row>
@@ -239,8 +270,8 @@ function Boat(){
             <Container fluid>
               {/* Render Breadcrumb */}
               <Breadcrumbs
-                title={'Barco'}
-                breadcrumbItem={"Barco"}
+                title={'Tripulación'}
+                breadcrumbItem={"Tripulación"}
                 add={{
                     allow: true,
                     text: 'Crear Nuevo',
@@ -276,4 +307,4 @@ function Boat(){
       );
   }
   
-  export default withRouter(Boat)
+  export default withRouter(BoatCrew)

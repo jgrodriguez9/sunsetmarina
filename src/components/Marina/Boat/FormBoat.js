@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useFormik } from "formik"
 import { useDispatch } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
-import { Button, Col, Form, Input, Label, Row } from "reactstrap";
+import { Button, Col, Form, Input, Label, Nav, NavItem, NavLink, Row, TabContent, TabPane } from "reactstrap";
 import * as Yup from "yup";
 import { ERROR_SERVER, FIELD_NUMERIC, FIELD_REQUIRED, SAVE_SUCCESS, SELECT_OPTION, UPDATE_SUCCESS } from "../../../constants/messages";
 import { addMessage } from "../../../redux/messageSlice";
@@ -15,6 +15,8 @@ import moment from "moment";
 import { saveBoat, updateBoat } from "../../../helpers/marina/boat";
 import SimpleDate from "../../DatePicker/SimpleDate";
 import { getClientList } from "../../../helpers/marina/client";
+import classNames from "classnames";
+import BoatCrew from "./TabSection/BoatCrew";
 
 export default function FormBoat({item, btnTextSubmit="Aceptar"}){
     const history = useHistory();
@@ -24,7 +26,8 @@ export default function FormBoat({item, btnTextSubmit="Aceptar"}){
     const [fecha, setFecha] = useState(item?.insuranceExpirationDate ? moment(item?.insuranceExpirationDate, 'YYYY-MM-DD').toDate() : null)
     const [clientOpt, setClientOpt] = useState([])
     const [clientDefault, setClientDefault] = useState(null)
-    console.log(item)
+    const [customActiveTab, setcustomActiveTab] = useState("1");
+
     useEffect(() => {
         if(item && clientOpt.length > 0){
             const client = clientOpt.find(c=>c.value===item.customer?.id);
@@ -160,7 +163,11 @@ export default function FormBoat({item, btnTextSubmit="Aceptar"}){
         }
     })
 
-    console.log(formik.values)
+    const toggleCustom = tab => {
+        if (customActiveTab !== tab) {
+          setcustomActiveTab(tab);
+        }
+    };
 
     return(
         <Form
@@ -329,7 +336,39 @@ export default function FormBoat({item, btnTextSubmit="Aceptar"}){
                     <Label htmlFor={`nauticalTouristic`} className="mb-0 ms-2">Es turístico</Label>
                 </Col>
             </Row>
+
+            <Row className="mt-2">
+                <Col xs="12" md="12">
+                    <Nav tabs className="nav-tabs-custom">
+                        <NavItem>
+                            <NavLink
+                                style={{ cursor: "pointer" }}
+                                className={classNames({
+                                active: customActiveTab === "1",
+                                })}
+                                onClick={() => {
+                                toggleCustom("1");
+                                }}
+                            >
+                                <span className="d-block d-sm-none">
+                                <i className="mdi mdi-tshirt-crew-outline"></i>
+                                </span>
+                                <span className="d-none d-sm-block">Tripulación</span>
+                            </NavLink>
+                        </NavItem>
+                    </Nav>
+                    <TabContent
+                            activeTab={customActiveTab}
+                            className="p-3 text-muted bg-light bg-soft"
+                    >
+                        <TabPane tabId="1">
+                            <BoatCrew formik={formik}/>
+                        </TabPane>
+                    </TabContent>
+                </Col>
+            </Row>
             <hr />
+
             {
                 formik.isSubmitting ?
                 <ButtonsDisabled buttons={[{text: btnTextSubmit, color: 'primary', className: '', loader: true}, {text: 'Cancelar', color: 'link', className: 'text-danger', loader: false}]}/> :

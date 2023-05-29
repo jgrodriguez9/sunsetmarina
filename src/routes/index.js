@@ -31,6 +31,9 @@ import EditCliente from '../pages/Marina/Client/Edit';
 import Boat from "../pages/Marina/Boat"
 import CreateBoat from '../pages/Marina/Boat/Create';
 import EditBoat from '../pages/Marina/Boat/Edit';
+import BoatCrew from "../pages/Marina/BoatCrew"
+import CreateBoatCrew from "../pages/Marina/BoatCrew/Create";
+import EditBoatCrew from "../pages/Marina/BoatCrew/Edit";
 
 const authProtectedRoutes = [
     { path: "/logout", component: Logout },
@@ -104,6 +107,11 @@ const adminRoutes = [
     { path: "/boat", exact: true, component: Boat },
     { path: "/boat/create", exact: true, component: CreateBoat },
     { path: "/boat/edit/:id", exact: true, component: EditBoat },
+
+    //tripulacion
+    { path: "/boatcrew", exact: true, component: BoatCrew },
+    { path: "/boatcrew/create", exact: true, component: CreateBoatCrew },
+    { path: "/boatcrew/edit/:id", exact: true, component: EditBoatCrew },
 
     //endmarina
 ]

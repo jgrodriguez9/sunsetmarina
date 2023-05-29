@@ -32,3 +32,6 @@ export const client = '/customer'
 //barcos
 export const boat = "/boat"
 
+//tripulacion
+export const boatCrew = "/boatCrew"
+

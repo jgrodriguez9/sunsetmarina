@@ -2,24 +2,24 @@ import { withRouter } from "react-router-dom";
 import { Col, Container, Row } from "reactstrap";
 import Breadcrumbs from "../../../../components/Common/Breadcrumbs";
 import CardMain from "../../../../components/Common/CardMain";
-import FormBoat from "../../../../components/Marina/Boat/FormBoat";
+import FormBoatCrew from "../../../../components/Marina/BoatCrew/FormBoatCrew";
 
-function CreateBoat(){
+function CreateBoatCrew(){
 
     return(
         <div className="page-content">
             <Container fluid>
 
                 <Breadcrumbs
-                    title={'Barco'}
-                    breadcrumbItem={"Barco"} 
+                    title={'Tripulación'}
+                    breadcrumbItem={"Tripulación"} 
                 />
 
                 <Row className="pb-5">
                   <Col lg="12">
                     <CardMain
-                        title='Crear Barco'
-                        children={<FormBoat item={null} btnTextSubmit="Guardar"/>}
+                        title='Crear Tripulación'
+                        children={<FormBoatCrew item={null} btnTextSubmit="Guardar"/>}
                     />                                          
                   </Col>
                 </Row>
@@ -29,4 +29,4 @@ function CreateBoat(){
 
 }
 
-export default withRouter(CreateBoat)
+export default withRouter(CreateBoatCrew)
