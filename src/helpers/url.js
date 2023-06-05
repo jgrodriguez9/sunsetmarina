@@ -35,3 +35,9 @@ export const boat = "/boat"
 //tripulacion
 export const boatCrew = "/boatCrew"
 
+//note
+export const note = "/note"
+
+//note
+export const contact = "/contact"
+

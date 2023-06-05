@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { Form, Button, NavItem, NavLink, TabContent, TabPane, Row, Col, Nav } from "reactstrap";
 import * as Yup from "yup";
-import { ERROR_SERVER, FIELD_REQUIRED, SAVE_SUCCESS, UPDATE_SUCCESS } from "../../constants/messages";
+import { CORREO_VALID, ERROR_SERVER, FIELD_REQUIRED, SAVE_SUCCESS, UPDATE_SUCCESS } from "../../constants/messages";
 import ButtonsDisabled from "../Common/ButtonsDisabled";
 import { ResumenCliente } from "./ResumenCliente";
 import classnames from "classnames";
@@ -16,6 +16,8 @@ import { addMessage } from "../../redux/messageSlice";
 import { useDispatch } from "react-redux";
 import extractMeaningfulMessage from "../../utils/extractMeaningfulMessage";
 import BoatClient from "./TabSection/BoatClient";
+import NoteClient from "./TabSection/NoteClient";
+import ContactClient from "./TabSection/ContactClient";
 
 
 export default function FormCliente({item, btnTextSubmit="Aceptar"}){
@@ -52,7 +54,7 @@ export default function FormCliente({item, btnTextSubmit="Aceptar"}){
             name: Yup.string().required(FIELD_REQUIRED),
             lastName: Yup.string().required(FIELD_REQUIRED),
             identification: Yup.string().required(FIELD_REQUIRED),
-            email: Yup.string().email("Correo electrónico inválido")
+            email: Yup.string().email(CORREO_VALID)
         }),
         onSubmit: async (values) => {
             //validaciones antes de enviarlo
@@ -147,22 +149,6 @@ export default function FormCliente({item, btnTextSubmit="Aceptar"}){
                                     <i className="fas fa-home"></i>
                                     </span>
                                     <span className="d-none d-sm-block">Dirección de residencia</span>
-                                </NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink
-                                    style={{ cursor: "pointer" }}
-                                    className={classnames({
-                                    active: customActiveTab === "2",
-                                    })}
-                                    onClick={() => {
-                                    toggleCustom("2");
-                                    }}
-                                >
-                                    <span className="d-block d-sm-none">
-                                    <i className="fas fa-calendar-alt"></i>
-                                    </span>
-                                    <span className="d-none d-sm-block">Reservas</span>
                                 </NavLink>
                             </NavItem>
                             <NavItem>
@@ -265,22 +251,6 @@ export default function FormCliente({item, btnTextSubmit="Aceptar"}){
                                 <NavLink
                                     style={{ cursor: "pointer" }}
                                     className={classnames({
-                                    active: customActiveTab === "9",
-                                    })}
-                                    onClick={() => {
-                                    toggleCustom("9");
-                                    }}
-                                >
-                                    <span className="d-block d-sm-none">
-                                    <i className="fas fa-cogs"></i>
-                                    </span>
-                                    <span className="d-none d-sm-block">Servicios</span>
-                                </NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink
-                                    style={{ cursor: "pointer" }}
-                                    className={classnames({
                                     active: customActiveTab === "10",
                                     })}
                                     onClick={() => {
@@ -302,9 +272,6 @@ export default function FormCliente({item, btnTextSubmit="Aceptar"}){
                             <TabPane tabId="1">
                                 <DirectionClient formik={formik} item={item}/>
                             </TabPane>
-                            <TabPane tabId="2">
-                                Reservas
-                            </TabPane>
                             <TabPane tabId="3">
                                 Pagos
                             </TabPane>
@@ -318,13 +285,10 @@ export default function FormCliente({item, btnTextSubmit="Aceptar"}){
                                 Documentos
                             </TabPane>
                             <TabPane tabId="7">
-                                Nota
+                                <NoteClient formik={formik} />
                             </TabPane>
                             <TabPane tabId="8">
-                                Contactos
-                            </TabPane>
-                            <TabPane tabId="9">
-                                Servicios
+                                <ContactClient formik={formik} />
                             </TabPane>
                             <TabPane tabId="10">
                                 <ObservationClient formik={formik} item={item}/>

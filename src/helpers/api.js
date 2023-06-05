@@ -52,7 +52,6 @@ export async function del(url, config = {}) {
 }
 
 export async function postFile(url, data, config = {}) {
-    console.log('entro')
     return axiosApi
       .post(url, { ...data }, { 
             headers: {
