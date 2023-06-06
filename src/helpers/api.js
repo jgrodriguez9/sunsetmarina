@@ -3,7 +3,8 @@ import axios from "axios";
 //pass new generated access token here
 const token = sessionStorage.getItem("sunsetadmiralauth") ? `${JSON.parse(sessionStorage.getItem("sunsetadmiralauth")).access_token}` : "";
 //apply base url for axios
-const API_URL = 'https://apiadmiral.plan-nex.com/api';
+//const API_URL = 'https://apiadmiral.plan-nex.com/api';
+const API_URL = 'https://apiadmiral.sunset.com.mx/api';
 
 const axiosApi = axios.create({
     baseURL: API_URL,
