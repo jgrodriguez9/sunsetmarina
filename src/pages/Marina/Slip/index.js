@@ -79,7 +79,7 @@ function Slip(){
         () => [
           {
             Header: 'Número',
-            accessor: 'number',
+            accessor: 'code',
             style: {
                 width: '40%'
             }

@@ -68,9 +68,9 @@ function EditSlip(){
 
                 <Row className="pb-5">
                   <Col lg="12">
-                    {states.loading && <FormLoader fields={fields} titleCard='Editar Muelle' />}
+                    {states.loading && <FormLoader fields={fields} titleCard='Editar Slip' />}
                     {states.success && <CardMain
-                                            title='Editar Muelle'
+                                            title='Editar Slip'
                                             children={<FormSlip item={item} btnTextSubmit="Actualizar"/>}
                                         />}
                     {states.error && <ErrorEntity 

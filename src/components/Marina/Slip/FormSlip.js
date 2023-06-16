@@ -61,7 +61,7 @@ export default function FormSlip({item, btnTextSubmit="Aceptar"}){
     const formik = useFormik({
         initialValues: {
             id: item?.id ?? '',
-            number: item?.number ?? '',
+            code: item?.code ?? '',
             pier: {
                 id: item?.pier?.id ?? ''
             }, 
@@ -79,7 +79,7 @@ export default function FormSlip({item, btnTextSubmit="Aceptar"}){
             status: item?.status ?? 'AVAILABLE', 
         },
         validationSchema: Yup.object({
-            number: Yup.string().required(FIELD_REQUIRED),
+            code: Yup.string().required(FIELD_REQUIRED),
             pier: Yup.object({
                 id: Yup.number().required(FIELD_REQUIRED)
             }),
@@ -157,17 +157,17 @@ export default function FormSlip({item, btnTextSubmit="Aceptar"}){
         >
             <Row>
                 <Col xs="12" md="3">
-                    <Label htmlFor="number" className="mb-0">Número</Label>
+                    <Label htmlFor="code" className="mb-0">Número</Label>
                     <Input
-                        id="number"
-                        name="number"
-                        className={`form-control ${formik.errors.number ? 'is-invalid' : ''}`}
+                        id="code"
+                        name="code"
+                        className={`form-control ${formik.errors.code ? 'is-invalid' : ''}`}
                         onChange={formik.handleChange}
-                        value={formik.values.number}  
+                        value={formik.values.code}  
                     />
                     {
-                        formik.errors.number &&
-                        <div className="invalid-tooltip">{formik.errors.number}</div>
+                        formik.errors.code &&
+                        <div className="invalid-tooltip">{formik.errors.code}</div>
                     }
                 </Col>
                 <Col xs="12" md="3">

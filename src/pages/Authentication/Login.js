@@ -8,6 +8,7 @@ import { postJwtLogin } from "../../helpers/auth";
 import { ERROR_SERVER, FIELD_REQUIRED } from "../../constants/messages";
 import extractMeaningfulMessage from "../../utils/extractMeaningfulMessage";
 import { useState } from "react";
+import packJson from '../../../package.json'
 
 
 function Login(){
@@ -121,7 +122,7 @@ function Login(){
                 <div className="mt-5 text-center">
                   <p>
                     © {new Date().getFullYear()} Sunset Admiral
-                    <span className="d-block text-muted">v 1.0.0</span>
+                    <span className="d-block text-muted">v {packJson.version}</span>
                   </p>
                 </div>
               </Col>
