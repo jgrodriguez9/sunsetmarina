@@ -18,12 +18,19 @@ import extractMeaningfulMessage from "../../utils/extractMeaningfulMessage";
 import BoatClient from "./TabSection/BoatClient";
 import NoteClient from "./TabSection/NoteClient";
 import ContactClient from "./TabSection/ContactClient";
+import { numberFormat } from "../../utils/numberFormat";
 
 
 export default function FormCliente({item, btnTextSubmit="Aceptar"}){
     const history = useHistory();
     const dispatch = useDispatch();
     const [customActiveTab, setcustomActiveTab] = useState("1");
+    const [resumeClient, setResumeClient] = useState({
+        boats: null,
+        reservations: '0',
+        total: numberFormat(0),
+        debts: numberFormat(0)
+    })
 
     const toggleCustom = tab => {
         if (customActiveTab !== tab) {
@@ -119,7 +126,7 @@ export default function FormCliente({item, btnTextSubmit="Aceptar"}){
 
     return(
         <>
-            <ResumenCliente />
+            <ResumenCliente resumeClient={resumeClient}/>
             <hr />
             <Form
                 className="needs-validation"
@@ -279,7 +286,7 @@ export default function FormCliente({item, btnTextSubmit="Aceptar"}){
                                 Slips
                             </TabPane>
                             <TabPane tabId="5">
-                                <BoatClient formik={formik} />
+                                <BoatClient formik={formik} setResumeClient={setResumeClient}/>
                             </TabPane>
                             <TabPane tabId="6">
                                 Documentos

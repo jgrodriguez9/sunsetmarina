@@ -17,7 +17,7 @@ export default function PrincipalInfoClient({formik, item}){
     const fecthClientsCategoryAPi = async () => {
         try {
             const response = await getClientCategoryList();
-            //console.log(response)
+            setClientsCategoryOpt(response.filter(it=>it.enabled).map(it=>({value: it.id, label:it.name})))
         } catch (error) {
             console.log(error)
         } 
@@ -174,7 +174,7 @@ export default function PrincipalInfoClient({formik, item}){
                             value={clientsDefault}
                             onChange={(value) => {
                                 setClientsDefault(value)
-                                formik.setFieldValue('customerCategory .id', value?.value ?? '') 
+                                formik.setFieldValue('customerCategory.id', value?.value ?? '') 
                             }}
                             options={clientsCategoryOpt}
                             classNamePrefix="select2-selection"

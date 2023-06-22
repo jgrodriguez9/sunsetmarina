@@ -2,9 +2,11 @@ import { NumericFormat } from 'react-number-format';
 
 export const numberFormat = (number) => {
 
+
+
     return (
         <NumericFormat
-            value={number || ''}
+            value={number && number >= 0 ? number : ''}
             displayType="text"
             prefix='$'
             thousandSeparator={true}

@@ -1,6 +1,6 @@
-import { Card, CardBody, CardHeader, CardText, Col, Row } from "reactstrap";
+import { Card, CardBody, CardHeader, CardText, Col, Row, Spinner } from "reactstrap";
 
-export function ResumenCliente(){
+export function ResumenCliente({resumeClient}){
 
 
     return(
@@ -13,7 +13,7 @@ export function ResumenCliente(){
                   </h5>
                 </CardHeader>
                 <CardBody className="py-0">                  
-                  <CardText className="fs-1 text-primary">0</CardText>
+                  <CardText className="fs-1 text-primary">{resumeClient.boats ? resumeClient.boats : <Spinner className="fs-5" color="primary" />}</CardText>
                 </CardBody>
               </Card>
             </Col>
@@ -25,7 +25,7 @@ export function ResumenCliente(){
                   </h5>
                 </CardHeader>
                 <CardBody className="py-0">                  
-                  <CardText className="fs-1 text-success">0</CardText>
+                  <CardText className="fs-1 text-success">{resumeClient.reservations ? resumeClient.reservations : <Spinner className="fs-5" color="success" />}</CardText>
                 </CardBody>
               </Card>
             </Col>
@@ -37,7 +37,7 @@ export function ResumenCliente(){
                   </h5>
                 </CardHeader>
                 <CardBody className="py-0">                  
-                  <CardText className="fs-1 text-white">$0.00</CardText>
+                  <CardText className="fs-1 text-white">{resumeClient.total ? resumeClient.total : <Spinner className="fs-5" color="white" />}</CardText>
                 </CardBody>
               </Card>
             </Col>
@@ -49,7 +49,7 @@ export function ResumenCliente(){
                   </h5>
                 </CardHeader>
                 <CardBody className="py-0">                  
-                  <CardText className="fs-1 text-white">$0.00</CardText>
+                  <CardText className="fs-1 text-white">{resumeClient.debts ? resumeClient.debts : <Spinner className="fs-5" color="white" />}</CardText>
                 </CardBody>
               </Card>
             </Col>
