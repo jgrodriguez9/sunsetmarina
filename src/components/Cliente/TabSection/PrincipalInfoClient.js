@@ -10,7 +10,6 @@ import moment from "moment";
 export default function PrincipalInfoClient({formik, item}){
     const [fecha, setFecha] = useState(item?.birthDate ? moment(item?.birthDate, "YYYY-MM-DD").toDate() : null)
     const [clientsCategoryOpt, setClientsCategoryOpt] = useState([])
-    const [clientsDefault, setClientsDefault] = useState(null)
     const [languageDefault, setLanguageDefault] = useState(null)
     const [selectedImage, setSelectedImage] = useState(null);
 
@@ -171,9 +170,13 @@ export default function PrincipalInfoClient({formik, item}){
                     <Label htmlFor="customerCategory" className="mb-0 col-md-3 col-12">Categoría del cliente</Label>
                     <div className="col-md-9 col-12">
                         <Select
-                            value={clientsDefault}
+                            value={formik.values.customerCategory ?
+                                {
+                                    value: formik.values.customerCategory.id, 
+                                    label: clientsCategoryOpt.find(it=>it.value===formik.values.customerCategory.id)?.label} :
+                                null
+                            }
                             onChange={(value) => {
-                                setClientsDefault(value)
                                 formik.setFieldValue('customerCategory.id', value?.value ?? '') 
                             }}
                             options={clientsCategoryOpt}

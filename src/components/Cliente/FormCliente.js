@@ -120,7 +120,7 @@ export default function FormCliente({item, btnTextSubmit="Aceptar"}){
             }
         }
     })
-
+    
     console.log(formik.values)
     console.log(formik.errors)
 

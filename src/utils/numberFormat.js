@@ -6,7 +6,7 @@ export const numberFormat = (number) => {
 
     return (
         <NumericFormat
-            value={number && number >= 0 ? number : ''}
+            value={number >= 0 ? number : ''}
             displayType="text"
             prefix='$'
             thousandSeparator={true}
