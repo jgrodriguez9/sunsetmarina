@@ -4,8 +4,7 @@ import { SELECT_OPTION } from "../../constants/messages";
 import SimpleDate from "../DatePicker/SimpleDate";
 
 export default function ControlFilter({field, handleChange}){
-
-
+    
     switch(field.control){
         case 'input':
             return (

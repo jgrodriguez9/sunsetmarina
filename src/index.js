@@ -1,4 +1,3 @@
-import {StrictMode} from 'react';
 import { createRoot } from 'react-dom/client';
 import reportWebVitals from './reportWebVitals';
 import App from './App';
@@ -10,7 +9,9 @@ import './index.css';
 const rootElement = document.getElementById('root')
 const root = createRoot(rootElement);
 root.render(
-    <Provider store={store}><App /></Provider>
+    <Provider store={store}>
+        <App />
+    </Provider>
 );
 
 // If you want to start measuring performance in your app, pass a function

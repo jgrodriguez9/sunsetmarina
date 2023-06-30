@@ -7,7 +7,7 @@ import { getClientCategoryList } from "../../../helpers/catalogos/clientCategory
 import { languages } from "../../../data/languages";
 import moment from "moment";
 
-export default function PrincipalInfoClient({formik, item}){
+export default function PrincipalInfoClient({formik, item, setFile}){
     const [fecha, setFecha] = useState(item?.birthDate ? moment(item?.birthDate, "YYYY-MM-DD").toDate() : null)
     const [clientsCategoryOpt, setClientsCategoryOpt] = useState([])
     const [languageDefault, setLanguageDefault] = useState(null)
@@ -25,7 +25,7 @@ export default function PrincipalInfoClient({formik, item}){
     useEffect(() => {
         fecthClientsCategoryAPi();
     }, [])
-
+    //console.log(formik.values)
     return (
         <Row>
             <Col xs="12" md="12">          
@@ -33,15 +33,24 @@ export default function PrincipalInfoClient({formik, item}){
             <Col xs="12" md="5">
                 <Row className="align-items-center mb-2 ">
                     <div className="d-flex align-items-center">
-                        <div className="me-5">
-                            {selectedImage ?
+                        <div className="me-5 position-relative">
+                            {(selectedImage || formik.values.profilePicture) ?
                                 <>
-                                    <img
-                                        className="btn-image-profile"
-                                        alt="not found"
-                                        src={URL.createObjectURL(selectedImage)}
-                                    />
-                                    <i className="bx bxs-pencil icon-image-upload"/>
+                                    {
+                                        formik.values.profilePicture && !selectedImage ?
+                                        <img
+                                            className="btn-image-profile"
+                                            alt="Usuario logo"
+                                            src={formik.values.profilePicture}
+                                        /> :
+                                        <img
+                                            className="btn-image-profile"
+                                            alt="not found"
+                                            src={URL.createObjectURL(selectedImage)}
+                                        />
+                                    }
+                                    
+                                    <i className="bx bxs-pencil icon-image-upload text-warning fs-5"/>
                                 </> :
                                 <button type="button" className="btn-block btn-image-profile">
                                     <i className="fas fa-camera icon-file-upload"/>
@@ -51,7 +60,10 @@ export default function PrincipalInfoClient({formik, item}){
                                 type="file"
                                 accept="image/*"
                                 className="input-file"
-                                onChange={e=>setSelectedImage(e.target.files[0])}
+                                onChange={e=>{
+                                    setSelectedImage(e.target.files[0])
+                                    setFile(e.target.files[0])
+                                }}
                             />
                         </div>
                         {formik.values.code && <div>

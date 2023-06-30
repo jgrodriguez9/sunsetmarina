@@ -5,8 +5,8 @@ import * as url from "../url";
 const getClientList = () => get(`${url.client}/all`)
 const getClient = (id) => get(`${url.client}/${id}`)
 const getClientListPaginado = query => get(`${url.client}${query}`)
-const saveClient = (data) => post(url.client, data)
-const updateClient = (id, data) => put(`${url.client}/${id}`, data)
+const saveClient = (data, config) => post(url.client, data, config)
+const updateClient = (id, data, config) => put(`${url.client}/${id}`, data, config)
 const deleteClient = (id) => del(`${url.client}/${id}`)
 
 export {

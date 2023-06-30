@@ -34,6 +34,10 @@ import EditBoat from '../pages/Marina/Boat/Edit';
 import BoatCrew from "../pages/Marina/BoatCrew"
 import CreateBoatCrew from "../pages/Marina/BoatCrew/Create";
 import EditBoatCrew from "../pages/Marina/BoatCrew/Edit";
+import AccountStatus from "../pages/Contabilidad/AccountStatus"
+import BillReport from "../pages/Contabilidad/BillReport"
+import IncomeReport from "../pages/Contabilidad/IncomeReport"
+import DockTaxBill from "../pages/Contabilidad/DockTaxBill"
 
 const authProtectedRoutes = [
     { path: "/logout", component: Logout },
@@ -112,6 +116,17 @@ const adminRoutes = [
     { path: "/boatcrew", exact: true, component: BoatCrew },
     { path: "/boatcrew/create", exact: true, component: CreateBoatCrew },
     { path: "/boatcrew/edit/:id", exact: true, component: EditBoatCrew },
+
+    //contabilidad
+    //estado de cuenta
+    { path: "/accountstatus", exact: true, component: AccountStatus },
+    //reporte de cobranza
+    { path: "/billreport", exact: true, component: BillReport },
+    //reporte de ingresos
+    { path: "/incomereport", exact: true, component: IncomeReport },
+    //cobro impuesto de muelle
+    { path: "/docktaxbill", exact: true, component: DockTaxBill },
+
 
     //endmarina
 ]

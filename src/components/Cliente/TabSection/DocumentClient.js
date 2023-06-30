@@ -2,8 +2,6 @@ import { Col, Row } from "reactstrap";
 import TabActionHeader from "../Common/TabActionHeader";
 import DialogMain from "../../Common/DialogMain";
 import { useEffect, useMemo, useState } from "react";
-import FormBoatClient from "../../Marina/Boat/FormBoatClient";
-import { deleteBoat, getBoatByClient } from "../../../helpers/marina/boat";
 import SimpleTable from "../../Tables/SimpleTable";
 import { DELETE_SUCCESS, ERROR_SERVER } from "../../../constants/messages";
 import extractMeaningfulMessage from "../../../utils/extractMeaningfulMessage";
@@ -13,12 +11,14 @@ import TableLoader from "../../Loader/TablaLoader";
 import moment from "moment";
 import CellActions from "../../Tables/CellActions";
 import DeleteDialog from "../../Common/DeleteDialog";
+import { deleteDocument, getDocumentByClient } from '../../../helpers/marina/document'
+import FormDocumentClient from "../../Marina/Document/FormDocumentClient";
 
-export default function BoatClient({formik, setResumeClient}){
+export default function DocumentClient({formik}){
     const dispatch = useDispatch();
-    const [loadingBoats, setLoadingBoats] = useState(true)
+    const [loadingItems, setLoadingItems] = useState(true)
     const [openModalAdd, setOpenModalAdd] = useState(false)
-    const [boats, setBoats] = useState([])
+    const [items, setItems] = useState([])
     const [refetch, setRefetch] = useState(true)
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
     const [isDeleting, setDeleting] = useState(false)
@@ -36,15 +36,8 @@ export default function BoatClient({formik, setResumeClient}){
         setItem((prev) => ({
             ...prev,
             id: boat.id,
-            name: boat.name, 
-            registrationNumber: boat.registrationNumber, 
-            length: boat.length,
-            beam: boat.beam,
-            draught: boat.draught,
-            markEngine: boat.markEngine,
-            nauticalTouristic: boat.nauticalTouristic, 
-            insuranceExpirationDate: boat.insuranceExpirationDate, 
-            boatType: boat.boatType, 
+            comments: boat.comments, 
+            reminderDate: boat.reminderDate,
         }))
         setOpenModalAdd(true)
     }
@@ -52,26 +45,32 @@ export default function BoatClient({formik, setResumeClient}){
     const columns = useMemo(
         () => [
           {
-            Header: 'Nombre',
-            accessor: 'name',
-            style: {
-                width: '30%'
-            }
-          },
-          {
-            Header: 'Número de registro',
-            accessor: 'registrationNumber',
-            style: {
-                width: '30%'
-            }
-          },
-          {
-            Header: 'Fecha expiración seguro',
-            accessor: 'insuranceExpirationDate',
+            Header: 'Tipo documento',
+            accessor: 'documentType.description',
             style: {
                 width: '30%'
             },
-            Cell: ({row, value}) => moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY')
+            Cell: ({row, value}) => (
+                <a href={row.original.urlPath} target="_blank" rel="noreferrer">
+                    <span className="me-2">{value}</span>
+                    <i className="bx bx-link-external" />
+                </a>
+            )
+          },
+          {
+            Header: 'Comentario',
+            accessor: 'comments',
+            style: {
+                width: '40%'
+            }
+          },
+          {
+            Header: 'Fecha recordatorio',
+            accessor: 'reminderDate',
+            style: {
+                width: '20%'
+            },
+            Cell: ({row, value}) => value ? moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY') : 'Sin fecha'
           },
           {
             id: 'acciones',
@@ -79,7 +78,7 @@ export default function BoatClient({formik, setResumeClient}){
             Cell: ({row}) => (
                 <>
                     <CellActions
-                        edit={{"allow": true, action: editAction}} 
+                        edit={{"allow": false, action: editAction}} 
                         del={{"allow": true, action: handleShowDialogDelete}}
                         row={row}
                     />
@@ -99,15 +98,11 @@ export default function BoatClient({formik, setResumeClient}){
     }
     
 
-    const fetchBoatForClientApi = async () => {
+    const fetchItemsForClientApi = async () => {
         try {
-            const response = await getBoatByClient(formik.values.id)
-            setBoats(response.list)
-            setResumeClient(prev=>({
-                ...prev,
-                boats: response.list.length.toString()
-            }))
-            setLoadingBoats(false)
+            const response = await getDocumentByClient(formik.values.id)
+            setItems(response.list)
+            setLoadingItems(false)
         } catch (error) {
             let message  = ERROR_SERVER;
             message = extractMeaningfulMessage(error, message)
@@ -115,15 +110,15 @@ export default function BoatClient({formik, setResumeClient}){
                 type: 'error',
                 message: message
             }))
-            setBoats([])
-            setLoadingBoats(false)
+            setItems([])
+            setLoadingItems(false)
         }
     }
 
     useEffect(() => {
         if(refetch){
-            setLoadingBoats(true)
-            fetchBoatForClientApi();
+            setLoadingItems(true)
+            fetchItemsForClientApi();
             setRefetch(false)
         }        
     }, [refetch]);
@@ -131,7 +126,7 @@ export default function BoatClient({formik, setResumeClient}){
     const handleDelete = async () => {
         setDeleting(true)   
         try {
-            await deleteBoat(selectedIdDelete);
+            await deleteDocument(selectedIdDelete);
             setRefetch(true)
             setDeleting(false)
             setShowDeleteDialog(false)
@@ -162,13 +157,13 @@ export default function BoatClient({formik, setResumeClient}){
             <Row className="mt-2">
                 <Col xs="12" md="12">
                     {
-                        loadingBoats ?
+                        loadingItems ?
                         <TableLoader 
-                            columns={[{name: "Nombre", width: '20%'}, {name: "Número de registro", width: '20%'}, {name: "Fecha expiración seguro", width: '20%'}]} 
+                            columns={[{name: "Tipo documento", width: '30%'}, {name: "Comentario", width: '40%'}, {name: "Fecha recordatorio", width: '20%'}, {name: "Acciones", width: '10%'}]} 
                         /> : 
                         <SimpleTable 
                             columns={columns}
-                            data={boats} 
+                            data={items} 
                         />
                     }
                     
@@ -179,9 +174,9 @@ export default function BoatClient({formik, setResumeClient}){
             <DialogMain 
                 open={openModalAdd}
                 setOpen={setOpenModalAdd}
-                title={item?.id ? "Actualizar embarcación" : "Agregar embarcación"}
+                title={item?.id ? "Actualizar documento" : "Agregar documento"}
                 size="xl"
-                children={<FormBoatClient 
+                children={<FormDocumentClient 
                             item={item}
                             setOpenModalAdd={setOpenModalAdd}
                             setRefetch={setRefetch}

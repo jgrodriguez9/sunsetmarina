@@ -15,12 +15,11 @@ import SimpleTable from "../../../components/Tables/SimpleTable";
 import { DELETE_SUCCESS, ERROR_SERVER } from "../../../constants/messages";
 import { addMessage } from "../../../redux/messageSlice";
 import extractMeaningfulMessage from "../../../utils/extractMeaningfulMessage";
-import { Country, State }  from 'country-state-city';
-import { deleteClient, getClientListPaginado } from "../../../helpers/marina/client";
+import { deleteMuelle, getMuelleListPaginado } from "../../../helpers/catalogos/muelle";
 
-function Client(){  
+function Notifications(){  
     const dispatch = useDispatch();
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
     const [items, setItems] = useState([]);
     const [totalPaginas, setTotalPaginas] = useState(0)
     const [totalRegistros, setTotalRegistros]   =useState(10)
@@ -34,14 +33,6 @@ function Client(){
     })
     const [filters, setFilters] = useState([
         {
-            label: 'Código',
-            field: 'code',
-            width: 3,
-            control: 'input',
-            type: 'text',
-            value: ''
-        },
-        {
             label: 'Nombre',
             field: 'name',
             width: 3,
@@ -49,52 +40,13 @@ function Client(){
             type: 'text',
             value: ''
         },
-        {
-            label: 'Apellido',
-            field: 'lastName',
-            width: 3,
-            control: 'input',
-            type: 'text',
-            value: ''
-        },
-        {
-            label: 'País',
-            field: 'country',
-            width: 3,
-            control: 'select',
-            type: '',
-            value: '',
-            valueSelect: null,
-            options: [
-                {
-                    label: Country.getCountryByCode('MX').name,
-                    value: Country.getCountryByCode('MX').name
-                }
-            ]
-        },
-        {
-            label: 'Estado',
-            field: 'state',
-            width: 3,
-            control: 'select',
-            type: '',
-            value: '',
-            valueSelect: null,
-            options: State.getStatesOfCountry('MX').map(s=> (
-                {
-                    label: s.name,
-                    value: s.name
-                }
-            ))
-        }
     ]);
 
     const fetchList = async () => {
         setLoading(true)
         let q = Object.keys(query).map(key=>`${key}=${query[key]}`).join("&")
         try {
-            const response = await getClientListPaginado(`?${q}`);
-            //console.log(response)
+            const response = await getMuelleListPaginado(`?${q}`);
             setItems(response.list)
             setTotalPaginas(response.pagination.totalPages)
             setTotalRegistros(response.pagination.totalCount)
@@ -118,91 +70,41 @@ function Client(){
     }, [JSON.stringify(query)])
 
     const editAction = (row) => {
-        history.push(`/client/edit/${row.original.id}`)
+        history.push(`/pier/edit/${row.original.id}`)
     }
 
     const columns = useMemo(
         () => [
-            {
-                Header: 'Código',
-                accessor: 'code',            
-                style: {
-                    width: '15%'
-                }
-            },
-            {
-                Header: 'Nombre',
-                accessor: 'name',
-                Cell: ({row}) => (
-                    <>
-                      <div className="d-flex align-items-center">
-                        <div className="flex-shrink-0">
-                          {row.original.profilePicture ? <img
-                            src={row.original.profilePicture}
-                            alt=""
-                            className="avatar-xxs rounded-circle"
-                          /> :
-                            <div className="flex-shrink-0 avatar-xs me-2">
-                              <div className="avatar-title bg-soft-success text-success rounded-circle fs-13">
-                                {row.original.name.charAt(0)}
-                              </div>
-                            </div>
-                          }
-                        </div>
-                        <div className="flex-grow-1 ms-2 name">
-                          {`${row.original.name} ${row.original.lastName}`}
-                        </div>
-                      </div>
-                    </>
-                  ),
-                style: {
-                    width: '30%'
-                }
-            },
-            {
-                Header: 'Correo electrónico',
-                accessor: 'email',            
-                style: {
-                    width: '17%'
-                }
-            },
-            {
-                Header: 'Teléfono',
-                accessor: 'phone',
-                style: {
-                    width: '10%'
-                }
-            },
-            {
-                Header: 'Estado',
-                accessor: 'state',
-                style: {
-                    width: '10%'
-                }
-            },
-            {
-                Header: 'País',
-                accessor: 'country',
-                style: {
-                    width: '10%'
-                }
-            },          
-            {
-                id: 'acciones',
-                Header: "Acciones",
-                Cell: ({row}) => (
-                    <>
-                        <CellActions
-                            edit={{"allow": true, action: editAction}} 
-                            del={{"allow": false, action: handleShowDialogDelete}}
-                            row={row}
-                        />
-                    </>
-                ), 
-                style: {
-                    width: '8%'
-                }         
+          {
+            Header: 'Nombre',
+            accessor: 'name',
+            style: {
+                width: '60%'
             }
+          },
+          {
+            Header: 'Orden',
+            accessor: 'orderPosition',
+            style: {
+                width: '30%'
+            }
+          },
+          {
+            id: 'acciones',
+            Header: "Acciones",
+            Cell: ({row}) => (
+                <>
+                    <CellActions
+                        edit={{"allow": true, action: editAction}} 
+                        del={{"allow": true, action: handleShowDialogDelete}}
+                        row={row}
+                    />
+                </>
+            ), 
+            style: {
+                width: '10%'
+            }         
+          }
         ],
         []
     );
@@ -232,7 +134,6 @@ function Client(){
         const obj = activeFilters.reduce((accumulator, value) => {
             return {...accumulator, [value.name]: value.value};
           }, {});
-          console.log(obj)
 
           setQuery(prev=>({
             max: prev.max,
@@ -242,13 +143,13 @@ function Client(){
     }
 
     const goPageCreate = () => {
-        history.push("/client/create")
+        history.push("/pier/create")
     }
 
     const handleDelete = async () => {
         setDeleting(true)   
         try {
-            await deleteClient(selectedIdDelete);
+            await deleteMuelle(selectedIdDelete);
             fetchList()
             setDeleting(false)
             setShowDeleteDialog(false)
@@ -271,7 +172,7 @@ function Client(){
         loading ?
         <Row>
             <Col xs="12" xl="12">
-                <TableLoader columns={[{name: "Código", width: '15%'}, {name: "Nombre", width: '25%'}, {name: 'Correo electrónico', with: '20%'}, {name: "Teléfono", width: '10%'}, {name: "Estado", width: "10%" }, {name: "País", width: "10%" }, {name: "Acciones", width: '10%'}]} />
+                <TableLoader columns={[{name: "Nombre", width: '60%'}, {name: "Orden", width: '30%'}, {name: "Acciones", width: '10%'}]} />
             </Col>
         </Row> :
         <Row>
@@ -313,8 +214,8 @@ function Client(){
             <Container fluid>
               {/* Render Breadcrumb */}
               <Breadcrumbs
-                title={'Cliente'}
-                breadcrumbItem={"Cliente"}
+                title={'Muelle'}
+                breadcrumbItem={"Muelle"}
                 add={{
                     allow: true,
                     text: 'Crear Nuevo',
@@ -350,4 +251,4 @@ function Client(){
       );
   }
   
-  export default withRouter(Client)
+  export default withRouter(Notifications)

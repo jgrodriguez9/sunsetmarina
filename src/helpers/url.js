@@ -38,6 +38,12 @@ export const boatCrew = "/boatCrew"
 //note
 export const note = "/note"
 
-//note
+//contact
 export const contact = "/contact"
+
+//document
+export const document = "/document"
+
+//misnotificaciones
+export const mynotification = "/mynotifications"
 

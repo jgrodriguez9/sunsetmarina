@@ -19,14 +19,17 @@ import BoatClient from "./TabSection/BoatClient";
 import NoteClient from "./TabSection/NoteClient";
 import ContactClient from "./TabSection/ContactClient";
 import { numberFormat } from "../../utils/numberFormat";
+import getObjectValid from "../../utils/getObjectValid";
+import DocumentClient from "./TabSection/DocumentClient";
 
 
 export default function FormCliente({item, btnTextSubmit="Aceptar"}){
     const history = useHistory();
     const dispatch = useDispatch();
     const [customActiveTab, setcustomActiveTab] = useState("1");
+    const [file, setFile] = useState(null)
     const [resumeClient, setResumeClient] = useState({
-        boats: null,
+        boats: '0',
         reservations: '0',
         total: numberFormat(0),
         debts: numberFormat(0)
@@ -56,6 +59,8 @@ export default function FormCliente({item, btnTextSubmit="Aceptar"}){
             customerCategory: item?.customerCategory ? {id: item.customerCategory?.id} : null,
             language: item?.language ?? '', 
             fax: item?.fax ?? '', 
+            profilePicture: item?.profilePicture ?? '',
+            observations: item?.observations ?? '',
         },
         validationSchema: Yup.object({
             name: Yup.string().required(FIELD_REQUIRED),
@@ -65,14 +70,27 @@ export default function FormCliente({item, btnTextSubmit="Aceptar"}){
         }),
         onSubmit: async (values) => {
             //validaciones antes de enviarlo
-            values.birthDate = values.birthDate ? moment(values.birthDate).format('YYYY-MM-DD') : null
             delete values.code;
-            console.log(values)
-            console.log('submit')
+            let formData = new FormData();
+            if(file){
+                formData["file"] = file
+            }
+            Object.entries(getObjectValid(values)).forEach(entry => {
+                const [key, value] = entry;
+                if(key === 'birthDate'){
+                    formData[key] = moment(values.birthDate).format('YYYY-MM-DD')
+                }else{
+                    formData[key] = value
+                }                
+            });
             if(values.id){
                 //update
                 try {
-                    let response = await updateClient(values.id, values)
+                    let response = await updateClient(values.id, formData, {
+                        headers: {
+                          "Content-Type": "multipart/form-data",
+                        },
+                    })
                     if(response){
                         dispatch(addMessage({
                             type: 'success',
@@ -96,7 +114,11 @@ export default function FormCliente({item, btnTextSubmit="Aceptar"}){
             }else{
                 //save
                 try{
-                    let response = await saveClient(values)
+                    let response = await saveClient(formData, {
+                        headers: {
+                          "Content-Type": "multipart/form-data",
+                        },
+                    })
                     if(response){
                         dispatch(addMessage({
                             type: 'success',
@@ -120,13 +142,10 @@ export default function FormCliente({item, btnTextSubmit="Aceptar"}){
             }
         }
     })
-    
-    console.log(formik.values)
-    console.log(formik.errors)
 
     return(
         <>
-            <ResumenCliente resumeClient={resumeClient}/>
+            <ResumenCliente resumeClient={resumeClient} />
             <hr />
             <Form
                 className="needs-validation"
@@ -137,7 +156,7 @@ export default function FormCliente({item, btnTextSubmit="Aceptar"}){
                     return false;
                 }}
             >
-                <PrincipalInfoClient formik={formik} item={item} />
+                <PrincipalInfoClient formik={formik} item={item} setFile={setFile} />
                 
                 <Row className="mt-2">
                     <Col xs="12" md="12">
@@ -289,7 +308,7 @@ export default function FormCliente({item, btnTextSubmit="Aceptar"}){
                                 <BoatClient formik={formik} setResumeClient={setResumeClient}/>
                             </TabPane>
                             <TabPane tabId="6">
-                                Documentos
+                                <DocumentClient formik={formik}/>
                             </TabPane>
                             <TabPane tabId="7">
                                 <NoteClient formik={formik} />

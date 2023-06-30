@@ -1,7 +1,7 @@
 import { Card, CardBody, CardHeader, CardText, Col, Row, Spinner } from "reactstrap";
 
 export function ResumenCliente({resumeClient}){
-
+  //console.log(resumeClient)
 
     return(
         <Row>
@@ -13,7 +13,7 @@ export function ResumenCliente({resumeClient}){
                   </h5>
                 </CardHeader>
                 <CardBody className="py-0">                  
-                  <CardText className="fs-1 text-primary">{resumeClient.boats ? resumeClient.boats : <Spinner className="fs-5" color="primary" />}</CardText>
+                  <CardText className="fs-1 text-primary">{resumeClient.boats  ? resumeClient.boats : <Spinner className="fs-5" color="primary" />}</CardText>
                 </CardBody>
               </Card>
             </Col>

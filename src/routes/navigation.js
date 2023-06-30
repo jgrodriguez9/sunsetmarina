@@ -107,5 +107,38 @@ export const navigations = [
                 classIcon: null,
             }
         ]
-    }
+    },
+    {
+        id: 'contabilidad',
+        label: 'Contabilidad',
+        classIcon: 'fas fa-cash-register me-2',
+        route: '/#',
+        show: existsRole(sessionStorage.getItem('roles'), ['ROLE_ADMIN', 'ROLE_COMPANY_ADMIN']),
+        items: [
+            {
+                id: 'estadoCuenta',
+                label: 'Estado de cuenta',
+                route: '/accountstatus',
+                classIcon: null,
+            },
+            {
+                id: 'cobranza',
+                label: 'Reporte de cobranza',
+                route: '/billreport',
+                classIcon: null,
+            },
+            {
+                id: 'ingresos',
+                label: 'Reporte de ingresos',
+                route: '/incomereport',
+                classIcon: null,
+            },
+            {
+                id: 'inpuestoMuelle',
+                label: 'Cobranza impuesto de muelle',
+                route: '/docktaxbill',
+                classIcon: null,
+            },
+        ]
+    },
 ]

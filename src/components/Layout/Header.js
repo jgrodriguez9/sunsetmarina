@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import logo from "../../assets/images/logo.png";
 import logoXs from "../../assets/images/logo-xs.png";
 import ProfileMenu from "./ProfileMenu";
+import NotificationDropdown from "./NotificationDropdown";
 
 function Header({openMenu}){
     const [search, setsearch] = useState(false);
@@ -33,7 +34,7 @@ function Header({openMenu}){
             document.webkitCancelFullScreen();
           }
         }
-      }
+    }
 
     return (
         <>
@@ -78,7 +79,7 @@ function Header({openMenu}){
                   </button>
                 </div>
     
-                {/* <NotificationDropdown /> */}
+                <NotificationDropdown />
                 <ProfileMenu />
                             
               </div>
