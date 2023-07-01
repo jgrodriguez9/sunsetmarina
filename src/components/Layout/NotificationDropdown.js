@@ -94,11 +94,12 @@ function NotificationDropdown() {
                                 }                            
                             </ul>                        
                         </SimpleBar>
+                        {items.length > 5 &&
                         <div className="p-2 border-top d-grid">
                             <Link className="btn btn-sm btn-link font-size-14 text-center" to="/notifications">
                                 <i className="mdi mdi-arrow-right-circle me-1"></i> <span key="t-view-more">Ver todas</span>
                             </Link>
-                        </div>
+                        </div>}
                     </>
                 }
             </DropdownMenu>

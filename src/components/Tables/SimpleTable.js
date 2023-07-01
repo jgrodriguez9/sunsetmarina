@@ -49,7 +49,7 @@ export default function SimpleTable({columns, data}){
                                 )
                                 }) : <tr><td colSpan={columns.length}>No hay información disponible</td></tr>}
                             </tbody>
-                            </table>
+                        </table>
                     </div>
                 </div>
             </Col>

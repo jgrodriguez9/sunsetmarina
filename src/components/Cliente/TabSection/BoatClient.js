@@ -71,7 +71,7 @@ export default function BoatClient({formik, setResumeClient}){
             style: {
                 width: '30%'
             },
-            Cell: ({row, value}) => moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY')
+            Cell: ({value}) => moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY')
           },
           {
             id: 'acciones',

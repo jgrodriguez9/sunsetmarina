@@ -38,6 +38,7 @@ import AccountStatus from "../pages/Contabilidad/AccountStatus"
 import BillReport from "../pages/Contabilidad/BillReport"
 import IncomeReport from "../pages/Contabilidad/IncomeReport"
 import DockTaxBill from "../pages/Contabilidad/DockTaxBill"
+import Notifications from "../pages/Catalogos/Notifications"
 
 const authProtectedRoutes = [
     { path: "/logout", component: Logout },
@@ -134,6 +135,9 @@ const managerRoutes = []
 const agentRoutes = [
     //mapa muelle
     { path: "/map", exact: true, component: Dock },
+
+    //notificaciones
+    { path: "/notifications", exact: true, component: Notifications },
 ]
 
 export { 

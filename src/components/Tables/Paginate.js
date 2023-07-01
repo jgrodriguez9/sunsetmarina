@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { Pagination, PaginationItem, PaginationLink } from "reactstrap"
 
 function Paginate({page, totalPaginas, handlePageClick, totalRegistros, limit, handleChangeLimit}){
@@ -18,8 +17,7 @@ function Paginate({page, totalPaginas, handlePageClick, totalRegistros, limit, h
           for (var i = pageIndex - (pivot - 1); options.length < maxNumberOfOptions; i++) {
             options.push(i + 1);
           }
-        }
-    
+        }    
         return options;
     }
     
