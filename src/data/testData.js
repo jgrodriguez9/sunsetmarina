@@ -200,3 +200,36 @@ export const lastTransaction = [
         estado_pago: 'pendiente',
     }
 ]
+
+export const listClientAccounsStatus = [
+    {
+        slip: 'Slip #42',
+        boat: {
+            name: 'Lucy',
+        },
+        paymentsList: [
+            {
+                fecha: '01/04/023',
+                concepto: 'Renta Abril',
+                adeudo: 6960,
+                pago: 6960,
+            }
+        ],
+        moratorio: 0
+    },
+    {
+        slip: 'Slip #25',
+        boat: {
+            name: 'Susy',
+        },
+        paymentsList: [
+            {
+                fecha: '01/06/023',
+                concepto: 'Renta Junio',
+                adeudo: 6960,
+                pago: 0,
+            }
+        ],
+        moratorio: 348
+    }
+]
