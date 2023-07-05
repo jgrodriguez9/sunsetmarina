@@ -47,3 +47,6 @@ export const document = "/document"
 //misnotificaciones
 export const mynotification = "/mynotifications"
 
+//notificacion
+export const notification = "/notification"
+

@@ -39,6 +39,7 @@ import BillReport from "../pages/Contabilidad/BillReport"
 import IncomeReport from "../pages/Contabilidad/IncomeReport"
 import DockTaxBill from "../pages/Contabilidad/DockTaxBill"
 import Notifications from "../pages/Catalogos/Notifications"
+import EditNotifications from "../pages/Catalogos/Notifications/Edit";
 
 const authProtectedRoutes = [
     { path: "/logout", component: Logout },
@@ -137,7 +138,8 @@ const agentRoutes = [
     { path: "/map", exact: true, component: Dock },
 
     //notificaciones
-    { path: "/notifications", exact: true, component: Notifications },
+    { path: "/notification", exact: true, component: Notifications },
+    { path: "/notification/edit/:id", exact: true, component: EditNotifications },
 ]
 
 export { 

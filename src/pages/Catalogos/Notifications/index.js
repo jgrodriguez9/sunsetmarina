@@ -6,7 +6,6 @@ import { Badge, Col, Container, Row } from "reactstrap";
 import Breadcrumbs from "../../../components/Common/Breadcrumbs";
 import CardMain from "../../../components/Common/CardMain";
 import TableLoader from "../../../components/Loader/TablaLoader";
-import SimpleTable from "../../../components/Tables/SimpleTable";
 import { ERROR_SERVER } from "../../../constants/messages";
 import { addMessage } from "../../../redux/messageSlice";
 import extractMeaningfulMessage from "../../../utils/extractMeaningfulMessage";
@@ -14,11 +13,14 @@ import moment from "moment";
 import { getMyNotifcations } from "../../../helpers/catalogos/notifications";
 import { addNotifications } from "../../../redux/notificationsSlide";
 import PaginateTable from "../../../components/Tables/PaginateTable";
+import CellActions from "../../../components/Tables/CellActions";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
 function Notifications(){  
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(true)
     const [items, setItems] = useState([]);
+    const history = useHistory();
 
     const fetchList = async () => {
         setLoading(true)
@@ -43,13 +45,17 @@ function Notifications(){
         fetchList();
     }, [])
 
+    const editAction = (row) => {
+        history.push(`/notification/edit/${row.original.id}`)
+    }
+
     const columns = useMemo(
         () => [
           {
             Header: 'Concepto',
             accessor: 'concept',
             style: {
-                width: '30%'
+                width: '20%'
             }
           },
           {
@@ -82,7 +88,22 @@ function Notifications(){
                 width: '20%'
             },
             Cell: ({value}) => moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY')
-          },        
+          },     
+          {
+            id: 'acciones',
+            Header: "Acciones",
+            Cell: ({row}) => (
+                <>
+                    <CellActions
+                        edit={{"allow": true, action: editAction}} 
+                        row={row}
+                    />
+                </>
+            ), 
+            style: {
+                width: '10%'
+            }         
+          }   
         ],
         []
     );
