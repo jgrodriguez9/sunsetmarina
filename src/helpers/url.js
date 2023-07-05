@@ -50,3 +50,6 @@ export const mynotification = "/mynotifications"
 //notificacion
 export const notification = "/notification"
 
+//slipReservation
+export const slipReservation = '/slipReservation'
+

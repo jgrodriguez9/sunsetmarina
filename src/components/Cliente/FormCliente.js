@@ -21,6 +21,7 @@ import ContactClient from "./TabSection/ContactClient";
 import { numberFormat } from "../../utils/numberFormat";
 import getObjectValid from "../../utils/getObjectValid";
 import DocumentClient from "./TabSection/DocumentClient";
+import SlipReservationClient from "./TabSection/SlipReservationClient";
 
 
 export default function FormCliente({item, btnTextSubmit="Aceptar"}){
@@ -302,7 +303,7 @@ export default function FormCliente({item, btnTextSubmit="Aceptar"}){
                                 Pagos
                             </TabPane>
                             <TabPane tabId="4">
-                                Slips
+                                <SlipReservationClient formik={formik}/>
                             </TabPane>
                             <TabPane tabId="5">
                                 <BoatClient formik={formik} setResumeClient={setResumeClient}/>
