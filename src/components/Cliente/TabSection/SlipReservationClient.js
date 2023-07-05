@@ -12,8 +12,8 @@ import moment from "moment";
 import CellActions from "../../Tables/CellActions";
 import DeleteDialog from "../../Common/DeleteDialog";
 import { deleteDocument } from '../../../helpers/marina/document'
-import FormDocumentClient from "../../Marina/Document/FormDocumentClient";
 import { getSlipReservationByClient } from "../../../helpers/marina/slipReservation";
+import FormSlipReservationClient from "../../Marina/SlipReservation/FormSlipReservationClient";
 
 export default function SlipReservationClient({formik}){
     const dispatch = useDispatch();
@@ -101,8 +101,9 @@ export default function SlipReservationClient({formik}){
 
     const fetchItemsForClientApi = async () => {
         try {
-            const response = await getSlipReservationByClient(formik.values.id)
-            console.log(response)
+            const query = `?page=1&max=50`
+            const response = await getSlipReservationByClient(formik.values.id, query)
+            //console.log(response)
             //setItems(response.list)
             setLoadingItems(false)
         } catch (error) {
@@ -170,9 +171,9 @@ export default function SlipReservationClient({formik}){
             <DialogMain 
                 open={openModalAdd}
                 setOpen={setOpenModalAdd}
-                title={item?.id ? "Actualizar documento" : "Agregar documento"}
+                title={item?.id ? "Actualizar reservación" : "Agregar reservación"}
                 size="xl"
-                children={<FormDocumentClient 
+                children={<FormSlipReservationClient 
                             item={item}
                             setOpenModalAdd={setOpenModalAdd}
                             setRefetch={setRefetch}

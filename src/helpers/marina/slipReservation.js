@@ -2,7 +2,8 @@ import { del, get, post, put } from "../api";
 import * as url from "../url";
 
 //get listado paginado
-const getSlipReservationByClient = id => get(`${url.slipReservation}/findAllByCustomer/${id}`)
+const getSlipReservationByClient = (id, query) => get(`${url.slipReservation}/findAllByCustomer/${id}${query}`)
+const getSlipReservationPriceAndValid = query => post(`${url.slipReservation}/calculatePrice/${query}`)
 // const getBoatList= () => get(`${url.boat}/all`)
 // const getBoat= (id) => get(`${url.boat}/${id}`)
 // const getBoatListPaginado = query => get(`${url.boat}${query}`)
@@ -13,6 +14,7 @@ const getSlipReservationByClient = id => get(`${url.slipReservation}/findAllByCu
 
 export {
      getSlipReservationByClient,
+     getSlipReservationPriceAndValid
      // getBoatList,
      // getBoat,
      // getBoatListPaginado,

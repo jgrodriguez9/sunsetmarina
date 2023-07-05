@@ -94,7 +94,6 @@ function Client(){
         let q = Object.keys(query).map(key=>`${key}=${query[key]}`).join("&")
         try {
             const response = await getClientListPaginado(`?${q}`);
-            //console.log(response)
             setItems(response.list)
             setTotalPaginas(response.pagination.totalPages)
             setTotalRegistros(response.pagination.totalCount)

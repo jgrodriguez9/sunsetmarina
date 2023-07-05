@@ -4,7 +4,7 @@ import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
 import { InputGroup } from "reactstrap";
 
-function SimpleDate({date, setDate, element, options, placeholder}){
+function SimpleDate({date, setDate, element, options, placeholder, onOpen=()=>{}}){
 
 
     return (
@@ -20,6 +20,7 @@ function SimpleDate({date, setDate, element, options, placeholder}){
                 }}
                 value={date}
                 onChange={date=>setDate(date, element)}
+                onOpen={onOpen}
             />
         </InputGroup>
     )
