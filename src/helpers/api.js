@@ -1,4 +1,7 @@
 import axios from "axios";
+import { store } from '../redux/store';
+import { addMessage } from "../redux/messageSlice";
+const {dispatch} = store;
 
 //pass new generated access token here
 const token = sessionStorage.getItem("sunsetadmiralauth") ? `${JSON.parse(sessionStorage.getItem("sunsetadmiralauth")).access_token}` : "";
@@ -17,6 +20,13 @@ axiosApi.interceptors.response.use(
     response => response,
     error => {
         console.log(error)
+        console.log(error.code)
+        if(error.code === 'ERR_NETWORK'){
+            dispatch(addMessage({
+                type: 'error',
+                message: 'Ups! no tiene conexión a internet'
+            }))
+        }
         if(error.response.status===403 || error.response.status===401){
             //window.sessionStorage.removeItem('sunsetadmiralauth');
             //window.location.reload();

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory, withRouter } from "react-router-dom";
-import { Col, Container, Row } from "reactstrap";
+import { Badge, Col, Container, Row } from "reactstrap";
 import Breadcrumbs from "../../../components/Common/Breadcrumbs";
 import CardBasic from "../../../components/Common/CardBasic";
 import CardMain from "../../../components/Common/CardMain";
@@ -15,7 +15,6 @@ import SimpleTable from "../../../components/Tables/SimpleTable";
 import { DELETE_SUCCESS, ERROR_SERVER } from "../../../constants/messages";
 import { addMessage } from "../../../redux/messageSlice";
 import extractMeaningfulMessage from "../../../utils/extractMeaningfulMessage";
-import { deleteMuelle } from "../../../helpers/catalogos/muelle";
 import { deleteSlip, getSlipListPaginado } from "../../../helpers/marina/slip";
 import { numberFormat } from "../../../utils/numberFormat";
 
@@ -81,7 +80,7 @@ function Slip(){
             Header: 'Número',
             accessor: 'code',
             style: {
-                width: '40%'
+                width: '30%'
             }
           },
           {
@@ -95,6 +94,22 @@ function Slip(){
             Header: 'Precio',
             accessor: 'price',
             Cell: ({row}) => numberFormat(row.values.price),
+            style: {
+                width: '10%'
+            }
+          },
+          {
+            Header: 'Estado',
+            accessor: 'status',
+            Cell: ({value}) => {
+                if(value === 'AVAILABLE'){
+                    return <Badge color='info'>Disponible</Badge>
+                }else if(value === 'RESERVED'){
+                    return <Badge color='success'>Reservado</Badge>
+                }else{
+                    return <Badge color='danger'>Bloqueado</Badge>
+                }
+            },
             style: {
                 width: '10%'
             }

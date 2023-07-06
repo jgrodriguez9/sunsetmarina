@@ -18,7 +18,7 @@ const getRemainTime = (reminderDate) => {
     }else if(hoursReamin > 0){
         return (
             <>
-                <i className={`mdi mdi-clock-outline me-1 fs-6 text-danger'}`} />
+                <i className={`mdi mdi-clock-outline me-1 fs-6 text-danger`} />
                 {`${hoursReamin} ${hoursReamin > 1 ? 'horas' : 'hora'}`}
             </>
         )

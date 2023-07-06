@@ -7,18 +7,18 @@ const getSlipReservationPriceAndValid = query => post(`${url.slipReservation}/ca
 // const getBoatList= () => get(`${url.boat}/all`)
 // const getBoat= (id) => get(`${url.boat}/${id}`)
 // const getBoatListPaginado = query => get(`${url.boat}${query}`)
-// const saveBoat = (data) => post(url.boat, data)
-// const updateBoat = (id, data) => put(`${url.boat}/${id}`, data)
+const saveReservation = (data) => post(url.slipReservation, data)
+const updateReservation = (id, data) => put(`${url.slipReservation}/${id}`, data)
 // const deleteBoat = (id) => del(`${url.boat}/${id}`)
 
 
 export {
      getSlipReservationByClient,
-     getSlipReservationPriceAndValid
+     getSlipReservationPriceAndValid,
+     saveReservation,
+     updateReservation
      // getBoatList,
      // getBoat,
      // getBoatListPaginado,
-     // saveBoat,
-     // updateBoat,
      // deleteBoat     
 }

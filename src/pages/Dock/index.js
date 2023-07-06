@@ -5,9 +5,6 @@ import CardMain from "../../components/Common/CardMain";
 import DockImage from "../../components/Dock/DockImage";
 
 function Dock(){      
-
-
-    
     return (
         <>
           <div className="page-content">

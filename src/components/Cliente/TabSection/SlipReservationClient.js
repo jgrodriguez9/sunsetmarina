@@ -1,4 +1,4 @@
-import { Col, Row } from "reactstrap";
+import { Badge, Col, Row } from "reactstrap";
 import TabActionHeader from "../Common/TabActionHeader";
 import DialogMain from "../../Common/DialogMain";
 import { useEffect, useMemo, useState } from "react";
@@ -14,6 +14,7 @@ import DeleteDialog from "../../Common/DeleteDialog";
 import { deleteDocument } from '../../../helpers/marina/document'
 import { getSlipReservationByClient } from "../../../helpers/marina/slipReservation";
 import FormSlipReservationClient from "../../Marina/SlipReservation/FormSlipReservationClient";
+import { numberFormat } from "../../../utils/numberFormat";
 
 export default function SlipReservationClient({formik}){
     const dispatch = useDispatch();
@@ -33,12 +34,19 @@ export default function SlipReservationClient({formik}){
     }
 
     const editAction = (row) => {
-        const boat = row.original
+        console.log(row)
+        const slip = row.original
         setItem((prev) => ({
             ...prev,
-            id: boat.id,
-            comments: boat.comments, 
-            reminderDate: boat.reminderDate,
+            id: slip.id,
+            price: slip.price, 
+            observations: slip.observations, 
+            customer: {id: formik.values.id},
+            boat: slip.boat,
+            slip: slip.slip, 
+            arrivalDate: slip.arrivalDate,
+            departureDate: slip.departureDate,
+            status: slip.status
         }))
         setOpenModalAdd(true)
     }
@@ -46,32 +54,65 @@ export default function SlipReservationClient({formik}){
     const columns = useMemo(
         () => [
           {
-            Header: 'Tipo documento',
-            accessor: 'documentType.description',
+            Header: 'Código',
+            accessor: 'code',
             style: {
-                width: '30%'
-            },
-            Cell: ({row, value}) => (
-                <a href={row.original.urlPath} target="_blank" rel="noreferrer">
-                    <span className="me-2">{value}</span>
-                    <i className="bx bx-link-external" />
-                </a>
-            )
-          },
-          {
-            Header: 'Comentario',
-            accessor: 'comments',
-            style: {
-                width: '40%'
+                width: '15%'
             }
           },
           {
-            Header: 'Fecha recordatorio',
-            accessor: 'reminderDate',
+            Header: 'Slip',
+            accessor: 'slip.code',
             style: {
-                width: '20%'
+                width: '10%'
+            }
+          },
+          {
+            Header: 'Embarcación',
+            accessor: 'boat.name',
+            style: {
+                width: '15%'
+            }
+          },
+          {
+            Header: 'Fecha llegada',
+            accessor: 'arrivalDate',
+            style: {
+                width: '15%'
             },
-            Cell: ({row, value}) => value ? moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY') : 'Sin fecha'
+            Cell: ({value}) => moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY')
+          },
+          {
+            Header: 'Fecha salida',
+            accessor: 'departureDate',
+            style: {
+                width: '15%'
+            },
+            Cell: ({value}) => moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY')
+          },
+          {
+            Header: 'Precio diario',
+            accessor: 'price',
+            style: {
+                width: '10%'
+            },
+            Cell: ({value}) => numberFormat(value)
+          },
+          {
+            Header: 'Estado',
+            accessor: 'status',
+            style: {
+                width: '10%'
+            },
+            Cell: ({value}) => {
+                if(value === 'PENDING'){
+                    return <Badge color='warning'>Pendiente</Badge>
+                }else if(value === 'CONFIRMED'){
+                    return <Badge color='success'>Confirmada</Badge>
+                }else{
+                    return <Badge color='danger'>Cancelada</Badge>
+                }
+            }
           },
           {
             id: 'acciones',
@@ -79,7 +120,7 @@ export default function SlipReservationClient({formik}){
             Cell: ({row}) => (
                 <>
                     <CellActions
-                        edit={{"allow": false, action: editAction}} 
+                        edit={{"allow": true, action: editAction}} 
                         del={{"allow": true, action: handleShowDialogDelete}}
                         row={row}
                     />
@@ -101,10 +142,10 @@ export default function SlipReservationClient({formik}){
 
     const fetchItemsForClientApi = async () => {
         try {
-            const query = `?page=1&max=50`
+            const query = `?page=1&max=100`
             const response = await getSlipReservationByClient(formik.values.id, query)
-            //console.log(response)
-            //setItems(response.list)
+            console.log(response)
+            setItems(response.list)
             setLoadingItems(false)
         } catch (error) {
             setItems([])

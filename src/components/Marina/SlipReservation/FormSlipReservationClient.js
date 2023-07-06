@@ -1,7 +1,7 @@
 
 import {  useEffect, useState } from "react";
 import { useFormik } from "formik"
-import { Button, Col, Input, Label, Row } from "reactstrap";
+import { Alert, Button, Col, Input, Label, Row } from "reactstrap";
 import * as Yup from "yup";
 import { ERROR_SERVER, FIELD_REQUIRED, SAVE_SUCCESS, SELECT_OPTION, UPDATE_SUCCESS } from "../../../constants/messages";
 import ButtonsDisabled from "../../Common/ButtonsDisabled";
@@ -10,22 +10,25 @@ import { useDispatch } from "react-redux";
 import { addMessage } from "../../../redux/messageSlice";
 import extractMeaningfulMessage from "../../../utils/extractMeaningfulMessage";
 import moment from "moment";
-import getObjectValid from "../../../utils/getObjectValid";
-import { saveDocument, updateDocument } from "../../../helpers/marina/document";
-import { getDocumentTypeList } from "../../../helpers/catalogos/documentType";
 import Select from "react-select";
-import { getBoadTypeAll } from "../../../helpers/catalogos/boadType";
 import { getBoatByClient } from "../../../helpers/marina/boat";
 import { getSlipList } from "../../../helpers/marina/slip";
-import { getSlipReservationPriceAndValid } from "../../../helpers/marina/slipReservation";
+import { getSlipReservationPriceAndValid, saveReservation, updateReservation } from "../../../helpers/marina/slipReservation";
 import { numberFormat } from "../../../utils/numberFormat";
+import ContentLoader from "../../Loader/ContentLoader";
+import getObjectValid from "../../../utils/getObjectValid";
+import { statusSlipReservation } from "../../../data/statusSlipReservation";
 
 
 export default function FormSlipReservationClient({item, setOpenModalAdd, setRefetch}){
     const dispatch = useDispatch();
-    const [validSlip, setValidSlip] = useState(null)
     const [arrivalDate, setArrivalDate] = useState(item?.arrivalDate  ? moment(item?.arrivalDate , 'YYYY-MM-DD').toDate() : null)
     const [departureDate, setDepartureDate] = useState(item?.departureDate  ? moment(item?.departureDate , 'YYYY-MM-DD').toDate() : null)
+    const [checkValidationSlip, setCheckValidationSlip] = useState({
+        loading: false,
+        isValid: false,
+        checked: false
+    })
 
     const [boatOpt, setBoatOpt] = useState([])
     const [slipOpt, setSlipOpt] = useState([])
@@ -60,6 +63,9 @@ export default function FormSlipReservationClient({item, setOpenModalAdd, setRef
             customer: item?.customer ?? {id: ''},
             boat: item?.boat ?? {id: ''},
             slip: item?.slip ?? {id: ''}, 
+            arrivalDate: item?.arrivalDate ?? '',
+            departureDate: item?.departureDate ?? '',
+            status: item?.status ?? 'PENDING'
         },
         validationSchema: Yup.object({
             boat: Yup.object({
@@ -72,61 +78,71 @@ export default function FormSlipReservationClient({item, setOpenModalAdd, setRef
         onSubmit: async (values) => {
             //validaciones antes de enviarlo
             console.log(values)
-            // if(values.id){
-            //     //update
-            //     try{
-            //         values.insuranceExpirationDate = moment(values.insuranceExpirationDate).format('YYYY-MM-DD')
-            //         let response = await updateBoat(values.id, values)
-            //         if(response){
-            //             dispatch(addMessage({
-            //                 type: 'success',
-            //                 message: UPDATE_SUCCESS
-            //             }))
-            //             setOpenModalAdd(false)
-            //             setRefetch(true)
-            //         }else{
-            //             dispatch(addMessage({
-            //                 type: 'error',
-            //                 message: ERROR_SERVER
-            //             }))
-            //         }
+            const data = {}
+            Object.entries(getObjectValid(values)).forEach(entry => {
+                const [key, value] = entry;
+                if(key === 'arrivalDate'){
+                    data[key] = moment(values.arrivalDate).format('YYYY-MM-DD')
+                }else if(key === 'departureDate'){
+                    data[key] = moment(values.arrivalDate).format('YYYY-MM-DD')
+                }else{
+                    data[key] = value
+                }                
+            });
+            
+            if(values.id){
+                //update
+                try{
+                    let response = await updateReservation(values.id, data)
+                    if(response){
+                        dispatch(addMessage({
+                            type: 'success',
+                            message: UPDATE_SUCCESS
+                        }))
+                        setOpenModalAdd(false)
+                        setRefetch(true)
+                    }else{
+                        dispatch(addMessage({
+                            type: 'error',
+                            message: ERROR_SERVER
+                        }))
+                    }
                 
-            //     }catch(error){
-            //         let message  = ERROR_SERVER;
-            //         message = extractMeaningfulMessage(error, message)
-            //         dispatch(addMessage({
-            //             type: 'error',
-            //             message: message
-            //         }))
-            //     }
-            // }else{
-            //     //save
-            //     try{
-            //         values.insuranceExpirationDate = moment(values.insuranceExpirationDate).format('YYYY-MM-DD')
-            //         let response = await saveBoat(values)
-            //         if(response){
-            //             dispatch(addMessage({
-            //                 type: 'success',
-            //                 message: SAVE_SUCCESS
-            //             }))
-            //             setOpenModalAdd(false)
-            //             setRefetch(true)
-            //         }else{
-            //             dispatch(addMessage({
-            //                 type: 'error',
-            //                 message: ERROR_SERVER
-            //             }))
-            //         }
+                }catch(error){
+                    let message  = ERROR_SERVER;
+                    message = extractMeaningfulMessage(error, message)
+                    dispatch(addMessage({
+                        type: 'error',
+                        message: message
+                    }))
+                }
+            }else{
+                //save
+                try{
+                    let response = await saveReservation(data)
+                    if(response){
+                        dispatch(addMessage({
+                            type: 'success',
+                            message: SAVE_SUCCESS
+                        }))
+                        setOpenModalAdd(false)
+                        setRefetch(true)
+                    }else{
+                        dispatch(addMessage({
+                            type: 'error',
+                            message: ERROR_SERVER
+                        }))
+                    }
                 
-            //     }catch(error){
-            //         let message  = ERROR_SERVER;
-            //         message = extractMeaningfulMessage(error, message)
-            //         dispatch(addMessage({
-            //             type: 'error',
-            //             message: message
-            //         }))
-            //     }
-            // }
+                }catch(error){
+                    let message  = ERROR_SERVER;
+                    message = extractMeaningfulMessage(error, message)
+                    dispatch(addMessage({
+                        type: 'error',
+                        message: message
+                    }))
+                }
+            }
         }
     })
 
@@ -134,12 +150,22 @@ export default function FormSlipReservationClient({item, setOpenModalAdd, setRef
     useEffect(() => {
         if(formik.values.boat.id && formik.values.slip.id){
             const fecthPriceAndValid = async () => {
+                setCheckValidationSlip(prev=>({
+                    ...prev,
+                    loading: true,
+                    checked: false,
+                    isValid: false
+                }))
                 try {
                     const query = `${formik.values.slip.id}&${formik.values.boat.id}`
                     const response = await getSlipReservationPriceAndValid(query)
-                    setValidSlip(response.valid)
+                    setCheckValidationSlip(prev=>({
+                        ...prev,
+                        loading: false,
+                        isValid: response.valid,
+                        checked: true
+                    }))
                     formik.setFieldValue('price', response.price)
-                    console.log(response)
                 } catch (error) {
                     let message  = ERROR_SERVER;
                     message = extractMeaningfulMessage(error, message)
@@ -147,6 +173,12 @@ export default function FormSlipReservationClient({item, setOpenModalAdd, setRef
                         type: 'error',
                         message: message
                     })) 
+                    setCheckValidationSlip(prev=>({
+                        ...prev,
+                        loading: false,
+                        isValid: false,
+                        checked: true
+                    }))
                 }
             }
             fecthPriceAndValid();
@@ -158,7 +190,16 @@ export default function FormSlipReservationClient({item, setOpenModalAdd, setRef
         instance.set('minDate',  formik.values.arrivalDate)
     }
     return(
-        <div className="needs-validation">
+        <div className="needs-validation position-relative">
+            {checkValidationSlip.loading && <ContentLoader text="Checando validez del slip" />}
+            {(checkValidationSlip.checked && !checkValidationSlip.isValid) &&
+            <Row>
+                <Col><Alert color="danger">El slip no es válido</Alert></Col>
+            </Row>}
+            {(checkValidationSlip.checked && checkValidationSlip.isValid) &&
+            <Row>
+                <Col><Alert color="success">El slip es válido</Alert></Col>
+            </Row>}
             <Row>
                 <Col xs="12" md="4">
                     <div className="mb-3">
@@ -171,7 +212,6 @@ export default function FormSlipReservationClient({item, setOpenModalAdd, setRef
                                         null}
                             onChange={(value) => {
                                 formik.setFieldValue('boat.id', value?.value ?? '')
-                                formik.setFieldValue('boat.name', value?.label ?? '') 
                             }}
                             options={boatOpt}
                             classNamePrefix="select2-selection"
@@ -194,7 +234,6 @@ export default function FormSlipReservationClient({item, setOpenModalAdd, setRef
                                         null}
                             onChange={(value) => {
                                 formik.setFieldValue('slip.id', value?.value ?? '')
-                                formik.setFieldValue('slip.code', value?.label ?? '') 
                             }}
                             options={slipOpt}
                             classNamePrefix="select2-selection"
@@ -249,6 +288,21 @@ export default function FormSlipReservationClient({item, setOpenModalAdd, setRef
                         />
                     </div> 
                 </Col>  
+                <Col xs="12" md="4">
+                    <Label className="mb-0 d-block">Estado</Label>
+                    <Select
+                        value={formik.values.status ? 
+                            {value: formik.values.status, label: statusSlipReservation.find(it=>it.value===formik.values.status).label} 
+                            : null
+                        }
+                        onChange={(value) => {
+                            formik.setFieldValue('status', value?.value ?? '') 
+                        }}
+                        options={statusSlipReservation}
+                        classNamePrefix="select2-selection"
+                        placeholder={SELECT_OPTION}
+                    />
+                </Col>
             </Row>
             <Row>
                 <Col xs="12" md="8">
@@ -267,7 +321,12 @@ export default function FormSlipReservationClient({item, setOpenModalAdd, setRef
             {
                 formik.isSubmitting ?
                 <ButtonsDisabled buttons={[{text: 'Aceptar', color: 'primary', className: '', loader: true}]}/> :
-                <Button color="primary" type="button" className="me-2" onClick={() => formik.handleSubmit()}>
+                <Button 
+                    color="primary" 
+                    disabled={!checkValidationSlip.isValid}
+                    type="button" 
+                    className="me-2" 
+                    onClick={checkValidationSlip.isValid ? () => formik.handleSubmit() : () => {}}>
                     {
                         formik.values.id ? 'Actualizar' : 'Aceptar'
                     }
