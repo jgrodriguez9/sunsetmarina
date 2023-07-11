@@ -14,7 +14,7 @@ import moment from "moment";
 import CellActions from "../../Tables/CellActions";
 import DeleteDialog from "../../Common/DeleteDialog";
 
-export default function BoatClient({formik, setResumeClient}){
+export default function BoatClient({formik}){
     const dispatch = useDispatch();
     const [loadingBoats, setLoadingBoats] = useState(true)
     const [openModalAdd, setOpenModalAdd] = useState(false)
@@ -103,10 +103,6 @@ export default function BoatClient({formik, setResumeClient}){
         try {
             const response = await getBoatByClient(formik.values.id)
             setBoats(response.list)
-            setResumeClient(prev=>({
-                ...prev,
-                boats: response.list.length.toString()
-            }))
             setLoadingBoats(false)
         } catch (error) {
             let message  = ERROR_SERVER;

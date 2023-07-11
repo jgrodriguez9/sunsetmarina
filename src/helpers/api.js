@@ -26,8 +26,9 @@ axiosApi.interceptors.response.use(
                 type: 'error',
                 message: 'Ups! no tiene conexión a internet'
             }))
+            return;
         }
-        if(error.response.status===403 || error.response.status===401){
+        else if(error.response.status===403 || error.response.status===401){
             //window.sessionStorage.removeItem('sunsetadmiralauth');
             //window.location.reload();
             return Promise.reject(error);

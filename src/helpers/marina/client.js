@@ -8,6 +8,7 @@ const getClientListPaginado = query => get(`${url.client}${query}`)
 const saveClient = (data, config) => post(url.client, data, config)
 const updateClient = (id, data, config) => put(`${url.client}/${id}`, data, config)
 const deleteClient = (id) => del(`${url.client}/${id}`)
+const getClientShowAllData = (id) => get(`${url.client}/getAllInfo/${id}`)
 
 export {
      getClientList,
@@ -15,5 +16,6 @@ export {
      getClientListPaginado,
      saveClient,
      updateClient,
-     deleteClient
+     deleteClient,
+     getClientShowAllData
 }

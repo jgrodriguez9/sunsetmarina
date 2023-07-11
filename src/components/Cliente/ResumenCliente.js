@@ -1,7 +1,48 @@
+import { useEffect } from "react";
+import { useState } from "react";
 import { Card, CardBody, CardHeader, CardText, Col, Row, Spinner } from "reactstrap";
+import { getClientShowAllData } from "../../helpers/marina/client";
+import { numberFormat } from "../../utils/numberFormat";
 
-export function ResumenCliente({resumeClient}){
-  //console.log(resumeClient)
+export function ResumenCliente({item}){
+    const [resumeClient, setResumeClient] = useState({
+      boats: null,
+      reservations: null,
+      total: null,
+      debts: null
+    })
+
+    useEffect(() => {
+      const fetchAPi = async () => {
+        try {
+          const response = await getClientShowAllData(item.id)
+          setResumeClient({
+            boats: response.boats,
+            reservations: response.slips,
+            total: numberFormat(0),//falta que se agregue al servicio
+            debts: numberFormat(response.debt)
+          })
+        } catch (error) {
+          setResumeClient({
+            boats: null,
+            reservations: null,
+            total: null,
+            debts: null
+          })
+        }
+      }
+      if(item){
+        fetchAPi()
+      }else{
+        setResumeClient({
+          boats: 0,
+          reservations: 0,
+          total: numberFormat(0),
+          debts: numberFormat(0)
+        })
+      }
+      
+    }, [])
 
     return(
         <Row>
