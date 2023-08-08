@@ -19,7 +19,7 @@ export function ResumenCliente({item}){
           setResumeClient({
             boats: response.boats,
             reservations: response.slips,
-            total: numberFormat(0),//falta que se agregue al servicio
+            total: numberFormat(response.payments),
             debts: numberFormat(response.debt)
           })
         } catch (error) {
@@ -54,7 +54,7 @@ export function ResumenCliente({item}){
                   </h5>
                 </CardHeader>
                 <CardBody className="py-0">                  
-                  <CardText className="fs-1 text-primary">{resumeClient.boats  ? resumeClient.boats : <Spinner className="fs-5" color="primary" />}</CardText>
+                  <CardText className="fs-1 text-primary">{resumeClient.boats >= 0  ? resumeClient.boats : <Spinner className="fs-5" color="primary" />}</CardText>
                 </CardBody>
               </Card>
             </Col>
@@ -66,7 +66,7 @@ export function ResumenCliente({item}){
                   </h5>
                 </CardHeader>
                 <CardBody className="py-0">                  
-                  <CardText className="fs-1 text-success">{resumeClient.reservations ? resumeClient.reservations : <Spinner className="fs-5" color="success" />}</CardText>
+                  <CardText className="fs-1 text-success">{resumeClient.reservations >= 0 ? resumeClient.reservations : <Spinner className="fs-5" color="success" />}</CardText>
                 </CardBody>
               </Card>
             </Col>

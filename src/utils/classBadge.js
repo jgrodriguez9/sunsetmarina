@@ -5,7 +5,10 @@ export const classBadge = value => {
         cancelado: 'danger',
         UPDATE: "warning",
         CREATE: 'success',
-        DELETE: 'danger'
+        DELETE: 'danger',
+        PAYED: 'success',
+        BLOCKED: 'danger',
+        RESERVED: 'success'
     }
 
     return objBadge[value] || 'light'

@@ -21,6 +21,7 @@ import ContactClient from "./TabSection/ContactClient";
 import getObjectValid from "../../utils/getObjectValid";
 import DocumentClient from "./TabSection/DocumentClient";
 import SlipReservationClient from "./TabSection/SlipReservationClient";
+import PaymentClient from "./TabSection/PaymentClient";
 
 
 export default function FormCliente({item, btnTextSubmit="Aceptar"}){
@@ -294,7 +295,7 @@ export default function FormCliente({item, btnTextSubmit="Aceptar"}){
                                 <DirectionClient formik={formik} item={item}/>
                             </TabPane>
                             <TabPane tabId="3">
-                                Pagos
+                                <PaymentClient formik={formik}/>
                             </TabPane>
                             <TabPane tabId="4">
                                 <SlipReservationClient formik={formik}/>

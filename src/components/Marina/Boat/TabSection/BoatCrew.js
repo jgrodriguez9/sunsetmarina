@@ -107,12 +107,14 @@ export default function BoatCrew({formik}){
     }
 
     useEffect(() => {
-        if(refetch){
+        if(refetch && formik.values.id){
             setLoadingBoatCrew(true)
             fetchBoatCrewByBoatApi();
             setRefetch(false)
+        }else{
+            setLoadingBoatCrew(false)
         }        
-    }, [refetch]);
+    }, [refetch, formik.values.id]);
 
     const handleDelete = async () => {
         setDeleting(true)   

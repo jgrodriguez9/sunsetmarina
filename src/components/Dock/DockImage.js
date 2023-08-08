@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux";
 import { getSlipList } from "../../helpers/marina/slip";
 import { getClassSlipStatus } from "../../utils/getClassSlipStatus";
 import { slipStatus } from "../../constants/constants";
+import { classBadge } from "../../utils/classBadge";
 
 export default function DockImage(){
     const dispatch = useDispatch();
@@ -25,7 +26,7 @@ export default function DockImage(){
                     </ListGroupItem>
                     <ListGroupItem className="d-flex justify-content-between">
                         <h5 className="m-0">Estado</h5>
-                        <Badge color="success">{slipStatus(slipInfo?.estado)}</Badge>
+                        <Badge color={classBadge(slipInfo?.estado)}>{slipStatus(slipInfo?.estado)}</Badge>
                     </ListGroupItem>
                     {slipInfo?.propietario && 
                     <ListGroupItem className="d-flex justify-content-between">

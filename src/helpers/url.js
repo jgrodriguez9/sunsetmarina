@@ -53,3 +53,9 @@ export const notification = "/notification"
 //slipReservation
 export const slipReservation = '/slipReservation'
 
+//payment
+export const payment = '/payment'
+
+//cargos
+export const charge = '/charge'
+

@@ -15,6 +15,7 @@ import { deleteDocument } from '../../../helpers/marina/document'
 import { getSlipReservationByClient } from "../../../helpers/marina/slipReservation";
 import FormSlipReservationClient from "../../Marina/SlipReservation/FormSlipReservationClient";
 import { numberFormat } from "../../../utils/numberFormat";
+import ChargesCanvas from "../ChargesCanvas";
 
 export default function SlipReservationClient({formik}){
     const dispatch = useDispatch();
@@ -25,6 +26,7 @@ export default function SlipReservationClient({formik}){
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
     const [isDeleting, setDeleting] = useState(false)
     const [selectedIdDelete, setSelectedIdDeleted] = useState(null)
+    const [openCharges, setOpenCharges] = useState(false)
     const [item, setItem] = useState({
         customer: {id: formik.values.id}
     })
@@ -34,7 +36,6 @@ export default function SlipReservationClient({formik}){
     }
 
     const editAction = (row) => {
-        console.log(row)
         const slip = row.original
         setItem((prev) => ({
             ...prev,
@@ -122,6 +123,7 @@ export default function SlipReservationClient({formik}){
                     <CellActions
                         edit={{"allow": true, action: editAction}} 
                         del={{"allow": true, action: handleShowDialogDelete}}
+                        charge={{allow: true, action: handleShowDialogCharge}}
                         row={row}
                     />
                 </>
@@ -138,13 +140,17 @@ export default function SlipReservationClient({formik}){
         setShowDeleteDialog(true)
         setSelectedIdDeleted(row.original.id)
     }
+
+    const handleShowDialogCharge = (row) => {
+        setSelectedIdDeleted(row.original.id)
+        setOpenCharges(true)
+    }
     
 
     const fetchItemsForClientApi = async () => {
         try {
             const query = `?page=1&max=100`
             const response = await getSlipReservationByClient(formik.values.id, query)
-            console.log(response)
             setItems(response.list)
             setLoadingItems(false)
         } catch (error) {
@@ -226,6 +232,12 @@ export default function SlipReservationClient({formik}){
                 show={showDeleteDialog}
                 setShow={setShowDeleteDialog}
                 isDeleting={isDeleting}
+            />
+
+            <ChargesCanvas 
+                reservationId={selectedIdDelete}
+                open={openCharges}
+                setOpen={setOpenCharges}
             />
         </>
     )
