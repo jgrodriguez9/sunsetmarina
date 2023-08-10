@@ -1,10 +1,9 @@
 export const getTranslateAction = (action) => {
-    const objAction = {
-        UPDATE: "Actualizado",
-        CREATE: 'Creado',
-        DELETE: 'Eliminado',
-        PAYED:'Pagado'
-    }
+  const objAction = {
+    UPDATE: "Actualizado",
+    CREATE: "Creado",
+    DELETE: "Eliminado",
+  };
 
-    return objAction[action] || action;
-}
+  return objAction[action] || action;
+};

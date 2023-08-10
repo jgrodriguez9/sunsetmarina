@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useFormik } from "formik";
-import { Alert, Button, Col, Input, Label, Row } from "reactstrap";
+import { useDispatch } from "react-redux";
+import { Link, useHistory } from "react-router-dom";
+import { Alert, Button, Col, Form, Input, Label, Row } from "reactstrap";
 import * as Yup from "yup";
 import {
   ERROR_SERVER,
@@ -9,31 +11,33 @@ import {
   SELECT_OPTION,
   UPDATE_SUCCESS,
 } from "../../../constants/messages";
-import ButtonsDisabled from "../../Common/ButtonsDisabled";
-import SimpleDate from "../../DatePicker/SimpleDate";
-import { useDispatch } from "react-redux";
 import { addMessage } from "../../../redux/messageSlice";
 import extractMeaningfulMessage from "../../../utils/extractMeaningfulMessage";
-import moment from "moment";
+import ButtonsDisabled from "../../Common/ButtonsDisabled";
+import { getMuelleList } from "../../../helpers/catalogos/muelle";
+import { useEffect } from "react";
 import Select from "react-select";
-import { getBoatByClient } from "../../../helpers/marina/boat";
 import { getSlipList } from "../../../helpers/marina/slip";
+import { getClientList } from "../../../helpers/marina/client";
 import {
   getSlipReservationPriceAndValid,
   saveReservation,
   updateReservation,
 } from "../../../helpers/marina/slipReservation";
 import { numberFormat } from "../../../utils/numberFormat";
-import ContentLoader from "../../Loader/ContentLoader";
-import getObjectValid from "../../../utils/getObjectValid";
+import SimpleDate from "../../DatePicker/SimpleDate";
+import moment from "moment";
 import { statusSlipReservation } from "../../../data/statusSlipReservation";
+import ContentLoader from "../../Loader/ContentLoader";
+import { getBoatByClient } from "../../../helpers/marina/boat";
+import getObjectValid from "../../../utils/getObjectValid";
 
-export default function FormSlipReservationClient({
-  item,
-  setOpenModalAdd,
-  setRefetch,
-}) {
+export default function FormReserva({ item, btnTextSubmit = "Aceptar" }) {
+  const history = useHistory();
   const dispatch = useDispatch();
+  const [clientOpt, setClientOpt] = useState([]);
+  const [boatOpt, setBoatOpt] = useState([]);
+  const [slipOpt, setSlipOpt] = useState([]);
   const [arrivalDate, setArrivalDate] = useState(
     item?.arrivalDate ? moment(item?.arrivalDate, "YYYY-MM-DD").toDate() : null
   );
@@ -48,52 +52,58 @@ export default function FormSlipReservationClient({
     checked: false,
   });
 
-  const [boatOpt, setBoatOpt] = useState([]);
-  const [slipOpt, setSlipOpt] = useState([]);
-
-  const fetchBoatApi = async () => {
-    try {
-      const response = await getBoatByClient(item.customer.id);
-      setBoatOpt(
-        response.list
-          .filter((it) => it.status === "AVAILABLE")
-          .map((boat) => ({ label: boat.name, value: boat.id }))
-      );
-    } catch (error) {
-      setBoatOpt([]);
-    }
-  };
-  const fetchSlips = async () => {
-    try {
-      const response = await getSlipList();
-      setSlipOpt(
-        response
-          .filter((it) => it.status === "AVAILABLE")
-          .map((slip) => ({ label: slip.code, value: slip.id }))
-      );
-    } catch (error) {
-      setSlipOpt([]);
-    }
-  };
-
   useEffect(() => {
-    fetchBoatApi();
+    const fetchClients = async () => {
+      try {
+        const response = await getClientList();
+        setClientOpt(
+          response.map((c) => ({
+            label: `${c.name} ${c.lastName}`,
+            value: c.id,
+          }))
+        );
+      } catch (error) {}
+    };
+    fetchClients();
+
+    //slip availables
+    const fetchSlips = async () => {
+      try {
+        const response = await getSlipList();
+        setSlipOpt(
+          response
+            .filter((it) => it.status === "AVAILABLE")
+            .map((slip) => ({ label: slip.code, value: slip.id }))
+        );
+      } catch (error) {
+        setSlipOpt([]);
+      }
+    };
     fetchSlips();
   }, []);
 
   const formik = useFormik({
     initialValues: {
-      id: item?.id ?? "",
       price: item?.price ?? 0,
       observations: item?.observations ?? "",
-      customer: item?.customer ?? { id: "" },
-      boat: item?.boat ?? { id: "" },
-      slip: item?.slip ?? { id: "" },
       arrivalDate: item?.arrivalDate ?? "",
       departureDate: item?.departureDate ?? "",
-      status: item?.status ?? "PENDING",
+      customer: item?.customer ?? {
+        id: "",
+      },
+      boat: item?.boat ?? {
+        id: "",
+      },
+      slip: item?.slip ?? {
+        id: "",
+      },
     },
     validationSchema: Yup.object({
+      arrivalDate: Yup.string().required(FIELD_REQUIRED),
+      departureDate: Yup.string().required(FIELD_REQUIRED),
+      customer: Yup.object({
+        id: Yup.number().required(FIELD_REQUIRED),
+      }),
       boat: Yup.object({
         id: Yup.number().required(FIELD_REQUIRED),
       }),
@@ -103,6 +113,7 @@ export default function FormSlipReservationClient({
     }),
     onSubmit: async (values) => {
       //validaciones antes de enviarlo
+      console.log(values);
       const data = {};
       Object.entries(getObjectValid(values)).forEach((entry) => {
         const [key, value] = entry;
@@ -114,7 +125,6 @@ export default function FormSlipReservationClient({
           data[key] = value;
         }
       });
-
       if (values.id) {
         //update
         try {
@@ -126,8 +136,7 @@ export default function FormSlipReservationClient({
                 message: UPDATE_SUCCESS,
               })
             );
-            setOpenModalAdd(false);
-            setRefetch(true);
+            history.push("/slip");
           } else {
             dispatch(
               addMessage({
@@ -157,8 +166,7 @@ export default function FormSlipReservationClient({
                 message: SAVE_SUCCESS,
               })
             );
-            setOpenModalAdd(false);
-            setRefetch(true);
+            history.push("/reservation");
           } else {
             dispatch(
               addMessage({
@@ -180,6 +188,25 @@ export default function FormSlipReservationClient({
       }
     },
   });
+
+  //checamos bote del cliente
+  useEffect(() => {
+    const fetchBoatClientApi = async () => {
+      try {
+        const response = await getBoatByClient(formik.values.customer.id);
+        setBoatOpt(
+          response.list
+            .filter((it) => it.status === "AVAILABLE")
+            .map((boat) => ({ label: boat.name, value: boat.id }))
+        );
+      } catch (error) {
+        setBoatOpt([]);
+      }
+    };
+    if (formik.values.customer.id) {
+      fetchBoatClientApi();
+    }
+  }, [formik.values.customer.id]);
 
   //checamos precio y si es valid el slip
   useEffect(() => {
@@ -226,8 +253,17 @@ export default function FormSlipReservationClient({
   const onOpen = (selectedDates, dateStr, instance) => {
     instance.set("minDate", formik.values.arrivalDate);
   };
+
   return (
-    <div className="needs-validation position-relative">
+    <Form
+      className="needs-validation"
+      id="tooltipForm"
+      onSubmit={(e) => {
+        e.preventDefault();
+        formik.handleSubmit();
+        return false;
+      }}
+    >
       {checkValidationSlip.loading && (
         <ContentLoader text="Checando validez del slip" />
       )}
@@ -246,9 +282,38 @@ export default function FormSlipReservationClient({
         </Row>
       )}
       <Row>
-        <Col xs="12" md="4">
+        <Col xs="12" md="3">
           <div className="mb-3">
-            <Label htmlFor="boatType" className="mb-0">
+            <Label htmlFor="client" className="mb-0">
+              Cliente
+            </Label>
+            <Select
+              value={
+                formik.values.customer?.id
+                  ? {
+                      value: formik.values.customer.id,
+                      label: formik.values.customer.label,
+                    }
+                  : null
+              }
+              onChange={(value) => {
+                formik.setFieldValue("customer.id", value?.value ?? "");
+                formik.setFieldValue("customer.label", value?.label ?? "");
+              }}
+              options={clientOpt}
+              classNamePrefix="select2-selection"
+              placeholder={SELECT_OPTION}
+            />
+            {formik.errors.customer?.id && (
+              <div className="invalid-tooltip d-block">
+                {formik.errors.customer?.id}
+              </div>
+            )}
+          </div>
+        </Col>
+        <Col xs="12" md="3">
+          <div className="mb-3">
+            <Label htmlFor="client" className="mb-0">
               Embarcación
             </Label>
             <Select
@@ -256,14 +321,13 @@ export default function FormSlipReservationClient({
                 formik.values.boat?.id
                   ? {
                       value: formik.values.boat.id,
-                      label:
-                        boatOpt.find((it) => it.value === formik.values.boat.id)
-                          ?.label ?? "",
+                      label: formik.values.boat.label,
                     }
                   : null
               }
               onChange={(value) => {
                 formik.setFieldValue("boat.id", value?.value ?? "");
+                formik.setFieldValue("boat.label", value?.label ?? "");
               }}
               options={boatOpt}
               classNamePrefix="select2-selection"
@@ -271,14 +335,14 @@ export default function FormSlipReservationClient({
             />
             {formik.errors.boat?.id && (
               <div className="invalid-tooltip d-block">
-                {formik.errors.boat.id}
+                {formik.errors.boat?.id}
               </div>
             )}
           </div>
         </Col>
-        <Col xs="12" md="4">
+        <Col xs="12" md="3">
           <div className="mb-3">
-            <Label htmlFor="boatType" className="mb-0">
+            <Label htmlFor="slip" className="mb-0">
               Slip
             </Label>
             <Select
@@ -286,27 +350,26 @@ export default function FormSlipReservationClient({
                 formik.values.slip?.id
                   ? {
                       value: formik.values.slip.id,
-                      label:
-                        slipOpt.find((it) => it.value === formik.values.slip.id)
-                          ?.label ?? "",
+                      label: formik.values.slip.label,
                     }
                   : null
               }
               onChange={(value) => {
                 formik.setFieldValue("slip.id", value?.value ?? "");
+                formik.setFieldValue("slip.label", value?.label ?? "");
               }}
               options={slipOpt}
               classNamePrefix="select2-selection"
               placeholder={SELECT_OPTION}
             />
-            {formik.errors.documentType && (
+            {formik.errors.slip?.id && (
               <div className="invalid-tooltip d-block">
-                {formik.errors.documentType}
+                {formik.errors.slip?.id}
               </div>
             )}
           </div>
         </Col>
-        <Col xs="12" md="4">
+        <Col xs="12" md="3">
           <div className="mb-3">
             <Label htmlFor="price" className="mb-0">
               Precio diario
@@ -318,7 +381,7 @@ export default function FormSlipReservationClient({
         </Col>
       </Row>
       <Row>
-        <Col xs="12" md="4">
+        <Col xs="12" md="3">
           <div className="mb-3">
             <Label htmlFor="price" className="mb-0">
               Fecha inicio
@@ -337,7 +400,7 @@ export default function FormSlipReservationClient({
             />
           </div>
         </Col>
-        <Col xs="12" md="4">
+        <Col xs="12" md="3">
           <div className="mb-3">
             <Label htmlFor="price" className="mb-0">
               Fecha terminación
@@ -357,7 +420,7 @@ export default function FormSlipReservationClient({
             />
           </div>
         </Col>
-        <Col xs="12" md="4">
+        <Col xs="12" md="3">
           <Label className="mb-0 d-block">Estado</Label>
           <Select
             value={
@@ -380,7 +443,7 @@ export default function FormSlipReservationClient({
         </Col>
       </Row>
       <Row>
-        <Col xs="12" md="8">
+        <Col xs="12" md="6">
           <Label htmlFor="observations" className="mb-0">
             Observación
           </Label>
@@ -400,22 +463,36 @@ export default function FormSlipReservationClient({
       {formik.isSubmitting ? (
         <ButtonsDisabled
           buttons={[
-            { text: "Aceptar", color: "primary", className: "", loader: true },
+            {
+              text: btnTextSubmit,
+              color: "primary",
+              className: "",
+              loader: true,
+            },
+            {
+              text: "Cancelar",
+              color: "link",
+              className: "text-danger",
+              loader: false,
+            },
           ]}
         />
       ) : (
-        <Button
-          color="primary"
-          disabled={!checkValidationSlip.isValid}
-          type="button"
-          className="me-2"
-          onClick={
-            checkValidationSlip.isValid ? () => formik.handleSubmit() : () => {}
-          }
-        >
-          {formik.values.id ? "Actualizar" : "Aceptar"}
-        </Button>
+        <div className="d-flex">
+          {!checkValidationSlip.isValid ? (
+            <Button color="primary" disabled type="button" className="me-2">
+              {btnTextSubmit}
+            </Button>
+          ) : (
+            <Button color="primary" type="submit" className="me-2">
+              {btnTextSubmit}
+            </Button>
+          )}
+          <Link to="/reservation" className="btn btn-danger">
+            Cancelar
+          </Link>
+        </div>
       )}
-    </div>
+    </Form>
   );
 }
