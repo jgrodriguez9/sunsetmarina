@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useMemo } from "react";
-import { Badge, Button, Card, CardBody } from "reactstrap";
+import { Badge, Card, CardBody } from "reactstrap";
 import { lastTransaction } from "../../data/testData";
-import { classBadge } from "../../utils/classBadge";
 import SimpleTable from "../Tables/SimpleTable";
 import moment from "moment";
 import { numberFormat } from "../../utils/numberFormat";
@@ -75,7 +74,7 @@ export default function UltimasTransacciones() {
           if (value === "PENDING") {
             return <Badge color="warning">Pendiente</Badge>;
           } else if (value === "APPROVED") {
-            return <Badge color="success">Aprovado</Badge>;
+            return <Badge color="success">Aprobado</Badge>;
           } else {
             return <Badge color="danger">Cancelado</Badge>;
           }

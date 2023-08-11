@@ -42,6 +42,7 @@ import Notifications from "../pages/Catalogos/Notifications";
 import EditNotifications from "../pages/Catalogos/Notifications/Edit";
 import Reservation from "../pages/Marina/Reservation";
 import CreateReservation from "../pages/Marina/Reservation/Create";
+import EditReservation from "../pages/Marina/Reservation/Edit";
 
 const authProtectedRoutes = [
   { path: "/logout", component: Logout },
@@ -127,7 +128,7 @@ const adminRoutes = [
   //reservation
   { path: "/reservation", exact: true, component: Reservation },
   { path: "/reservation/create", exact: true, component: CreateReservation },
-  // { path: "/boatcrew/edit/:id", exact: true, component: EditBoatCrew },
+  { path: "/reservation/edit/:id", exact: true, component: EditReservation },
 
   //contabilidad
   //estado de cuenta

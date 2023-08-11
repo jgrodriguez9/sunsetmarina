@@ -5,6 +5,8 @@ const translateUtils = (texto) => {
     BLOCKED: "Bloqueado",
     PENDING: "Pendiente",
     PAYED: "Pagado",
+    CONFIRMED: "Confirmada",
+    CANCELLED: "Cancelada",
   };
 
   return obj[texto] || texto;

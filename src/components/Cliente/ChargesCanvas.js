@@ -26,12 +26,15 @@ const getTotalToPay = (charges) => {
     .reduce((acc, cValue) => acc + cValue.amount + cValue.interest, 0);
 };
 
-const ChargesCanvas = ({ reservationId, open, setOpen }) => {
+const ChargesCanvas = ({ reservationId, open, setOpen, customerId }) => {
   const [charge, setCharge] = useState([]);
   const [total, setTotal] = useState(null);
   const [loading, setLoading] = useState(false);
   const [desde, setDesde] = useState(null);
   const [hasta, setHasta] = useState(null);
+  const [chargesToPay, setChargesToPay] = useState([]);
+  const [concept, setConcept] = useState("");
+  const [reference, setReference] = useState("");
 
   useEffect(() => {
     const fecthChargesByReservation = async () => {
@@ -45,8 +48,10 @@ const ChargesCanvas = ({ reservationId, open, setOpen }) => {
           monthYear: it.monthYear,
           checked: true,
           disabled: it.status === "PAYED",
+          fullMonth: true,
         }));
         setCharge(list);
+        setChargesToPay(list);
         setTotal(getTotalToPay(list));
         setLoading(false);
         const firstCharge = list.find((it) => it.status !== "PAYED");
@@ -73,6 +78,24 @@ const ChargesCanvas = ({ reservationId, open, setOpen }) => {
 
   const toggle = () => {
     setOpen(!open);
+  };
+
+  const onHandlePayment = () => {
+    const data = {
+      payment: {
+        amount: total,
+        concept: concept,
+        reference: reference,
+        customer: {
+          id: customerId,
+        },
+        systemId: 777084,
+        systemPayment: "RESERVATION",
+      },
+      charges: chargesToPay,
+    };
+
+    console.log(data);
   };
 
   return (
@@ -109,7 +132,7 @@ const ChargesCanvas = ({ reservationId, open, setOpen }) => {
                         </strong>
                       </div>
                     </div>
-                    <div className="d-flex justify-content-between align-items-center mb-4">
+                    <div className="d-flex justify-content-between align-items-center mb-2">
                       <div>Hasta</div>
                       {hasta ? (
                         <div>
@@ -164,6 +187,31 @@ const ChargesCanvas = ({ reservationId, open, setOpen }) => {
                         <strong>-</strong>
                       )}
                     </div>
+                    <div className="mb-2">
+                      <Label htmlFor="concept" className="mb-0 fw-normal">
+                        Concepto (Opcional)
+                      </Label>
+                      <Input
+                        id="concept"
+                        name="concept"
+                        className="form-control"
+                        onChange={(e) => setConcept(e.target.value)}
+                        value={concept}
+                      />
+                    </div>
+                    <div className="mb-2">
+                      <Label htmlFor="concept" className="mb-0 fw-normal">
+                        Referencia (Opcional)
+                      </Label>
+                      <Input
+                        id="concept"
+                        name="concept"
+                        className="form-control"
+                        onChange={(e) => setReference(e.target.value)}
+                        value={reference}
+                      />
+                    </div>
+
                     <div className="d-flex justify-content-between align-items-center mt-5">
                       <div>
                         <span>
@@ -186,6 +234,7 @@ const ChargesCanvas = ({ reservationId, open, setOpen }) => {
                         className="fs-4"
                         disabled={total <= 0}
                         block
+                        onClick={onHandlePayment}
                       >
                         Pagar
                       </Button>

@@ -2,25 +2,33 @@ import { useEffect } from "react";
 import { useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory, withRouter } from "react-router-dom";
-import { Col, Container, Row } from "reactstrap";
+import { Badge, Col, Container, Row } from "reactstrap";
 import Breadcrumbs from "../../../components/Common/Breadcrumbs";
 import CardBasic from "../../../components/Common/CardBasic";
 import CardMain from "../../../components/Common/CardMain";
-import DeleteDialog from "../../../components/Common/DeleteDialog";
 import FormFilter from "../../../components/Common/FormFilter";
 import TableLoader from "../../../components/Loader/TablaLoader";
 import CellActions from "../../../components/Tables/CellActions";
 import Paginate from "../../../components/Tables/Paginate";
 import SimpleTable from "../../../components/Tables/SimpleTable";
-import { DELETE_SUCCESS, ERROR_SERVER } from "../../../constants/messages";
+import {
+  CANCEL_RESERVATION_SUCCESS,
+  DELETE_QUESTION_CONFIRMATION,
+  ERROR_SERVER,
+} from "../../../constants/messages";
 import { addMessage } from "../../../redux/messageSlice";
 import extractMeaningfulMessage from "../../../utils/extractMeaningfulMessage";
-import { deleteBoat, getBoatList } from "../../../helpers/marina/boat";
+import { getBoatList } from "../../../helpers/marina/boat";
 import moment from "moment";
-import { getReservationListPaginado } from "../../../helpers/marina/slipReservation";
+import {
+  getReservationListPaginado,
+  updateReservation,
+} from "../../../helpers/marina/slipReservation";
 import { numberFormat } from "../../../utils/numberFormat";
 import { getClientList } from "../../../helpers/marina/client";
 import { getSlipList } from "../../../helpers/marina/slip";
+import DialogMain from "../../../components/Common/DialogMain";
+import ContentLoader from "../../../components/Loader/ContentLoader";
 
 function Reservation() {
   const dispatch = useDispatch();
@@ -29,9 +37,9 @@ function Reservation() {
   const [totalPaginas, setTotalPaginas] = useState(0);
   const [totalRegistros, setTotalRegistros] = useState(10);
   const history = useHistory();
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [isDeleting, setDeleting] = useState(false);
-  const [selectedIdDelete, setSelectedIdDeleted] = useState(null);
+  const [selectedReservation, setSelectedReservation] = useState(null);
+  const [openModalCancel, setOpenModalCancel] = useState(false);
+  const [isCancel, setIsCancel] = useState(false);
   const [query, setQuery] = useState({
     max: totalRegistros,
     page: 1,
@@ -163,29 +171,21 @@ function Reservation() {
         Header: "Código",
         accessor: "code",
         style: {
-          width: "15%",
+          width: "13%",
         },
       },
       {
         Header: "Slip",
         accessor: "slip.code",
         style: {
-          width: "10%",
+          width: "8%",
         },
-      },
-      {
-        Header: "Precio diario",
-        accessor: "price",
-        style: {
-          width: "10%",
-        },
-        Cell: ({ value }) => numberFormat(value),
       },
       {
         Header: "Cliente",
         accessor: "customer.name",
         style: {
-          width: "20%",
+          width: "15%",
         },
         Cell: ({ row, value }) => `${value} ${row.original.customer.lastName}`,
       },
@@ -193,7 +193,7 @@ function Reservation() {
         Header: "Embarcación",
         accessor: "boat.name",
         style: {
-          width: "15%",
+          width: "12%",
         },
       },
       {
@@ -215,28 +215,71 @@ function Reservation() {
           moment(value, "YYYY-MM-DD").format("DD-MM-YYYY"),
       },
       {
+        Header: "Precio diario",
+        accessor: "price",
+        style: {
+          width: "10%",
+        },
+        Cell: ({ value }) => numberFormat(value),
+      },
+      {
+        Header: "Deuda",
+        accessor: "debt",
+        style: {
+          width: "7%",
+        },
+        Cell: ({ row, value }) =>
+          row.original.status === "CONFIRMED" ? (
+            <span className={value > 0 ? "text-danger" : "text-success"}>
+              {numberFormat(value)}
+            </span>
+          ) : (
+            numberFormat(value)
+          ),
+      },
+      {
+        Header: "Estado",
+        accessor: "status",
+        style: {
+          width: "8%",
+        },
+        Cell: ({ value }) => {
+          if (value === "PENDING") {
+            return <Badge color="warning">Pendiente</Badge>;
+          } else if (value === "CONFIRMED") {
+            return <Badge color="success">Confirmada</Badge>;
+          } else {
+            return <Badge color="danger">Cancelada</Badge>;
+          }
+        },
+      },
+      {
         id: "acciones",
         Header: "Acciones",
         Cell: ({ row }) => (
           <>
             <CellActions
               edit={{ allow: true, action: editAction }}
-              del={{ allow: true, action: handleShowDialogDelete }}
+              cancel={
+                row.original.status === "CANCELLED"
+                  ? null
+                  : { allow: true, action: handleShowDialogCancel }
+              }
               row={row}
             />
           </>
         ),
         style: {
-          width: "10%",
+          width: "7%",
         },
       },
     ],
     []
   );
 
-  const handleShowDialogDelete = (row) => {
-    setShowDeleteDialog(true);
-    setSelectedIdDeleted(row.original.id);
+  const handleShowDialogCancel = (row) => {
+    setOpenModalCancel(true);
+    setSelectedReservation(row.original);
   };
 
   const handlePageClick = (page) => {
@@ -273,19 +316,36 @@ function Reservation() {
     history.push("/reservation/create");
   };
 
-  const handleDelete = async () => {
-    setDeleting(true);
+  const onCloseCancel = () => {
+    setOpenModalCancel(false);
+  };
+
+  const handleCancelar = async () => {
+    setIsCancel(true);
     try {
-      await deleteBoat(selectedIdDelete);
-      fetchList();
-      setDeleting(false);
-      setShowDeleteDialog(false);
-      dispatch(
-        addMessage({
-          message: DELETE_SUCCESS,
-          type: "success",
-        })
-      );
+      const data = {
+        id: selectedReservation.id,
+        status: "CANCELLED",
+      };
+      const response = await updateReservation(data.id, data);
+      if (response) {
+        fetchList();
+        setOpenModalCancel(false);
+        dispatch(
+          addMessage({
+            message: CANCEL_RESERVATION_SUCCESS,
+            type: "success",
+          })
+        );
+      } else {
+        dispatch(
+          addMessage({
+            type: "error",
+            message: ERROR_SERVER,
+          })
+        );
+      }
+      setIsCancel(false);
     } catch (error) {
       let message = ERROR_SERVER;
       message = extractMeaningfulMessage(error, message);
@@ -295,7 +355,7 @@ function Reservation() {
           type: "error",
         })
       );
-      setDeleting(false);
+      setIsCancel(false);
     }
   };
 
@@ -304,14 +364,16 @@ function Reservation() {
       <Col xs="12" xl="12">
         <TableLoader
           columns={[
-            { name: "Código", width: "15%" },
-            { name: "Slip", width: "10%" },
-            { name: "Precio diario", width: "10%" },
-            { name: "Cliente", width: "20%" },
-            { name: "Embarcación", width: "15%" },
+            { name: "Código", width: "13%" },
+            { name: "Slip", width: "8%" },
+            { name: "Cliente", width: "15%" },
+            { name: "Embarcación", width: "12%" },
             { name: "Fecha llegada", width: "10%" },
             { name: "Fecha salida", width: "10%" },
-            { name: "Acciones", width: "10%" },
+            { name: "Precio diario", width: "10%" },
+            { name: "Deuda", width: "7%" },
+            { name: "Estado", width: "8%" },
+            { name: "Acciones", width: "7%" },
           ]}
         />
       </Col>
@@ -373,14 +435,80 @@ function Reservation() {
           </Row>
         </Container>
       </div>
-      <DeleteDialog
-        handleDelete={handleDelete}
-        show={showDeleteDialog}
-        setShow={setShowDeleteDialog}
-        isDeleting={isDeleting}
+      <DialogMain
+        open={openModalCancel}
+        setOpen={setOpenModalCancel}
+        title={"Cancelar reservación"}
+        size="md"
+        children={
+          selectedReservation
+            ? selectedReservation?.debt > 0
+              ? contentDialogNotCancel
+              : contentDialogCancel(isCancel, onCloseCancel, handleCancelar)
+            : null
+        }
       />
     </>
   );
 }
 
 export default withRouter(Reservation);
+
+const contentDialogNotCancel = (
+  <>
+    <Row>
+      <Col lg={12}>
+        <div className="text-center">
+          <i
+            className="mdi mdi-alert-circle-outline"
+            style={{ fontSize: "9em", color: "orange" }}
+          />
+          <h4>Debe pagar su deuda antes de cancelar la reservación</h4>
+        </div>
+      </Col>
+    </Row>
+  </>
+);
+
+const contentDialogCancel = (isCancel, onCloseCancel, handleCancelar) => (
+  <>
+    {isCancel && <ContentLoader text="Cancelando reservación..." />}
+    <Row>
+      <Col lg={12}>
+        <div className="text-center">
+          <i
+            className="mdi mdi-alert-circle-outline"
+            style={{ fontSize: "9em", color: "orange" }}
+          />
+          <h2>¿Estas seguro de cancelar la reservación</h2>
+          <h4>{DELETE_QUESTION_CONFIRMATION}</h4>
+        </div>
+      </Col>
+    </Row>
+    <Row>
+      <Col>
+        {isCancel ? (
+          <div className="text-center mt-3">
+            <button
+              type="button"
+              className="btn btn-danger btn-lg ms-2"
+              disabled
+            >
+              ¡Sí, cancelar reservación!
+            </button>
+          </div>
+        ) : (
+          <div className="text-center mt-3">
+            <button
+              type="button"
+              className="btn btn-danger btn-lg ms-2"
+              onClick={handleCancelar}
+            >
+              ¡Sí, cancelar reservación!
+            </button>
+          </div>
+        )}
+      </Col>
+    </Row>
+  </>
+);

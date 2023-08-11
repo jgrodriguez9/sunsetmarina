@@ -3,21 +3,25 @@ import TabActionHeader from "../Common/TabActionHeader";
 import DialogMain from "../../Common/DialogMain";
 import { useEffect, useMemo, useState } from "react";
 import SimpleTable from "../../Tables/SimpleTable";
-import { DELETE_SUCCESS, ERROR_SERVER } from "../../../constants/messages";
+import {
+  CANCEL_RESERVATION_SUCCESS,
+  DELETE_QUESTION_CONFIRMATION,
+  ERROR_SERVER,
+} from "../../../constants/messages";
 import extractMeaningfulMessage from "../../../utils/extractMeaningfulMessage";
 import { addMessage } from "../../../redux/messageSlice";
 import { useDispatch } from "react-redux";
 import TableLoader from "../../Loader/TablaLoader";
 import moment from "moment";
 import CellActions from "../../Tables/CellActions";
-import DeleteDialog from "../../Common/DeleteDialog";
 import {
-  deleteReservation,
   getSlipReservationByClient,
+  updateReservation,
 } from "../../../helpers/marina/slipReservation";
 import FormSlipReservationClient from "../../Marina/SlipReservation/FormSlipReservationClient";
 import { numberFormat } from "../../../utils/numberFormat";
 import ChargesCanvas from "../ChargesCanvas";
+import ContentLoader from "../../Loader/ContentLoader";
 
 export default function SlipReservationClient({ formik }) {
   const dispatch = useDispatch();
@@ -25,10 +29,10 @@ export default function SlipReservationClient({ formik }) {
   const [openModalAdd, setOpenModalAdd] = useState(false);
   const [items, setItems] = useState([]);
   const [refetch, setRefetch] = useState(true);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [isDeleting, setDeleting] = useState(false);
-  const [selectedIdDelete, setSelectedIdDeleted] = useState(null);
+  const [selectedReservation, setSelectedReservation] = useState(null);
   const [openCharges, setOpenCharges] = useState(false);
+  const [openModalCancel, setOpenModalCancel] = useState(false);
+  const [isCancel, setIsCancel] = useState(false);
   const [item, setItem] = useState({
     customer: { id: formik.values.id },
   });
@@ -81,7 +85,7 @@ export default function SlipReservationClient({ formik }) {
         Header: "Fecha llegada",
         accessor: "arrivalDate",
         style: {
-          width: "15%",
+          width: "10%",
         },
         Cell: ({ value }) => moment(value, "YYYY-MM-DD").format("DD-MM-YYYY"),
       },
@@ -89,7 +93,7 @@ export default function SlipReservationClient({ formik }) {
         Header: "Fecha salida",
         accessor: "departureDate",
         style: {
-          width: "15%",
+          width: "10%",
         },
         Cell: ({ value }) => moment(value, "YYYY-MM-DD").format("DD-MM-YYYY"),
       },
@@ -100,6 +104,21 @@ export default function SlipReservationClient({ formik }) {
           width: "10%",
         },
         Cell: ({ value }) => numberFormat(value),
+      },
+      {
+        Header: "Deuda",
+        accessor: "debt",
+        style: {
+          width: "10%",
+        },
+        Cell: ({ row, value }) =>
+          row.original.status === "CONFIRMED" ? (
+            <span className={value > 0 ? "text-danger" : "text-success"}>
+              {numberFormat(value)}
+            </span>
+          ) : (
+            numberFormat(value)
+          ),
       },
       {
         Header: "Estado",
@@ -123,8 +142,16 @@ export default function SlipReservationClient({ formik }) {
         Cell: ({ row }) => (
           <>
             <CellActions
-              edit={{ allow: true, action: editAction }}
-              del={{ allow: true, action: handleShowDialogDelete }}
+              edit={
+                row.original.status === "CANCELLED"
+                  ? null
+                  : { allow: true, action: editAction }
+              }
+              cancel={
+                row.original.status === "CANCELLED"
+                  ? null
+                  : { allow: true, action: handleShowDialogCancel }
+              }
               charge={{ allow: true, action: handleShowDialogCharge }}
               row={row}
             />
@@ -138,13 +165,13 @@ export default function SlipReservationClient({ formik }) {
     []
   );
 
-  const handleShowDialogDelete = (row) => {
-    setShowDeleteDialog(true);
-    setSelectedIdDeleted(row.original.id);
+  const handleShowDialogCancel = (row) => {
+    setOpenModalCancel(true);
+    setSelectedReservation(row.original);
   };
 
   const handleShowDialogCharge = (row) => {
-    setSelectedIdDeleted(row.original.id);
+    setSelectedReservation(row.original);
     setOpenCharges(true);
   };
 
@@ -171,19 +198,36 @@ export default function SlipReservationClient({ formik }) {
     }
   }, [refetch]);
 
-  const handleDelete = async () => {
-    setDeleting(true);
+  const onCloseCancel = () => {
+    setOpenModalCancel(false);
+  };
+
+  const handleCancelar = async () => {
+    setIsCancel(true);
     try {
-      await deleteReservation(selectedIdDelete);
-      setRefetch(true);
-      setDeleting(false);
-      setShowDeleteDialog(false);
-      dispatch(
-        addMessage({
-          message: DELETE_SUCCESS,
-          type: "success",
-        })
-      );
+      const data = {
+        id: selectedReservation.id,
+        status: "CANCELLED",
+      };
+      const response = await updateReservation(data.id, data);
+      if (response) {
+        setRefetch(true);
+        setOpenModalCancel(false);
+        dispatch(
+          addMessage({
+            message: CANCEL_RESERVATION_SUCCESS,
+            type: "success",
+          })
+        );
+      } else {
+        dispatch(
+          addMessage({
+            type: "error",
+            message: ERROR_SERVER,
+          })
+        );
+      }
+      setIsCancel(false);
     } catch (error) {
       let message = ERROR_SERVER;
       message = extractMeaningfulMessage(error, message);
@@ -193,7 +237,7 @@ export default function SlipReservationClient({ formik }) {
           type: "error",
         })
       );
-      setDeleting(false);
+      setIsCancel(false);
     }
   };
 
@@ -210,9 +254,14 @@ export default function SlipReservationClient({ formik }) {
           {loadingItems ? (
             <TableLoader
               columns={[
-                { name: "Tipo documento", width: "30%" },
-                { name: "Comentario", width: "40%" },
-                { name: "Fecha recordatorio", width: "20%" },
+                { name: "Código", width: "15%" },
+                { name: "Slip", width: "10%" },
+                { name: "Embarcación", width: "15%" },
+                { name: "Fecha llegada", width: "10%" },
+                { name: "Fecha salida", width: "10%" },
+                { name: "Precio diario", width: "10%" },
+                { name: "Deuda", width: "10%" },
+                { name: "Estado", width: "10%" },
                 { name: "Acciones", width: "10%" },
               ]}
             />
@@ -237,18 +286,85 @@ export default function SlipReservationClient({ formik }) {
         }
       />
 
-      <DeleteDialog
-        handleDelete={handleDelete}
-        show={showDeleteDialog}
-        setShow={setShowDeleteDialog}
-        isDeleting={isDeleting}
-      />
-
       <ChargesCanvas
-        reservationId={selectedIdDelete}
+        reservationId={selectedReservation?.id}
+        customerId={formik.values.id}
         open={openCharges}
         setOpen={setOpenCharges}
+      />
+
+      <DialogMain
+        open={openModalCancel}
+        setOpen={setOpenModalCancel}
+        title={"Cancelar reservación"}
+        size="md"
+        children={
+          selectedReservation
+            ? selectedReservation?.debt > 0
+              ? contentDialogNotCancel
+              : contentDialogCancel(isCancel, onCloseCancel, handleCancelar)
+            : null
+        }
       />
     </>
   );
 }
+
+const contentDialogNotCancel = (
+  <>
+    <Row>
+      <Col lg={12}>
+        <div className="text-center">
+          <i
+            className="mdi mdi-alert-circle-outline"
+            style={{ fontSize: "9em", color: "orange" }}
+          />
+          <h4>Debe pagar su deuda antes de cancelar la reservación</h4>
+        </div>
+      </Col>
+    </Row>
+  </>
+);
+
+const contentDialogCancel = (isCancel, onCloseCancel, handleCancelar) => (
+  <>
+    {isCancel && <ContentLoader text="Cancelando reservación..." />}
+    <Row>
+      <Col lg={12}>
+        <div className="text-center">
+          <i
+            className="mdi mdi-alert-circle-outline"
+            style={{ fontSize: "9em", color: "orange" }}
+          />
+          <h2>¿Estas seguro de cancelar la reservación</h2>
+          <h4>{DELETE_QUESTION_CONFIRMATION}</h4>
+        </div>
+      </Col>
+    </Row>
+    <Row>
+      <Col>
+        {isCancel ? (
+          <div className="text-center mt-3">
+            <button
+              type="button"
+              className="btn btn-danger btn-lg ms-2"
+              disabled
+            >
+              ¡Sí, cancelar reservación!
+            </button>
+          </div>
+        ) : (
+          <div className="text-center mt-3">
+            <button
+              type="button"
+              className="btn btn-danger btn-lg ms-2"
+              onClick={handleCancelar}
+            >
+              ¡Sí, cancelar reservación!
+            </button>
+          </div>
+        )}
+      </Col>
+    </Row>
+  </>
+);
