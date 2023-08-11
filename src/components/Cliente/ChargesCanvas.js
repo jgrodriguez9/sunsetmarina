@@ -18,15 +18,40 @@ import Select from "react-select";
 import moment from "moment";
 import "moment/locale/es";
 import TooltipDescription from "../Common/TooltipDescription";
+import { savePayment } from "../../helpers/marina/payment";
+import { ERROR_SERVER } from "../../constants/messages";
+import extractMeaningfulMessage from "../../utils/extractMeaningfulMessage";
+import { addMessage } from "../../redux/messageSlice";
+import { useDispatch } from "react-redux";
+import ButtonsDisabled from "../Common/ButtonsDisabled";
+import SuccessPaymentDialog from "../Common/SuccessPaymentDialog";
 moment.locale("es");
 
-const getTotalToPay = (charges) => {
-  return charges
-    .filter((it) => it.status !== "PAYED")
-    .reduce((acc, cValue) => acc + cValue.amount + cValue.interest, 0);
+const getTotalToPay = (charges, isFullMonth) => {
+  if (isFullMonth) {
+    return charges.reduce(
+      (acc, cValue) => acc + cValue.totalMonth + cValue.interest,
+      0
+    );
+  } else {
+    if (charges.length === 1) {
+      return charges[0].amount + charges[0].interest;
+    } else {
+      const sumTotal = charges
+        .filter((it, idx) => idx < charges.length - 1)
+        .reduce((acc, cValue) => acc + cValue.totalMonth + cValue.interest, 0);
+
+      return (
+        sumTotal +
+        (charges[charges.length - 1].amount +
+          charges[charges.length - 1].interest)
+      );
+    }
+  }
 };
 
-const ChargesCanvas = ({ reservationId, open, setOpen, customerId }) => {
+const ChargesCanvas = ({ reservation, open, setOpen, customerId }) => {
+  console.log(reservation);
   const [charge, setCharge] = useState([]);
   const [total, setTotal] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -35,34 +60,39 @@ const ChargesCanvas = ({ reservationId, open, setOpen, customerId }) => {
   const [chargesToPay, setChargesToPay] = useState([]);
   const [concept, setConcept] = useState("");
   const [reference, setReference] = useState("");
+  const [finalizarReserva, setFinalizarReserva] = useState(false);
+  const dispatch = useDispatch();
+  const [isPaying, setIsPaying] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(true);
 
   useEffect(() => {
     const fecthChargesByReservation = async () => {
       try {
-        const response = await getChargeByReservation(reservationId);
-        const list = response.list.map((it) => ({
-          id: it.id,
-          amount: it.amount,
-          interest: it.interest,
-          status: it.status,
-          monthYear: it.monthYear,
-          checked: true,
-          disabled: it.status === "PAYED",
-          fullMonth: true,
-        }));
+        const response = await getChargeByReservation(reservation.id);
+        const list = response.list
+          .filter((it) => it.status !== "PAYED")
+          .map((it) => ({
+            id: it.id,
+            amount: it.amount,
+            interest: it.interest,
+            status: it.status,
+            monthYear: it.monthYear,
+            fullMonth: true,
+            totalMonth: it.totalMonth,
+          }));
         setCharge(list);
         setChargesToPay(list);
-        setTotal(getTotalToPay(list));
+        setTotal(getTotalToPay(list, true));
         setLoading(false);
-        const firstCharge = list.find((it) => it.status !== "PAYED");
-        if (firstCharge) {
+
+        if (list.length > 0) {
           setDesde({
-            id: firstCharge.id,
-            date: firstCharge.monthYear,
+            id: list[0].id,
+            date: list[0].monthYear,
           });
           setHasta({
-            id: firstCharge.id,
-            date: firstCharge.monthYear,
+            id: list[0].id,
+            date: list[0].monthYear,
           });
         }
       } catch (error) {
@@ -70,17 +100,17 @@ const ChargesCanvas = ({ reservationId, open, setOpen, customerId }) => {
         setLoading(false);
       }
     };
-    if (reservationId) {
+    if (reservation?.id) {
       setLoading(true);
       fecthChargesByReservation();
     }
-  }, [reservationId]);
+  }, [reservation?.id]);
 
   const toggle = () => {
     setOpen(!open);
   };
 
-  const onHandlePayment = () => {
+  const onHandlePayment = async () => {
     const data = {
       payment: {
         amount: total,
@@ -96,7 +126,36 @@ const ChargesCanvas = ({ reservationId, open, setOpen, customerId }) => {
     };
 
     console.log(data);
+
+    try {
+      const response = await savePayment(data);
+    } catch (error) {
+      let message = ERROR_SERVER;
+      message = extractMeaningfulMessage(error, message);
+      dispatch(
+        addMessage({
+          message: message,
+          type: "error",
+        })
+      );
+    }
   };
+
+  const onHandleChangeFinalizarReserva = (isFinalizar) => {
+    console.log(isFinalizar);
+    setFinalizarReserva(isFinalizar);
+    const copyChargesToPay = [...chargesToPay];
+    setTotal(getTotalToPay(chargesToPay, !isFinalizar));
+    if (isFinalizar) {
+      copyChargesToPay[copyChargesToPay.length - 1].fullMonth = false;
+      setChargesToPay(copyChargesToPay);
+    } else {
+      copyChargesToPay[copyChargesToPay.length - 1].fullMonth = true;
+      setChargesToPay(copyChargesToPay);
+    }
+  };
+
+  const handleDownloadBoucher = () => {};
 
   return (
     <Offcanvas
@@ -120,6 +179,28 @@ const ChargesCanvas = ({ reservationId, open, setOpen, customerId }) => {
             </Col>
             <Col xs="12" md="4">
               <div className="py-4 border bottom-0 w-100 bg-light ">
+                <Row>
+                  <Col xs="12" md={{ size: 8, offset: 2 }}>
+                    <h4 className="mb-0">{`${reservation?.customer?.name} ${reservation?.customer?.lastName}`}</h4>
+                    <h5 className="m-0 fw-normal">
+                      Embarcación: {reservation?.boat?.name}
+                    </h5>
+                    <h5 className="m-0 fw-normal">
+                      Slip: {reservation?.slip?.code}
+                    </h5>
+                    <h5 className="m-0 fw-normal">
+                      Duración:{" "}
+                      {moment(reservation?.arrivalDate, "YYYY-MM-DD").format(
+                        "DD-MM-YYYY"
+                      )}{" "}
+                      al{" "}
+                      {moment(reservation?.departureDate, "YYYY-MM-DD").format(
+                        "DD-MM-YYYY"
+                      )}
+                    </h5>
+                  </Col>
+                </Row>
+                <hr />
                 <Row>
                   <Col xs="12" md={{ size: 8, offset: 2 }}>
                     <div className="d-flex justify-content-between align-items-center mb-2">
@@ -166,6 +247,10 @@ const ChargesCanvas = ({ reservationId, open, setOpen, customerId }) => {
                               name="enabled"
                               type="checkbox"
                               className={`form-check-Input form-check-input`}
+                              checked={finalizarReserva}
+                              onChange={(e) =>
+                                onHandleChangeFinalizarReserva(e.target.checked)
+                              }
                             />
                             <Label
                               htmlFor={`enabled`}
@@ -229,15 +314,28 @@ const ChargesCanvas = ({ reservationId, open, setOpen, customerId }) => {
                       </div>
                     </div>
                     <div className="text-center mt-3">
-                      <Button
-                        color="primary"
-                        className="fs-4"
-                        disabled={total <= 0}
-                        block
-                        onClick={onHandlePayment}
-                      >
-                        Pagar
-                      </Button>
+                      {isPaying ? (
+                        <ButtonsDisabled
+                          buttons={[
+                            {
+                              text: "Pagar",
+                              color: "primary",
+                              className: "",
+                              loader: true,
+                            },
+                          ]}
+                        />
+                      ) : (
+                        <Button
+                          color="primary"
+                          className="fs-4"
+                          disabled={total <= 0}
+                          block
+                          onClick={onHandlePayment}
+                        >
+                          Pagar
+                        </Button>
+                      )}
                     </div>
                   </Col>
                 </Row>
@@ -245,6 +343,12 @@ const ChargesCanvas = ({ reservationId, open, setOpen, customerId }) => {
             </Col>
           </Row>
         )}
+
+        <SuccessPaymentDialog
+          show={showSuccess}
+          setShow={setShowSuccess}
+          handleDownloadBoucher={handleDownloadBoucher}
+        />
       </OffcanvasBody>
     </Offcanvas>
   );

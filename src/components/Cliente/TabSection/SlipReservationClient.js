@@ -287,7 +287,7 @@ export default function SlipReservationClient({ formik }) {
       />
 
       <ChargesCanvas
-        reservationId={selectedReservation?.id}
+        reservation={selectedReservation}
         customerId={formik.values.id}
         open={openCharges}
         setOpen={setOpenCharges}

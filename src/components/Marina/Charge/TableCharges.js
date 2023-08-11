@@ -39,10 +39,10 @@ const TableCharges = ({ items }) => {
               </td>
               <td>{numberFormat(it.interest)}</td>
               <td>{numberFormat(it.amount)}</td>
-              <td>{numberFormat(it.amount)}</td>
+              <td>{numberFormat(it.totalMonth)}</td>
               <td>
                 <strong>
-                  {numberFormat(rowTotal(it.interest, it.amount))}
+                  {numberFormat(rowTotal(it.interest, it.totalMonth))}
                 </strong>
               </td>
             </tr>
