@@ -66,19 +66,26 @@ export default function FormFilter({ filters, setFilters, fireSearch }) {
       </Row>
       <hr />
       <Row>
-        <Col xs="12" md="2">
-          <Button
-            color="primary"
-            size="sm"
-            outline
-            onClick={handleFilter}
-            className="me-2"
-          >
-            <i className="fas fa-search" /> Buscar
-          </Button>
-          <Button color="danger" size="sm" outline onClick={handleCleanFilter}>
-            <i className="fas fa-trash" /> Limpiar Filtros
-          </Button>
+        <Col xs="12" md="12">
+          <div className="d-flex">
+            <Button
+              color="primary"
+              size="sm"
+              outline
+              onClick={handleFilter}
+              className="me-2"
+            >
+              <i className="fas fa-search" /> Buscar
+            </Button>
+            <Button
+              color="danger"
+              size="sm"
+              outline
+              onClick={handleCleanFilter}
+            >
+              <i className="fas fa-trash" /> Limpiar Filtros
+            </Button>
+          </div>
         </Col>
       </Row>
     </>

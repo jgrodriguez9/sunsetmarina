@@ -291,6 +291,7 @@ export default function SlipReservationClient({ formik }) {
         customerId={formik.values.id}
         open={openCharges}
         setOpen={setOpenCharges}
+        setRefetch={setRefetch}
       />
 
       <DialogMain

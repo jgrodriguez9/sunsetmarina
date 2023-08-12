@@ -23,7 +23,6 @@ import { ERROR_SERVER } from "../../constants/messages";
 import extractMeaningfulMessage from "../../utils/extractMeaningfulMessage";
 import { addMessage } from "../../redux/messageSlice";
 import { useDispatch } from "react-redux";
-import ButtonsDisabled from "../Common/ButtonsDisabled";
 import SuccessPaymentDialog from "../Common/SuccessPaymentDialog";
 moment.locale("es");
 
@@ -50,8 +49,13 @@ const getTotalToPay = (charges, isFullMonth) => {
   }
 };
 
-const ChargesCanvas = ({ reservation, open, setOpen, customerId }) => {
-  console.log(reservation);
+const ChargesCanvas = ({
+  reservation,
+  open,
+  setOpen,
+  customerId,
+  setRefetch,
+}) => {
   const [charge, setCharge] = useState([]);
   const [total, setTotal] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -63,7 +67,12 @@ const ChargesCanvas = ({ reservation, open, setOpen, customerId }) => {
   const [finalizarReserva, setFinalizarReserva] = useState(false);
   const dispatch = useDispatch();
   const [isPaying, setIsPaying] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(true);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [ticket, setTicket] = useState({
+    reservation: null,
+    payment: null,
+    chargesSuccess: [],
+  });
 
   useEffect(() => {
     const fecthChargesByReservation = async () => {
@@ -111,6 +120,7 @@ const ChargesCanvas = ({ reservation, open, setOpen, customerId }) => {
   };
 
   const onHandlePayment = async () => {
+    setIsPaying(true);
     const data = {
       payment: {
         amount: total,
@@ -125,11 +135,19 @@ const ChargesCanvas = ({ reservation, open, setOpen, customerId }) => {
       charges: chargesToPay,
     };
 
-    console.log(data);
-
     try {
       const response = await savePayment(data);
+      setTicket((prev) => ({
+        reservation: reservation,
+        payment: response,
+        chargesSuccess: chargesToPay,
+        concept: concept,
+      }));
+      setShowSuccess(true);
+      setIsPaying(false);
+      setRefetch(true);
     } catch (error) {
+      setIsPaying(false);
       let message = ERROR_SERVER;
       message = extractMeaningfulMessage(error, message);
       dispatch(
@@ -142,7 +160,6 @@ const ChargesCanvas = ({ reservation, open, setOpen, customerId }) => {
   };
 
   const onHandleChangeFinalizarReserva = (isFinalizar) => {
-    console.log(isFinalizar);
     setFinalizarReserva(isFinalizar);
     const copyChargesToPay = [...chargesToPay];
     setTotal(getTotalToPay(chargesToPay, !isFinalizar));
@@ -155,7 +172,11 @@ const ChargesCanvas = ({ reservation, open, setOpen, customerId }) => {
     }
   };
 
-  const handleDownloadBoucher = () => {};
+  useEffect(() => {
+    if (!showSuccess && ticket.payment) {
+      setOpen(false);
+    }
+  }, [showSuccess, ticket.payment]);
 
   return (
     <Offcanvas
@@ -315,16 +336,10 @@ const ChargesCanvas = ({ reservation, open, setOpen, customerId }) => {
                     </div>
                     <div className="text-center mt-3">
                       {isPaying ? (
-                        <ButtonsDisabled
-                          buttons={[
-                            {
-                              text: "Pagar",
-                              color: "primary",
-                              className: "",
-                              loader: true,
-                            },
-                          ]}
-                        />
+                        <Button color="primary" className="fs-4" disabled block>
+                          <i className="bx bx-loader bx-spin font-size-16 align-middle" />{" "}
+                          Pagar
+                        </Button>
                       ) : (
                         <Button
                           color="primary"
@@ -347,7 +362,7 @@ const ChargesCanvas = ({ reservation, open, setOpen, customerId }) => {
         <SuccessPaymentDialog
           show={showSuccess}
           setShow={setShowSuccess}
-          handleDownloadBoucher={handleDownloadBoucher}
+          ticket={ticket}
         />
       </OffcanvasBody>
     </Offcanvas>

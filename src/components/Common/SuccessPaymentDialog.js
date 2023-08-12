@@ -1,10 +1,8 @@
+import { PDFDownloadLink } from "@react-pdf/renderer";
 import { Col, Modal, ModalBody, Row } from "reactstrap";
+import TicketPayment from "../Tickets/TicketPayment";
 
-export default function SuccessPaymentDialog({
-  handleDownloadBoucher,
-  show,
-  setShow,
-}) {
+export default function SuccessPaymentDialog({ ticket, show, setShow }) {
   const onCloseClick = () => {
     setShow(false);
   };
@@ -34,13 +32,31 @@ export default function SuccessPaymentDialog({
         <Row>
           <Col>
             <div className="text-center mt-3">
-              <button
-                type="button"
-                className="btn btn-primary btn-lg ms-2"
-                onClick={handleDownloadBoucher}
-              >
-                Descargar
-              </button>
+              {ticket.payment && (
+                <PDFDownloadLink
+                  document={<TicketPayment ticket={ticket} />}
+                  fileName={`pago.pdf`}
+                >
+                  {({ blob, url, loading, error }) =>
+                    loading ? (
+                      <button
+                        className="btn btn-secondary btn-outline btn-lg ms-2"
+                        disabled
+                        type="button"
+                      >
+                        <i className="bx bxs-file-pdf" /> Cargando documento
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-lg ms-2"
+                      >
+                        Descargar
+                      </button>
+                    )
+                  }
+                </PDFDownloadLink>
+              )}
               <button
                 type="button"
                 className="btn btn-light btn-lg ms-2"

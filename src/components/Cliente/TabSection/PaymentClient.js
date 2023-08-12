@@ -15,6 +15,8 @@ import Paginate from "../../Tables/Paginate";
 import { numberFormat } from "../../../utils/numberFormat";
 import { getFormaPago } from "../../../utils/getFormaPago";
 import { getTipoPago } from "../../../utils/getTipoPago";
+import FormFilter from "../../Common/FormFilter";
+import CardBasic from "../../Common/CardBasic";
 
 export default function PaymentClient({ formik }) {
   const dispatch = useDispatch();
@@ -28,6 +30,25 @@ export default function PaymentClient({ formik }) {
     max: totalRegistros,
     page: 1,
   });
+
+  const [filters, setFilters] = useState([
+    {
+      label: "Código",
+      field: "code",
+      width: 3,
+      control: "input",
+      type: "text",
+      value: "",
+    },
+    {
+      label: "Referencia",
+      field: "reference",
+      width: 3,
+      control: "input",
+      type: "text",
+      value: "",
+    },
+  ]);
 
   const columns = useMemo(
     () => [
@@ -138,15 +159,40 @@ export default function PaymentClient({ formik }) {
       page: 1,
     }));
   };
+  const fireSearch = (filts) => {
+    const activeFilters = filts
+      .filter((fl) => fl.value)
+      .map((field) => ({ name: field.field, value: field.value }));
+    const obj = activeFilters.reduce((accumulator, value) => {
+      return { ...accumulator, [value.name]: value.value };
+    }, {});
+    setQuery((prev) => ({
+      max: prev.max,
+      page: 1,
+      ...obj,
+    }));
+  };
+
+  const handleFilter = (
+    <Row>
+      <Col>
+        <FormFilter
+          filters={filters}
+          setFilters={setFilters}
+          fireSearch={fireSearch}
+        />
+      </Col>
+    </Row>
+  );
 
   return (
     <>
-      <TabActionHeader
-        add={{
-          allow: false,
-        }}
-      />
-      <Row className="mt-2">
+      <Row>
+        <Col xs="12" lg="12">
+          <CardBasic title="Filtros" children={handleFilter} initOpen={false} />
+        </Col>
+      </Row>
+      <Row>
         <Col xs="12" md="12">
           {loading ? (
             <TableLoader
