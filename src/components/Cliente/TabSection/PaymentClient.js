@@ -8,7 +8,7 @@ import { ERROR_SERVER } from "../../../constants/messages";
 import { addMessage } from "../../../redux/messageSlice";
 import { getPaymentByClient } from "../../../helpers/marina/payment";
 import TabActionHeader from "../Common/TabActionHeader";
-import { Badge, Col, Row } from "reactstrap";
+import { Badge, Button, Col, Row } from "reactstrap";
 import TableLoader from "../../Loader/TablaLoader";
 import SimpleTable from "../../Tables/SimpleTable";
 import Paginate from "../../Tables/Paginate";
@@ -17,6 +17,8 @@ import { getFormaPago } from "../../../utils/getFormaPago";
 import { getTipoPago } from "../../../utils/getTipoPago";
 import FormFilter from "../../Common/FormFilter";
 import CardBasic from "../../Common/CardBasic";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import TicketPayment from "../../Tickets/TicketPayment";
 
 export default function PaymentClient({ formik }) {
   const dispatch = useDispatch();
@@ -48,6 +50,24 @@ export default function PaymentClient({ formik }) {
       type: "text",
       value: "",
     },
+    {
+      label: "Fecha inicio",
+      field: "startDate",
+      width: 3,
+      control: "date",
+      type: "",
+      value: "",
+      valueDate: "",
+    },
+    {
+      label: "Fecha fin",
+      field: "endDate",
+      width: 3,
+      control: "date",
+      type: "",
+      value: "",
+      valueDate: "",
+    },
   ]);
 
   const columns = useMemo(
@@ -60,10 +80,10 @@ export default function PaymentClient({ formik }) {
         },
       },
       {
-        Header: "Referencia",
-        accessor: "reference",
+        Header: "Concepto",
+        accessor: "concept",
         style: {
-          width: "25%",
+          width: "20%",
         },
       },
       {
@@ -112,6 +132,43 @@ export default function PaymentClient({ formik }) {
           } else {
             return <Badge color="danger">Cancelado</Badge>;
           }
+        },
+      },
+      {
+        id: "acciones",
+        Header: "Acciones",
+        Cell: ({ row }) => {
+          const ticket = {
+            reservation: null,
+            payment: row.original,
+            chargesSuccess: row.original.charges,
+            concept: row.original.concept,
+          };
+
+          return (
+            <>
+              <PDFDownloadLink
+                document={<TicketPayment ticket={ticket} />}
+                fileName={`pago.pdf`}
+              >
+                {({ blob, url, loading, error }) =>
+                  loading ? (
+                    <Button color="secondary" size="sm" outline type="button">
+                      <i className="bx bx-download" /> Cargando documento
+                    </Button>
+                  ) : (
+                    <Button color="primary" size="sm" outline type="button">
+                      <i className="bx bx-download" />
+                    </Button>
+                  )
+                }
+              </PDFDownloadLink>
+            </>
+          );
+        },
+        style: {
+          width: "5%",
+          textAlign: "center",
         },
       },
     ],
@@ -198,12 +255,13 @@ export default function PaymentClient({ formik }) {
             <TableLoader
               columns={[
                 { name: "Código", width: "15%" },
-                { name: "Referencia", width: "25%" },
+                { name: "Concepto", width: "20%" },
                 { name: "Fecha", width: "15%" },
                 { name: "Monto", width: "10%" },
                 { name: "Forma de pago", width: "10%" },
                 { name: "Tipo de pago", width: "15%" },
                 { name: "Estado", width: "10%" },
+                { name: "Acciones", width: "5%" },
               ]}
             />
           ) : (
