@@ -43,6 +43,9 @@ import EditNotifications from "../pages/Catalogos/Notifications/Edit";
 import Reservation from "../pages/Marina/Reservation";
 import CreateReservation from "../pages/Marina/Reservation/Create";
 import EditReservation from "../pages/Marina/Reservation/Edit";
+import Brazaletes from "../pages/Contabilidad/Brazaletes";
+import CreateBrazalete from "../pages/Contabilidad/Brazaletes/Create";
+import CreateBrazaleteLote from "../pages/Contabilidad/Brazaletes/CreateLote";
 
 const authProtectedRoutes = [
   { path: "/logout", component: Logout },
@@ -139,6 +142,14 @@ const adminRoutes = [
   { path: "/incomereport", exact: true, component: IncomeReport },
   //cobro impuesto de muelle
   { path: "/docktaxbill", exact: true, component: DockTaxBill },
+  //brazaletes
+  { path: "/bracelet", exact: true, component: Brazaletes },
+  { path: "/bracelet/create", exact: true, component: CreateBrazalete },
+  {
+    path: "/bracelet/create/lote",
+    exact: true,
+    component: CreateBrazaleteLote,
+  },
 
   //endmarina
 ];

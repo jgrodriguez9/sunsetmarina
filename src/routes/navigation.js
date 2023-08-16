@@ -157,6 +157,12 @@ export const navigations = [
         route: "/docktaxbill",
         classIcon: null,
       },
+      {
+        id: "brazaletes",
+        label: "Brazaletes",
+        route: "/bracelet",
+        classIcon: null,
+      },
     ],
   },
 ];

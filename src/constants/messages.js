@@ -10,3 +10,4 @@ export const DELETE_QUESTION = "¿Estas seguro?";
 export const DELETE_QUESTION_CONFIRMATION = "¡Esta acción no es reversible!";
 export const FIELD_NUMERIC = "Campo numérico";
 export const CORREO_VALID = "Correo electrónico inválido";
+export const FIELD_INTEGER = "Campo numérico entero";
