@@ -126,7 +126,7 @@ export const navigations = [
   {
     id: "contabilidad",
     label: "Contabilidad",
-    classIcon: "fas fa-cash-register me-2",
+    classIcon: "bx bx-line-chart me-2",
     route: "/#",
     show: existsRole(sessionStorage.getItem("roles"), [
       "ROLE_ADMIN",
@@ -161,6 +161,24 @@ export const navigations = [
         id: "brazaletes",
         label: "Brazaletes",
         route: "/bracelet",
+        classIcon: null,
+      },
+    ],
+  },
+  {
+    id: "caja",
+    label: "Caja",
+    classIcon: "fas fa-cash-register me-2",
+    route: "/#",
+    show: existsRole(sessionStorage.getItem("roles"), [
+      "ROLE_ADMIN",
+      "ROLE_COMPANY_ADMIN",
+    ]),
+    items: [
+      {
+        id: "boardingPass",
+        label: "Pase de salida",
+        route: "/boardingpass",
         classIcon: null,
       },
     ],

@@ -46,6 +46,8 @@ import EditReservation from "../pages/Marina/Reservation/Edit";
 import Brazaletes from "../pages/Contabilidad/Brazaletes";
 import CreateBrazalete from "../pages/Contabilidad/Brazaletes/Create";
 import CreateBrazaleteLote from "../pages/Contabilidad/Brazaletes/CreateLote";
+import BoardingPass from "../pages/Caja/BoardingPass";
+import CreateBoardingPass from "../pages/Caja/BoardingPass/Create";
 
 const authProtectedRoutes = [
   { path: "/logout", component: Logout },
@@ -150,8 +152,13 @@ const adminRoutes = [
     exact: true,
     component: CreateBrazaleteLote,
   },
-
   //endmarina
+
+  //caja
+  //brazaletes
+  { path: "/boardingpass", exact: true, component: BoardingPass },
+  { path: "/boardingpass/create", exact: true, component: CreateBoardingPass },
+  //end caja
 ];
 const managerRoutes = [];
 const agentRoutes = [

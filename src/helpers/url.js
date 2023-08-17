@@ -61,3 +61,6 @@ export const charge = "/charge";
 
 //brazaletes
 export const bracalet = "/bracelet";
+
+//pase de salida
+export const boardingPass = "/boardingPass";
