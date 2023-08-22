@@ -35,7 +35,7 @@ import SimpleLoad from '../../Loader/SimpleLoad';
 import SelectAsync from '../../Common/SelectAsync';
 import { getBracaletListPaginado } from '../../../helpers/contabilidad/bracalet';
 
-export default function FormBoardingPass() {
+export default function FormBoardingPass({ cajero = false }) {
 	const history = useHistory();
 	const dispatch = useDispatch();
 	let timer = useRef();
@@ -45,7 +45,7 @@ export default function FormBoardingPass() {
 	const [clientOpt, setClientOpt] = useState([]);
 	const [boat, setBoat] = useState(null);
 	const [boatOpt, setBoatOpt] = useState([]);
-	const [slip, setSlip] = useState([]);
+	const [slip, setSlip] = useState(null);
 	const [slipOpt, setSlipOpt] = useState([]);
 	//reservaciones paginado
 	const [reservationSelected, setReservationSelected] = useState(null);
@@ -145,7 +145,7 @@ export default function FormBoardingPass() {
 				.min(1, 'Al menos debe escoger 1 brazalete'),
 		}),
 		onSubmit: async (values) => {
-			console.log(values);
+			//console.log(values);
 			try {
 				let response = await saveBoardingPass(values);
 				if (response) {
@@ -155,7 +155,21 @@ export default function FormBoardingPass() {
 							message: SAVE_SUCCESS,
 						})
 					);
-					history.push('/boardingpass');
+					if (cajero) {
+						formik.resetForm({
+							amount: 0,
+							pax: 0,
+							reservation: {
+								id: '',
+							},
+							bracelets: [],
+						});
+						setBoat(null);
+						setClient(null);
+						setSlip(null);
+					} else {
+						history.push('/boardingpass');
+					}
 				} else {
 					dispatch(
 						addMessage({
@@ -165,7 +179,7 @@ export default function FormBoardingPass() {
 					);
 				}
 			} catch (error) {
-				console.log('entro aqui');
+				//console.log('entro aqui');
 				let message = ERROR_SERVER;
 				message = extractMeaningfulMessage(error, message);
 				dispatch(
@@ -317,7 +331,7 @@ export default function FormBoardingPass() {
 			</div>
 		</>
 	);
-	console.log(formik.values);
+	//console.log(formik.values);
 	const calcularPrice = async (pax) => {
 		setIsCalculatingPrice(true);
 		try {
@@ -327,13 +341,13 @@ export default function FormBoardingPass() {
 			formik.setFieldValue('amount', response.price);
 			setIsCalculatingPrice(false);
 		} catch (error) {
-			console.log(error);
+			//console.log(error);
 			setIsCalculatingPrice(false);
 			formik.setFieldValue('amount', 0);
 		}
 	};
 
-	console.log(formik.isValid);
+	//console.log(formik.isValid);
 
 	return (
 		<>
