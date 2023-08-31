@@ -27,7 +27,7 @@ function App() {
 	const dispatch = useDispatch();
 	useMemo(() => {
 		if (user.name) {
-			if (user.roles.includes('ROLE_ADMIN')) {
+			if (user.roles.includes('ROLE_Administracion')) {
 				setAuthRoutes([
 					...authProtectedRoutes,
 					...agentRoutes,

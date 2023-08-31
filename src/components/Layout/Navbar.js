@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Collapse } from 'reactstrap';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import classname from 'classnames';
 import { navigations } from '../../routes/navigation';
 
 const Navbar = (props) => {
+	const location = useLocation();
 	const [app, setapp] = useState(null);
 
 	useEffect(() => {
@@ -12,7 +13,7 @@ const Navbar = (props) => {
 		var ul = document.getElementById('navigation');
 		var items = ul.getElementsByTagName('a');
 		for (var i = 0; i < items.length; ++i) {
-			if (props.location.pathname === items[i].pathname) {
+			if (location.pathname === items[i].pathname) {
 				matchingMenuItem = items[i];
 				break;
 			}

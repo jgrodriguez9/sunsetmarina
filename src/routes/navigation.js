@@ -7,7 +7,7 @@ export const navigations = [
 		classIcon: 'bx bx-home-circle me-2',
 		route: '/dashboard',
 		show: existsRole(sessionStorage.getItem('roles'), [
-			'ROLE_ADMIN',
+			'ROLE_Administracion',
 			'ROLE_COMPANY_ADMIN',
 		]),
 		items: [],
@@ -18,7 +18,7 @@ export const navigations = [
 		classIcon: 'fas fa-shield-alt me-2',
 		route: '/#',
 		show: existsRole(sessionStorage.getItem('roles'), [
-			'ROLE_ADMIN',
+			'ROLE_Administracion',
 			'ROLE_COMPANY_ADMIN',
 		]),
 		items: [
@@ -36,7 +36,7 @@ export const navigations = [
 		classIcon: 'fas fa-th me-2',
 		route: '/#',
 		show: existsRole(sessionStorage.getItem('roles'), [
-			'ROLE_ADMIN',
+			'ROLE_Administracion',
 			'ROLE_COMPANY_ADMIN',
 		]),
 		items: [
@@ -84,7 +84,7 @@ export const navigations = [
 		classIcon: 'fas fa-ship me-2',
 		route: '/#',
 		show: existsRole(sessionStorage.getItem('roles'), [
-			'ROLE_ADMIN',
+			'ROLE_Administracion',
 			'ROLE_COMPANY_ADMIN',
 		]),
 		items: [
@@ -132,7 +132,7 @@ export const navigations = [
 		classIcon: 'bx bx-line-chart me-2',
 		route: '/#',
 		show: existsRole(sessionStorage.getItem('roles'), [
-			'ROLE_ADMIN',
+			'ROLE_Administracion',
 			'ROLE_COMPANY_ADMIN',
 		]),
 		items: [
@@ -174,7 +174,7 @@ export const navigations = [
 		classIcon: 'fas fa-cash-register me-2',
 		route: '/#',
 		show: existsRole(sessionStorage.getItem('roles'), [
-			'ROLE_ADMIN',
+			'ROLE_Administracion',
 			'ROLE_COMPANY_ADMIN',
 		]),
 		items: [
