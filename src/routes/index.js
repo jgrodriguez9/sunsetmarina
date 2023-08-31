@@ -1,5 +1,4 @@
 import Login from '../pages/Authentication/Login';
-import Logout from '../pages/Authentication/Logout';
 import Compania from '../pages/Catalogos/Compania';
 import TipoBarco from '../pages/Catalogos/TipoBarco';
 import CreateTipoBarco from '../pages/Catalogos/TipoBarco/Create';
@@ -51,7 +50,7 @@ import NoAccessPage from '../pages/Utility/NoAccessPage';
 import { Navigate } from 'react-router-dom';
 
 const authProtectedRoutes = [
-	{ path: '/logout', component: <Logout /> },
+	{ path: '/dashboard', component: <Dashboard /> },
 	{ path: '/forbiden', component: <NoAccessPage /> },
 	{ path: '/', exact: true, component: () => <Navigate to="/dashboard" /> },
 
@@ -64,9 +63,6 @@ const authProtectedRoutes = [
 const publicRoutes = [{ path: '/login', component: <Login /> }];
 
 const adminRoutes = [
-	//dashboard
-	{ path: '/dashboard', component: <Dashboard /> },
-
 	//seguridad
 	//logs
 	{ path: '/logs', exact: true, component: <Logs /> },
@@ -181,8 +177,6 @@ const adminRoutes = [
 ];
 const managerRoutes = [];
 const agentRoutes = [
-	//dashboard
-	{ path: '/dashboard', component: <Dashboard /> },
 	//mapa muelle
 	{ path: '/map', exact: true, component: <Dock /> },
 

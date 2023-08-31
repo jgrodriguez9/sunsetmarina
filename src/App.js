@@ -99,7 +99,7 @@ function App() {
 					return;
 			}
 		}
-	}, [message]);
+	}, [message, dispatch]);
 
 	return (
 		<>
