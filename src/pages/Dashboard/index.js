@@ -1,5 +1,4 @@
-import { withRouter } from 'react-router-dom';
-import { Col, Container, Row } from 'reactstrap';
+import { Container } from 'reactstrap';
 import Breadcrumbs from '../../components/Common/Breadcrumbs';
 import DashBoardOperator from '../../components/Dashboard/DashBoardOperator';
 import DashBoardContador from '../../components/Dashboard/DashBoardContador';
@@ -27,4 +26,4 @@ function Dashboard() {
 	);
 }
 
-export default withRouter(Dashboard);
+export default Dashboard;

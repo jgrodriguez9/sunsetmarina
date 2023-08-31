@@ -1,7 +1,7 @@
 import { useFormik } from 'formik';
 import { useDispatch } from 'react-redux';
-import { Link, useHistory } from 'react-router-dom';
-import { Badge, Button, Col, Form, Input, Label, Row } from 'reactstrap';
+import { Link, useNavigate } from 'react-router-dom';
+import { Button, Col, Form, Input, Label, Row } from 'reactstrap';
 import * as Yup from 'yup';
 import {
 	ERROR_SERVER,
@@ -9,7 +9,6 @@ import {
 	FIELD_NUMERIC,
 	FIELD_REQUIRED,
 	SAVE_SUCCESS,
-	SELECT_OPTION,
 } from '../../../constants/messages';
 import { addMessage } from '../../../redux/messageSlice';
 import extractMeaningfulMessage from '../../../utils/extractMeaningfulMessage';
@@ -36,7 +35,7 @@ import SelectAsync from '../../Common/SelectAsync';
 import { getBracaletListPaginado } from '../../../helpers/contabilidad/bracalet';
 
 export default function FormBoardingPass({ cajero = false }) {
-	const history = useHistory();
+	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	let timer = useRef();
 
@@ -168,7 +167,7 @@ export default function FormBoardingPass({ cajero = false }) {
 						setClient(null);
 						setSlip(null);
 					} else {
-						history.push('/boardingpass');
+						navigate('/boardingpass');
 					}
 				} else {
 					dispatch(

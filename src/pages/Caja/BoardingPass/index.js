@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useHistory, withRouter } from 'react-router-dom';
-import { Badge, Col, Container, Row } from 'reactstrap';
+import { useNavigate } from 'react-router-dom';
+import { Col, Container, Row } from 'reactstrap';
 import Breadcrumbs from '../../../components/Common/Breadcrumbs';
 import CardBasic from '../../../components/Common/CardBasic';
 import CardMain from '../../../components/Common/CardMain';
@@ -28,7 +28,7 @@ function BoardingPass() {
 	const [items, setItems] = useState([]);
 	const [totalPaginas, setTotalPaginas] = useState(0);
 	const [totalRegistros, setTotalRegistros] = useState(10);
-	const history = useHistory();
+	const navigate = useNavigate();
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	const [isDeleting, setDeleting] = useState(false);
 	const [selectedIdDelete, setSelectedIdDeleted] = useState(null);
@@ -222,7 +222,7 @@ function BoardingPass() {
 	};
 
 	const goPageCreate = () => {
-		history.push('/boardingpass/create');
+		navigate('/boardingpass/create');
 	};
 
 	const cardHandleList = loading ? (
@@ -313,4 +313,4 @@ function BoardingPass() {
 	);
 }
 
-export default withRouter(BoardingPass);
+export default BoardingPass;

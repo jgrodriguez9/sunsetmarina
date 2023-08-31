@@ -1,10 +1,10 @@
-import { useHistory, withRouter } from "react-router-dom"
+import { useNavigate } from 'react-router-dom';
 
 function Logout() {
-    const history = useHistory();
-    sessionStorage.removeItem("sunsetadmiralauth");
-    history.push("/login");
-    return <></>
+	const navigate = useNavigate();
+	sessionStorage.removeItem('sunsetadmiralauth');
+	navigate('/login');
+	return <></>;
 }
 
-export default withRouter(Logout)
+export default Logout;
