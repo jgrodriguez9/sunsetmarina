@@ -11,85 +11,63 @@ import { getPaymentListPaginado } from '../../helpers/marina/payment';
 import { ERROR_SERVER } from '../../constants/messages';
 import extractMeaningfulMessage from '../../utils/extractMeaningfulMessage';
 import TableLoader from '../Loader/TablaLoader';
+import { getCustomerWithDebts } from '../../helpers/dashobard/stats';
 
-export default function UltimasTransacciones() {
+export default function CustomerWithDebts() {
 	const [items, setItems] = useState(lastTransaction);
 	const [loading, setLoading] = useState(false);
 
 	const columns = useMemo(
 		() => [
 			{
-				Header: 'Código',
-				accessor: 'code',
+				Header: 'Cod. cliente',
+				accessor: 'customer.code',
 				style: {
 					width: '15%',
 				},
 			},
 			{
-				Header: 'Referencia',
-				accessor: 'reference',
+				Header: 'Cliente',
+				accessor: 'customer.name',
 				style: {
-					width: '25%',
+					width: '40%',
 				},
+				Cell: ({ row, value }) =>
+					`${row.original.customer.name} ${row.original.customer.lastName}`,
 			},
 			{
-				Header: 'Fecha',
-				accessor: 'dateCreated',
+				Header: 'Teléfono',
+				accessor: 'customer.phone',
 				style: {
 					width: '15%',
 				},
-				Cell: ({ value }) =>
-					moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY'),
 			},
 			{
-				Header: 'Monto',
+				Header: 'Deuda',
 				accessor: 'amount',
 				style: {
-					width: '10%',
+					width: '15%',
 				},
 				Cell: ({ value }) => numberFormat(value),
 			},
 			{
-				Header: 'Forma de pago',
-				accessor: 'paymentForm',
-				style: {
-					width: '10%',
-				},
-				Cell: ({ value }) => getFormaPago(value),
-			},
-			{
-				Header: 'Tipo de pago',
-				accessor: 'systemPayment',
+				Header: 'Interés',
+				accessor: 'interest',
 				style: {
 					width: '15%',
 				},
-				Cell: ({ value }) => getTipoPago(value),
-			},
-			{
-				Header: 'Estado',
-				accessor: 'status',
-				style: {
-					width: '10%',
-				},
-				Cell: ({ value }) => {
-					if (value === 'PENDING') {
-						return <Badge color="warning">Pendiente</Badge>;
-					} else if (value === 'APPROVED') {
-						return <Badge color="success">Aprobado</Badge>;
-					} else {
-						return <Badge color="danger">Cancelado</Badge>;
-					}
-				},
+				Cell: ({ value }) => numberFormat(value),
 			},
 		],
 		[]
 	);
 
 	useEffect(() => {
-		const fecthApiPaymentForClient = async () => {
+		const fecthApi = async () => {
 			try {
 				let q = `?page=1&max=10`;
-				const response = await getPaymentListPaginado(q);
+				const response = await getCustomerWithDebts(q);
+				console.log(response);
 				setItems(response.list);
 				setLoading(false);
 			} catch (error) {
@@ -100,7 +78,7 @@ export default function UltimasTransacciones() {
 			}
 		};
 		setLoading(true);
-		fecthApiPaymentForClient();
+		fecthApi();
 	}, []);
 
 	return (
@@ -109,18 +87,16 @@ export default function UltimasTransacciones() {
 			<Card className="shadow-sm">
 				<CardBody>
 					<div className="mb-4 h4 card-title">
-						Ultimas 10 Transacciones
+						Clientes con deudas
 					</div>
 					{loading ? (
 						<TableLoader
 							columns={[
-								{ name: 'Código', width: '15%' },
-								{ name: 'Referencia', width: '25%' },
-								{ name: 'Fecha', with: '15%' },
-								{ name: 'Monto', width: '10%' },
-								{ name: 'Forma de pago', width: '10%' },
-								{ name: 'Tipo de pago', width: '15%' },
-								{ name: 'Estado', width: '10%' },
+								{ name: 'Cod. cliente', width: '15%' },
+								{ name: 'Cliente', width: '40%' },
+								{ name: 'Teléfono', width: '15%' },
+								{ name: 'Deuda', width: '15%' },
+								{ name: 'Interés', width: '15%' },
 							]}
 						/>
 					) : (

@@ -2,6 +2,8 @@ import { Col, Row } from 'reactstrap';
 import WelcomeCard from './WelcomeCard';
 import IndicadorTop from './IndicadorTop';
 import CajeroPaseSalidaForm from '../Caja/CajeroPaseSalidaForm';
+import { useEffect } from 'react';
+import { getBrazaletsStatics } from '../../helpers/dashobard/stats';
 
 const DashBoardCajero = () => {
 	const indicator = {
@@ -21,6 +23,24 @@ const DashBoardCajero = () => {
 			iconClass: 'fas fa-dollar-sign font-size-24',
 		},
 	};
+
+	useEffect(() => {
+		const fecthApi = async () => {
+			try {
+				const response = await getBrazaletsStatics();
+				console.log(response);
+				//setItems(response.list);
+				//setLoading(false);
+			} catch (error) {
+				// let message = ERROR_SERVER;
+				// message = extractMeaningfulMessage(error, message);
+				// setItems([]);
+				// setLoading(false);
+			}
+		};
+		//setLoading(true);
+		fecthApi();
+	}, []);
 
 	return (
 		<>

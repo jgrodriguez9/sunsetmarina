@@ -52,7 +52,7 @@ import { Navigate } from 'react-router-dom';
 const authProtectedRoutes = [
 	{ path: '/dashboard', component: <Dashboard /> },
 	{ path: '/forbiden', component: <NoAccessPage /> },
-	{ path: '/', exact: true, component: () => <Navigate to="/dashboard" /> },
+	{ path: '/', component: <Navigate to="/dashboard" /> },
 
 	// //user
 	// { path: "/user-list", exact: true, component: UserList },

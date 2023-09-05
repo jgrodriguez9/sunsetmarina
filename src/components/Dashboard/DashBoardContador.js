@@ -4,6 +4,7 @@ import IndicadorTop from './IndicadorTop';
 import ChartAnalisisRenta from './ChartAnalisisVenta';
 import ChartGanancias from './ChartGanancias';
 import UltimasTransacciones from './UltimasTransacciones';
+import CustomerWithDebts from './CustomerWithDebts';
 
 const DashBoardContador = () => {
 	const indicator = {
@@ -44,6 +45,11 @@ const DashBoardContador = () => {
 			<Row>
 				<Col>
 					<UltimasTransacciones />
+				</Col>
+			</Row>
+			<Row>
+				<Col>
+					<CustomerWithDebts />
 				</Col>
 			</Row>
 		</>

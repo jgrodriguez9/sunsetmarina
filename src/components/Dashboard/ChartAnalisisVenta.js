@@ -17,7 +17,7 @@ export default function ChartAnalisisRenta({ title }) {
 	};
 
 	return (
-		<Card>
+		<Card className="shadow-sm">
 			<CardBody>
 				<h4 className="card-title mb-4">{title}</h4>
 
