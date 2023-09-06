@@ -1,21 +1,22 @@
 import { useState, useEffect } from 'react';
 import { useMemo } from 'react';
-import { Badge, Card, CardBody } from 'reactstrap';
+import { Card, CardBody, Col, Row } from 'reactstrap';
 import { lastTransaction } from '../../data/testData';
 import SimpleTable from '../Tables/SimpleTable';
-import moment from 'moment';
 import { numberFormat } from '../../utils/numberFormat';
-import { getFormaPago } from '../../utils/getFormaPago';
-import { getTipoPago } from '../../utils/getTipoPago';
-import { getPaymentListPaginado } from '../../helpers/marina/payment';
-import { ERROR_SERVER } from '../../constants/messages';
-import extractMeaningfulMessage from '../../utils/extractMeaningfulMessage';
 import TableLoader from '../Loader/TablaLoader';
 import { getCustomerWithDebts } from '../../helpers/dashobard/stats';
+import Paginate from '../Tables/Paginate';
 
 export default function CustomerWithDebts() {
 	const [items, setItems] = useState(lastTransaction);
 	const [loading, setLoading] = useState(false);
+	const [totalPaginas, setTotalPaginas] = useState(0);
+	const [totalRegistros, setTotalRegistros] = useState(10);
+	const [query, setQuery] = useState({
+		max: totalRegistros,
+		page: 1,
+	});
 
 	const columns = useMemo(
 		() => [
@@ -33,7 +34,7 @@ export default function CustomerWithDebts() {
 					width: '40%',
 				},
 				Cell: ({ row, value }) =>
-					`${row.original.customer.name} ${row.original.customer.lastName}`,
+					`${row.original?.customer?.name} ${row.original?.customer?.lastName}`,
 			},
 			{
 				Header: 'Teléfono',
@@ -65,25 +66,42 @@ export default function CustomerWithDebts() {
 	useEffect(() => {
 		const fecthApi = async () => {
 			try {
-				let q = `?page=1&max=10`;
-				const response = await getCustomerWithDebts(q);
-				console.log(response);
+				let q = Object.keys(query)
+					.map((key) => `${key}=${query[key]}`)
+					.join('&');
+				const response = await getCustomerWithDebts(`?${q}`);
+				//console.log(response);
+				setTotalPaginas(response.pagination.totalPages);
+				setTotalRegistros(response.pagination.totalCount);
 				setItems(response.list);
 				setLoading(false);
 			} catch (error) {
-				let message = ERROR_SERVER;
-				message = extractMeaningfulMessage(error, message);
+				setTotalPaginas(0);
+				setTotalRegistros(10);
 				setItems([]);
 				setLoading(false);
 			}
 		};
 		setLoading(true);
 		fecthApi();
-	}, []);
+	}, [query]);
+
+	const handlePageClick = (page) => {
+		setQuery((prev) => ({
+			...prev,
+			page: page,
+		}));
+	};
+	const handleChangeLimit = (limit) => {
+		setQuery((prev) => ({
+			...prev,
+			max: limit,
+			page: 1,
+		}));
+	};
 
 	return (
 		<>
-			{/* <EcommerceOrdersModal isOpen={modal1} toggle={toggleViewModal} /> */}
 			<Card className="shadow-sm">
 				<CardBody>
 					<div className="mb-4 h4 card-title">
@@ -100,7 +118,21 @@ export default function CustomerWithDebts() {
 							]}
 						/>
 					) : (
-						<SimpleTable columns={columns} data={items} />
+						<Row>
+							<Col xs="12" md="12">
+								<SimpleTable columns={columns} data={items} />
+							</Col>
+							{items.length > 0 && (
+								<Paginate
+									page={query.page}
+									totalPaginas={totalPaginas}
+									totalRegistros={totalRegistros}
+									handlePageClick={handlePageClick}
+									limit={query.limite}
+									handleChangeLimit={handleChangeLimit}
+								/>
+							)}
+						</Row>
 					)}
 				</CardBody>
 			</Card>

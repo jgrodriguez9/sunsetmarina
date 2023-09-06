@@ -13,9 +13,9 @@ function Dashboard() {
 					{/* Render Breadcrumb */}
 					<Breadcrumbs title={'Inicio'} breadcrumbItem={'Inicio'} />
 
-					<DashBoardOperator />
+					{/* <DashBoardOperator /> */}
 
-					{/* <DashBoardContador /> */}
+					<DashBoardContador />
 
 					{/* <DashBoardCajero /> */}
 

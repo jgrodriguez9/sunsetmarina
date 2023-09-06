@@ -6,7 +6,6 @@ import ChartAnalisisRenta from './ChartAnalisisVenta';
 import { useEffect, useState } from 'react';
 import moment from 'moment';
 import { paymentAnalytics, slipAnalytics } from '../../helpers/dashobard/stats';
-import { numberFormat } from '../../utils/numberFormat';
 import { defaultOpt } from '../../constants/chartOptions';
 import jsFormatNumber from '../../utils/jsFormatNumber';
 
@@ -15,14 +14,36 @@ const DashBoardOperator = () => {
 		data: null,
 		loading: true,
 	});
+	//analisis de renta
+	const [salesIndicator, setSalesIndicator] = useState({
+		series: [],
+		options: {
+			labels: ['Reservados', 'Disponibles', 'Bloqueados'],
+			colors: ['#34c38f', '#f46a6a', '#f1b44c'],
+			legend: { show: !1 },
+			plotOptions: {
+				pie: {
+					donut: {
+						size: '70%',
+					},
+				},
+			},
+		},
+	});
 
 	useEffect(() => {
 		const fecthSlipAnalyticsApi = async () => {
 			try {
-				let q = `?monthNumber=${moment().format(
-					'MM'
-				)}&yearNumber=${moment().format('YYYY')}`;
-				const response = await slipAnalytics(q);
+				const response = await slipAnalytics();
+				const reserved = response.listStatus.find(
+					(it) => it.status === 'RESERVED'
+				);
+				const available = response.listStatus.find(
+					(it) => it.status === 'AVAILABLE'
+				);
+				const bloqueados = response.listStatus.find(
+					(it) => it.status === 'BLOCKED'
+				);
 				const data = {
 					ind1: {
 						title: 'Total de slip',
@@ -31,18 +52,12 @@ const DashBoardOperator = () => {
 					},
 					ind2: {
 						title: 'Slip Rentados',
-						number:
-							response.listStatus.find(
-								(it) => it.status === 'RESERVED'
-							)?.total ?? null,
+						number: reserved?.total ?? null,
 						iconClass: 'fas fa-ship font-size-24',
 					},
 					ind3: {
 						title: 'Slip Disponibles',
-						number:
-							response.listStatus.find(
-								(it) => it.status === 'AVAILABLE'
-							)?.total ?? null,
+						number: available?.total ?? null,
 						iconClass: 'fas fa-align-justify font-size-24',
 					},
 				};
@@ -50,6 +65,14 @@ const DashBoardOperator = () => {
 					...prev,
 					loading: false,
 					data: data,
+				}));
+				setSalesIndicator((prev) => ({
+					...prev,
+					series: [
+						parseFloat(reserved?.percent?.toFixed(1) ?? 0),
+						parseFloat(available?.percent?.toFixed(1) ?? 0),
+						parseFloat(bloqueados?.percent?.toFixed(1) ?? 0),
+					],
 				}));
 			} catch (error) {
 				setIndicator((prev) => ({
@@ -68,6 +91,7 @@ const DashBoardOperator = () => {
 		yearNumber: 2023,
 	});
 	const [salesData, setSalesData] = useState({
+		loading: true,
 		currentRevenue: null,
 		lastMonthRevenue: null,
 		percentageDifference: null,
@@ -77,6 +101,10 @@ const DashBoardOperator = () => {
 
 	useEffect(() => {
 		const fecthGananciaAnalyticsApi = async () => {
+			setSalesData((prev) => ({
+				...prev,
+				loading: true,
+			}));
 			try {
 				let q = `?monthNumber=${revenueFilter.monthNumber}&yearNumber=${revenueFilter.yearNumber}`;
 				const response = await paymentAnalytics(q);
@@ -100,6 +128,7 @@ const DashBoardOperator = () => {
 					},
 				};
 				setSalesData({
+					loading: false,
 					currentRevenue: response.currentRevenue,
 					lastMonthRevenue: response.lastMonthRevenue,
 					percentageDifference: response.percentageDifference,
@@ -112,11 +141,14 @@ const DashBoardOperator = () => {
 					options: opt,
 				});
 			} catch (error) {
-				setIndicator((prev) => ({
-					...prev,
-					loading: true,
-					data: null,
-				}));
+				setSalesData({
+					loading: false,
+					currentRevenue: null,
+					lastMonthRevenue: null,
+					percentageDifference: null,
+					series: [{ name: 'Ganancia (MXN)', data: [] }],
+					options: defaultOpt,
+				});
 			}
 		};
 		fecthGananciaAnalyticsApi();
@@ -134,7 +166,10 @@ const DashBoardOperator = () => {
 			</Row>
 			<Row>
 				<Col xl="4">
-					<ChartAnalisisRenta title={'Analisis de Renta'} />
+					<ChartAnalisisRenta
+						title={'Analisis de Renta'}
+						salesIndicator={salesIndicator}
+					/>
 				</Col>
 				<Col xl="8">
 					<ChartGanancias

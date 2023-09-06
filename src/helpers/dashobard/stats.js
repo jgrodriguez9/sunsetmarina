@@ -5,9 +5,10 @@ import * as url from '../url';
 const getCustomerWithDebts = (query) =>
 	get(`${url.dashboard}/customerWithDebts${query}`);
 
-const getBrazaletsStatics = () => get(`${url.dashboard}/braceletsAnalytics`);
+const getBrazaletsStatics = (query) =>
+	get(`${url.dashboard}/braceletsAnalytics${query}`);
 
-const slipAnalytics = (query) => get(`${url.dashboard}/slipAnalytics${query}`);
+const slipAnalytics = () => get(`${url.dashboard}/slipAnalytics`);
 const paymentAnalytics = (query) =>
 	get(`${url.dashboard}/paymentAnalytics${query}`);
 

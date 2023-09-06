@@ -1,21 +1,7 @@
 import ReactApexChart from 'react-apexcharts';
 import { Card, CardBody, Col, Row } from 'reactstrap';
 
-export default function ChartAnalisisRenta({ title }) {
-	const series = [56, 38, 26];
-	const options = {
-		labels: ['Series A', 'Series B', 'Series C'],
-		colors: ['#556ee6', '#34c38f', '#f46a6a'],
-		legend: { show: !1 },
-		plotOptions: {
-			pie: {
-				donut: {
-					size: '70%',
-				},
-			},
-		},
-	};
-
+export default function ChartAnalisisRenta({ title, salesIndicator }) {
 	return (
 		<Card className="shadow-sm">
 			<CardBody>
@@ -24,8 +10,8 @@ export default function ChartAnalisisRenta({ title }) {
 				<div>
 					<div id="donut-chart">
 						<ReactApexChart
-							options={options}
-							series={series}
+							options={salesIndicator?.options}
+							series={salesIndicator?.series}
 							type="donut"
 							height={260}
 							className="apex-charts"
@@ -38,19 +24,12 @@ export default function ChartAnalisisRenta({ title }) {
 						<Col xs="4">
 							<div className="mt-4">
 								<p className="mb-2 text-truncate">
-									<i className="mdi mdi-circle text-primary me-1" />{' '}
-									Slips
-								</p>
-								<h5>70</h5>
-							</div>
-						</Col>
-						<Col xs="4">
-							<div className="mt-4">
-								<p className="mb-2 text-truncate">
 									<i className="mdi mdi-circle text-success me-1" />{' '}
 									Reservados
 								</p>
-								<h5 className="text-success">50</h5>
+								<h5 className="text-success">
+									{salesIndicator?.series[0]}%
+								</h5>
 							</div>
 						</Col>
 						<Col xs="4">
@@ -59,7 +38,20 @@ export default function ChartAnalisisRenta({ title }) {
 									<i className="mdi mdi-circle text-danger me-1" />{' '}
 									Disponibles
 								</p>
-								<h5 className="text-danger">20</h5>
+								<h5 className="text-danger">
+									{salesIndicator?.series[1]}%
+								</h5>
+							</div>
+						</Col>
+						<Col xs="4">
+							<div className="mt-4">
+								<p className="mb-2 text-truncate">
+									<i className="mdi mdi-circle text-warning me-1" />{' '}
+									Bloqueados
+								</p>
+								<h5 className="text-warning">
+									{salesIndicator?.series[2]}%
+								</h5>
 							</div>
 						</Col>
 					</Row>

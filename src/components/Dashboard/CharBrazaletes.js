@@ -1,10 +1,9 @@
 import ReactApexChart from 'react-apexcharts';
 import { Card, CardBody, Col, Row } from 'reactstrap';
-import { numberFormat } from '../../utils/numberFormat';
 import { months, years } from '../../constants/dates';
 import SpinLoader from '../Loader/SpinLoader';
 
-export default function ChartGanancias({
+export default function CharBrazaletes({
 	salesData,
 	revenueFilter,
 	setRevenueFilter,
@@ -66,53 +65,11 @@ export default function ChartGanancias({
 								</div>
 							</div>
 						</div>
-						<h4 className="card-title mb-4">Ganancia</h4>
+						<h4 className="card-title mb-4">Brazaletes</h4>
 					</div>
 
 					<Row>
-						<Col lg="4">
-							<div className="text-muted">
-								<div className="mb-4">
-									<p>Mes seleccionado</p>
-									<h4>
-										{numberFormat(
-											salesData?.currentRevenue
-										)}
-									</h4>
-									<div>
-										<span
-											className={`badge font-size-12 me-1 px-1 ${
-												salesData?.percentageDifference >=
-												0
-													? 'badge-soft-success'
-													: 'badge-soft-danger'
-											}`}
-										>
-											{`${
-												salesData?.percentageDifference >=
-												0
-													? '+'
-													: ''
-											} ${
-												salesData?.percentageDifference
-											}%`}
-										</span>
-										Del mes anterior
-									</div>
-								</div>
-
-								<div className="mt-4">
-									<p className="mb-2">Ultimo mes</p>
-									<h5>
-										{numberFormat(
-											salesData?.lastMonthRevenue
-										)}
-									</h5>
-								</div>
-							</div>
-						</Col>
-
-						<Col lg="8">
+						<Col lg="12">
 							<div id="line-chart" dir="ltr">
 								{salesData.loading ? (
 									<div
