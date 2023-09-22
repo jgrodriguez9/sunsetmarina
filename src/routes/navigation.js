@@ -76,6 +76,12 @@ export const navigations = [
 				route: '/clientcategory',
 				classIcon: null,
 			},
+			{
+				id: 'conceptoCaja',
+				label: 'Concepto de caja',
+				route: '/cashconcept',
+				classIcon: null,
+			},
 		],
 	},
 	{

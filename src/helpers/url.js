@@ -66,3 +66,6 @@ export const bracalet = '/bracelet';
 export const boardingPass = '/boardingPass';
 
 export const dashboard = '/dashboard';
+
+//caja de concepto
+export const cashConcept = '/cashConcept';

@@ -48,6 +48,8 @@ import BoardingPass from '../pages/Caja/BoardingPass';
 import CreateBoardingPass from '../pages/Caja/BoardingPass/Create';
 import NoAccessPage from '../pages/Utility/NoAccessPage';
 import { Navigate } from 'react-router-dom';
+import ConceptoCaja from '../pages/Catalogos/ConceptoCaja';
+import CreateConceptoCaja from '../pages/Catalogos/ConceptoCaja/Create';
 
 const authProtectedRoutes = [
 	{ path: '/dashboard', component: <Dashboard /> },
@@ -109,6 +111,14 @@ const adminRoutes = [
 		exact: true,
 		component: <EditCategoriaCliente />,
 	},
+	//concepto de caja
+	{ path: '/cashconcept', exact: true, component: <ConceptoCaja /> },
+	{
+		path: '/cashconcept/create',
+		exact: true,
+		component: <CreateConceptoCaja />,
+	},
+	{ path: '/cashconcept/edit/:id', exact: true, component: <EditCompania /> },
 
 	//end catalogos
 
