@@ -16,12 +16,13 @@ import SimpleTable from '../../../components/Tables/SimpleTable';
 import { DELETE_SUCCESS, ERROR_SERVER } from '../../../constants/messages';
 import { addMessage } from '../../../redux/messageSlice';
 import extractMeaningfulMessage from '../../../utils/extractMeaningfulMessage';
+import { deleteCashConcept } from '../../../helpers/catalogos/cashConcept';
 import {
-	deleteCashConcept,
-	getCashConceptListPaginado,
-} from '../../../helpers/catalogos/cashConcept';
+	deleteCashRegister,
+	getCashRegisterListPaginado,
+} from '../../../helpers/caja/cashRegister';
 
-function ConceptoCaja() {
+function CashRegister() {
 	const dispatch = useDispatch();
 	const [loading, setLoading] = useState(true);
 	const [items, setItems] = useState([]);
@@ -44,27 +45,6 @@ function ConceptoCaja() {
 			type: 'text',
 			value: '',
 		},
-		{
-			label: 'Habilitado',
-			field: 'enabled',
-			width: 2,
-			control: 'checkbox',
-			type: 'text',
-			value: '',
-		},
-		{
-			label: 'Tipo de operación',
-			field: 'typeOperation',
-			width: 3,
-			control: 'select',
-			type: '',
-			value: '',
-			valueSelect: null,
-			options: [
-				{ label: 'Salida', value: 'OUT' },
-				{ label: 'Entrada', value: 'IN' },
-			],
-		},
 	]);
 
 	const fetchList = async () => {
@@ -73,7 +53,7 @@ function ConceptoCaja() {
 			.map((key) => `${key}=${query[key]}`)
 			.join('&');
 		try {
-			const response = await getCashConceptListPaginado(`?${q}`);
+			const response = await getCashRegisterListPaginado(`?${q}`);
 			//console.log(response)
 			setItems(response.list);
 			setTotalPaginas(response.pagination.totalPages);
@@ -100,7 +80,7 @@ function ConceptoCaja() {
 	}, [JSON.stringify(query)]);
 
 	const editAction = (row) => {
-		navigate(`/cashconcept/edit/${row.original.id}`);
+		navigate(`/cashregister/edit/${row.original.id}`);
 	};
 
 	const columns = useMemo(
@@ -116,29 +96,21 @@ function ConceptoCaja() {
 				Header: 'No. cuenta',
 				accessor: 'accountNumber',
 				style: {
-					width: '20%',
+					width: '30%',
 				},
 			},
 			{
-				Header: 'Tipo de operación',
-				accessor: 'typeOperation',
-				style: {
-					width: '20%',
-				},
-				Cell: ({ value }) => (value === 'IN' ? 'Entrada' : 'Salida'),
-			},
-			{
-				Header: 'Habilitado',
-				accessor: 'enabled',
+				Header: 'Abierta',
+				accessor: 'open',
 				Cell: ({ row, value }) => (
 					<CellFormatEnable
 						value={value}
-						okText="Habilitado"
-						failText="No habilitado"
+						okText="Abierta"
+						failText="Cerrada"
 					/>
 				),
 				style: {
-					width: '10%',
+					width: '20%',
 				},
 			},
 			{
@@ -199,13 +171,13 @@ function ConceptoCaja() {
 	};
 
 	const goPageCreate = () => {
-		navigate('/cashconcept/create');
+		navigate('/cashregister/create');
 	};
 
 	const handleDelete = async () => {
 		setDeleting(true);
 		try {
-			await deleteCashConcept(selectedIdDelete);
+			await deleteCashRegister(selectedIdDelete);
 			fetchList();
 			setDeleting(false);
 			setShowDeleteDialog(false);
@@ -234,9 +206,8 @@ function ConceptoCaja() {
 				<TableLoader
 					columns={[
 						{ name: 'Descripción', width: '40%' },
-						{ name: 'No. cuenta', width: '20%' },
-						{ name: 'Tipo de operación', width: '20%' },
-						{ name: 'Habilitado', width: '10%' },
+						{ name: 'No. cuenta', width: '30%' },
+						{ name: 'Abierta', width: '20%' },
 						{ name: 'Acciones', width: '10%' },
 					]}
 				/>
@@ -278,8 +249,8 @@ function ConceptoCaja() {
 				<Container fluid>
 					{/* Render Breadcrumb */}
 					<Breadcrumbs
-						title={'Concepto de caja'}
-						breadcrumbItem={'Concepto de caja'}
+						title={'Registro de caja'}
+						breadcrumbItem={'Registro de caja'}
 						add={{
 							allow: true,
 							text: 'Crear Nuevo',
@@ -315,4 +286,4 @@ function ConceptoCaja() {
 	);
 }
 
-export default ConceptoCaja;
+export default CashRegister;

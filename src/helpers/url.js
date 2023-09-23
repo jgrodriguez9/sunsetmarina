@@ -67,5 +67,11 @@ export const boardingPass = '/boardingPass';
 
 export const dashboard = '/dashboard';
 
-//caja de concepto
+//concepto de caja
 export const cashConcept = '/cashConcept';
+
+//cash register
+export const cashRegister = '/cashRegister';
+
+//cash register control
+export const cashRegisterControl = '/cashRegisterControl';

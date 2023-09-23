@@ -14,22 +14,20 @@ import { addMessage } from '../../../redux/messageSlice';
 import extractMeaningfulMessage from '../../../utils/extractMeaningfulMessage';
 import { SELECT_OPTION } from '../../../constants/messages';
 import ButtonsDisabled from '../../Common/ButtonsDisabled';
-import {
-	saveCashConcept,
-	updateCashConcept,
-} from '../../../helpers/catalogos/cashConcept';
 import { typeOperation } from '../../../data/typeOperation';
+import {
+	saveCashRegister,
+	updateCashRegister,
+} from '../../../helpers/caja/cashRegister';
 
-export default function FormConceptoCaja({ item, btnTextSubmit = 'Aceptar' }) {
+export default function FormCashRegister({ item, btnTextSubmit = 'Aceptar' }) {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const formik = useFormik({
 		initialValues: {
 			id: item?.id ?? '',
-			typeOperation: item?.typeOperation ?? 'IN',
 			accountNumber: item?.accountNumber ?? '',
 			description: item?.description ?? '',
-			enabled: item?.enabled ?? true,
 		},
 		validationSchema: Yup.object({
 			description: Yup.string().required(FIELD_REQUIRED),
@@ -39,7 +37,7 @@ export default function FormConceptoCaja({ item, btnTextSubmit = 'Aceptar' }) {
 			if (values.id) {
 				//update
 				try {
-					let response = await updateCashConcept(values.id, values);
+					let response = await updateCashRegister(values.id, values);
 					if (response) {
 						dispatch(
 							addMessage({
@@ -47,7 +45,7 @@ export default function FormConceptoCaja({ item, btnTextSubmit = 'Aceptar' }) {
 								message: UPDATE_SUCCESS,
 							})
 						);
-						navigate('/cashconcept');
+						navigate('/cashregister');
 					} else {
 						dispatch(
 							addMessage({
@@ -69,7 +67,7 @@ export default function FormConceptoCaja({ item, btnTextSubmit = 'Aceptar' }) {
 			} else {
 				//save
 				try {
-					let response = await saveCashConcept(values);
+					let response = await saveCashRegister(values);
 					if (response) {
 						dispatch(
 							addMessage({
@@ -77,7 +75,7 @@ export default function FormConceptoCaja({ item, btnTextSubmit = 'Aceptar' }) {
 								message: SAVE_SUCCESS,
 							})
 						);
-						navigate('/cashconcept');
+						navigate('/cashregister');
 					} else {
 						dispatch(
 							addMessage({
@@ -144,48 +142,6 @@ export default function FormConceptoCaja({ item, btnTextSubmit = 'Aceptar' }) {
 						value={formik.values.accountNumber}
 					/>
 				</Col>
-				<Col xs="12" md="3">
-					<Label htmlFor="country" className="mb-0">
-						Tipo de operación
-					</Label>
-					<Select
-						value={
-							formik.values.typeOperation
-								? {
-										value: formik.values.typeOperation,
-										label: typeOperation.find(
-											(it) =>
-												it.value ===
-												formik.values.typeOperation
-										).label,
-								  }
-								: null
-						}
-						onChange={(value) => {
-							formik.setFieldValue(
-								'typeOperation',
-								value?.value ?? ''
-							);
-						}}
-						options={typeOperation}
-						classNamePrefix="select2-selection"
-						placeholder={SELECT_OPTION}
-					/>
-				</Col>
-				<Col xs="12" md="3">
-					<Label className="mb-0 opacity-0 d-block">Habilitado</Label>
-					<Input
-						id="enabled"
-						name="enabled"
-						type="checkbox"
-						className={`form-check-Input form-check-input`}
-						onChange={formik.handleChange}
-						checked={formik.values.enabled || false}
-					/>
-					<Label htmlFor={`enabled`} className="mb-0 ms-2">
-						Habilitado
-					</Label>
-				</Col>
 			</Row>
 			<hr />
 			{formik.isSubmitting ? (
@@ -210,7 +166,7 @@ export default function FormConceptoCaja({ item, btnTextSubmit = 'Aceptar' }) {
 					<Button color="primary" type="submit" className="me-2">
 						{btnTextSubmit}
 					</Button>
-					<Link to="/cashconcept" className="btn btn-danger">
+					<Link to="/cashregister" className="btn btn-danger">
 						Cancelar
 					</Link>
 				</div>

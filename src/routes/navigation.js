@@ -190,6 +190,18 @@ export const navigations = [
 				route: '/boardingpass',
 				classIcon: null,
 			},
+			{
+				id: 'cashRegister',
+				label: 'Registro de cajas',
+				route: '/cashregister',
+				classIcon: null,
+			},
+			{
+				id: 'cashRegisterControl',
+				label: 'Control de cajas',
+				route: '/cashregistercontrol',
+				classIcon: null,
+			},
 		],
 	},
 ];

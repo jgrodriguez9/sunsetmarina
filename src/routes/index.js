@@ -50,6 +50,11 @@ import NoAccessPage from '../pages/Utility/NoAccessPage';
 import { Navigate } from 'react-router-dom';
 import ConceptoCaja from '../pages/Catalogos/ConceptoCaja';
 import CreateConceptoCaja from '../pages/Catalogos/ConceptoCaja/Create';
+import EditConceptoCaja from '../pages/Catalogos/ConceptoCaja/Edit';
+import CashRegister from '../pages/Caja/CashRegister';
+import CreateCashRegister from '../pages/Caja/CashRegister/Create';
+import EditCashRegister from '../pages/Caja/CashRegister/Edit';
+import CashRegisterControl from '../pages/Caja/CashRegisterControl';
 
 const authProtectedRoutes = [
 	{ path: '/dashboard', component: <Dashboard /> },
@@ -118,7 +123,11 @@ const adminRoutes = [
 		exact: true,
 		component: <CreateConceptoCaja />,
 	},
-	{ path: '/cashconcept/edit/:id', exact: true, component: <EditCompania /> },
+	{
+		path: '/cashconcept/edit/:id',
+		exact: true,
+		component: <EditConceptoCaja />,
+	},
 
 	//end catalogos
 
@@ -182,6 +191,34 @@ const adminRoutes = [
 		path: '/boardingpass/create',
 		exact: true,
 		component: <CreateBoardingPass />,
+	},
+	//registro de caja
+	{ path: '/cashregister', exact: true, component: <CashRegister /> },
+	{
+		path: '/cashregister/create',
+		exact: true,
+		component: <CreateCashRegister />,
+	},
+	{
+		path: '/cashregister/edit/:id',
+		exact: true,
+		component: <EditCashRegister />,
+	},
+	//control de caja
+	{
+		path: '/cashregistercontrol',
+		exact: true,
+		component: <CashRegisterControl />,
+	},
+	{
+		path: '/cashregistercontrol/create',
+		exact: true,
+		component: <CreateCashRegister />,
+	},
+	{
+		path: '/cashregistercontrol/edit/:id',
+		exact: true,
+		component: <EditCashRegister />,
 	},
 	//end caja
 ];
