@@ -28,6 +28,12 @@ export const navigations = [
 				route: '/logs',
 				classIcon: null,
 			},
+			{
+				id: 'users',
+				label: 'Usuarios',
+				route: '/users',
+				classIcon: null,
+			},
 		],
 	},
 	{

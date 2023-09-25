@@ -55,6 +55,7 @@ import CashRegister from '../pages/Caja/CashRegister';
 import CreateCashRegister from '../pages/Caja/CashRegister/Create';
 import EditCashRegister from '../pages/Caja/CashRegister/Edit';
 import CashRegisterControl from '../pages/Caja/CashRegisterControl';
+import Users from '../pages/Seguridad/Users';
 
 const authProtectedRoutes = [
 	{ path: '/dashboard', component: <Dashboard /> },
@@ -73,6 +74,11 @@ const adminRoutes = [
 	//seguridad
 	//logs
 	{ path: '/logs', exact: true, component: <Logs /> },
+
+	//users
+	{ path: '/users', exact: true, component: <Users /> },
+
+	//end seguridad
 
 	//catalogos
 	//boadTypes

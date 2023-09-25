@@ -75,3 +75,6 @@ export const cashRegister = '/cashRegister';
 
 //cash register control
 export const cashRegisterControl = '/cashRegisterControl';
+
+//user
+export const user = '/user';

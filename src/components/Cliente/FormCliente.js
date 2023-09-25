@@ -73,6 +73,7 @@ export default function FormCliente({ item, btnTextSubmit = 'Aceptar' }) {
 			fax: item?.fax ?? '',
 			profilePicture: item?.profilePicture ?? '',
 			observations: item?.observations ?? '',
+			needInvoice: item?.needInvoice ?? false,
 		},
 		validationSchema: Yup.object({
 			name: Yup.string().required(FIELD_REQUIRED),

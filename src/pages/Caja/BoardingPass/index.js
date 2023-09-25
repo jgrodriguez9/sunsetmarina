@@ -72,7 +72,7 @@ function BoardingPass() {
 			.join('&');
 		try {
 			const response = await getBoardingPassListPaginado(`?${q}`);
-			console.log(response);
+			//console.log(response);
 			setItems(response.list);
 			setTotalPaginas(response.pagination.totalPages);
 			setTotalRegistros(response.pagination.totalCount);

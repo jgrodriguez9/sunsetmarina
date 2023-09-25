@@ -28,6 +28,7 @@ import FormOpenCashRegisterControl from '../../../components/Caja/CashRegisterCo
 import TooltipDescription from '../../../components/Common/TooltipDescription';
 import CloseCashRegister from '../../../components/Caja/CashRegisterControl/CloseCashRegister';
 import ApproveCloseCashRegister from '../../../components/Caja/CashRegisterControl/ApproveCloseCashRegister';
+import { getCashRegisterListPaginado } from '../../../helpers/caja/cashRegister';
 
 function CashRegisterControl() {
 	const dispatch = useDispatch();
@@ -47,13 +48,49 @@ function CashRegisterControl() {
 	const [filters, setFilters] = useState([
 		{
 			label: 'Caja',
-			field: 'description',
+			field: 'cashRegisterId',
 			width: 3,
-			control: 'input',
-			type: 'text',
+			control: 'select',
+			type: '',
 			value: '',
+			valueSelect: null,
+			options: [],
+		},
+		{
+			label: 'Fecha inicio',
+			field: 'startDate',
+			width: 3,
+			control: 'date',
+			type: '',
+			value: '',
+			valueDate: '',
+		},
+		{
+			label: 'Fecha fin',
+			field: 'endDate',
+			width: 3,
+			control: 'date',
+			type: '',
+			value: '',
+			valueDate: '',
 		},
 	]);
+
+	useEffect(() => {
+		const fetchApi = async () => {
+			try {
+				const response = await getCashRegisterListPaginado(
+					`?max=1000&page=1`
+				);
+				const copyFilters = [...filters];
+				copyFilters[0].options = response.list.map((item) => ({
+					label: item.description,
+					value: item.id,
+				}));
+			} catch (error) {}
+		};
+		fetchApi();
+	}, []);
 
 	const fetchList = async () => {
 		setLoading(true);
@@ -447,7 +484,7 @@ function CashRegisterControl() {
 			<DialogMain
 				open={openModalCash}
 				setOpen={setOpenModalCash}
-				title={'Cerrar caja'}
+				title={'Abrir caja'}
 				size="md"
 				children={
 					<FormOpenCashRegisterControl
