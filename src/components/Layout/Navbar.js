@@ -3,16 +3,18 @@ import { Collapse } from 'reactstrap';
 import { Link, useLocation } from 'react-router-dom';
 import classname from 'classnames';
 import { navigations } from '../../routes/navigation';
+import { useLayoutEffect } from 'react';
 
 const Navbar = (props) => {
 	const location = useLocation();
 	const [app, setapp] = useState(null);
 
-	useEffect(() => {
-		var matchingMenuItem = null;
-		var ul = document.getElementById('navigation');
-		var items = ul.getElementsByTagName('a');
-		for (var i = 0; i < items.length; ++i) {
+	useLayoutEffect(() => {
+		let matchingMenuItem = null;
+		const ul = document.getElementById('navigation');
+		const items = ul.getElementsByTagName('a');
+		removeActivation(items);
+		for (let i = 0; i < items.length; ++i) {
 			if (location.pathname === items[i].pathname) {
 				matchingMenuItem = items[i];
 				break;
@@ -21,7 +23,16 @@ const Navbar = (props) => {
 		if (matchingMenuItem) {
 			activateParentDropdown(matchingMenuItem);
 		}
-	});
+	}, [location.pathname]);
+
+	const removeActivation = (items) => {
+		console.log(items);
+		for (let i = 0; i < items.length; ++i) {
+			if (items[i].classList.contains('active')) {
+				items[i].classList.remove('active');
+			}
+		}
+	};
 
 	function activateParentDropdown(item) {
 		item.classList.add('active');
@@ -30,22 +41,6 @@ const Navbar = (props) => {
 			parent.classList.add('active'); // li
 			const parent2 = parent.parentElement;
 			parent2.classList.add('active'); // li
-			const parent3 = parent2.parentElement;
-			if (parent3) {
-				parent3.classList.add('active'); // li
-				const parent4 = parent3.parentElement;
-				if (parent4) {
-					parent4.classList.add('active'); // li
-					const parent5 = parent4.parentElement;
-					if (parent5) {
-						parent5.classList.add('active'); // li
-						const parent6 = parent5.parentElement;
-						if (parent6) {
-							parent6.classList.add('active'); // li
-						}
-					}
-				}
-			}
 		}
 		return false;
 	}
