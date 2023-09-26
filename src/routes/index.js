@@ -56,6 +56,7 @@ import CreateCashRegister from '../pages/Caja/CashRegister/Create';
 import EditCashRegister from '../pages/Caja/CashRegister/Edit';
 import CashRegisterControl from '../pages/Caja/CashRegisterControl';
 import Users from '../pages/Seguridad/Users';
+import CashMovement from '../pages/Caja/CashRegisterControl/Movement';
 
 const authProtectedRoutes = [
 	{ path: '/dashboard', component: <Dashboard /> },
@@ -225,6 +226,11 @@ const adminRoutes = [
 		path: '/cashregistercontrol/edit/:id',
 		exact: true,
 		component: <EditCashRegister />,
+	},
+	{
+		path: '/cashregistercontrol/movement/:id',
+		exact: true,
+		component: <CashMovement />,
 	},
 	//end caja
 ];

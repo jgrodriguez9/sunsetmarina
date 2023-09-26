@@ -29,9 +29,11 @@ import TooltipDescription from '../../../components/Common/TooltipDescription';
 import CloseCashRegister from '../../../components/Caja/CashRegisterControl/CloseCashRegister';
 import ApproveCloseCashRegister from '../../../components/Caja/CashRegisterControl/ApproveCloseCashRegister';
 import { getCashRegisterListPaginado } from '../../../helpers/caja/cashRegister';
+import { useNavigate } from 'react-router-dom';
 
 function CashRegisterControl() {
 	const dispatch = useDispatch();
+	const navigate = useNavigate();
 	const [loading, setLoading] = useState(true);
 	const [items, setItems] = useState([]);
 	const [totalPaginas, setTotalPaginas] = useState(0);
@@ -153,7 +155,7 @@ function CashRegisterControl() {
 				id: 'horaApertura',
 				Header: 'Hora apertura',
 				style: {
-					width: '10%',
+					width: '7%',
 				},
 				Cell: ({ row }) =>
 					moment(row.original.openDate, 'YYYY-MM-DDTHH:mm:ss').format(
@@ -266,14 +268,29 @@ function CashRegisterControl() {
 								id={`btn-span-approve-close-cash-${row.original.id}`}
 							/>
 						</span>
+						<span
+							onClick={() => {
+								navigate(
+									`/cashregistercontrol/movement/${row.original.id}`
+								);
+							}}
+							className="pe-2"
+							id={`btn-span-movement-cash-${row.original.id}`}
+						>
+							<i className={`fas fa-coins text-warning fs-5`} />
+							<TooltipDescription
+								text={`Movimientos`}
+								id={`btn-span-movement-cash-${row.original.id}`}
+							/>
+						</span>
 					</>
 				),
 				style: {
-					width: '5%',
+					width: '8%',
 				},
 			},
 		],
-		[]
+		[navigate]
 	);
 
 	const handlePageClick = (page) => {
@@ -321,13 +338,13 @@ function CashRegisterControl() {
 						{ name: 'Caja', width: '9%' },
 						{ name: 'Fecha', width: '8%' },
 						{ name: 'Usuario de apertura', width: '14%' },
-						{ name: 'Hora apertura', width: '10%' },
+						{ name: 'Hora apertura', width: '7%' },
 						{ name: 'Usuario cierre', width: '14%' },
 						{ name: 'Fecha cierre', width: '10%' },
 						{ name: 'Usuario aprobó', width: '14%' },
 						{ name: 'Apertura inicial', width: '8%' },
 						{ name: 'Monto total', width: '8%' },
-						{ name: 'Acciones', width: '5%' },
+						{ name: 'Acciones', width: '8%' },
 					]}
 				/>
 			</Col>

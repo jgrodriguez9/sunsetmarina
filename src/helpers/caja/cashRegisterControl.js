@@ -10,6 +10,8 @@ const closeCashRegisterControl = (id) =>
 	post(`${url.cashRegisterControl}/close/${id}`);
 const approveCloseCashRegisterControl = (id) =>
 	post(`${url.cashRegisterControl}/approve/${id}`);
+const getCashMovement = (id) =>
+	get(`${url.cashRegisterControl}/listMovement/${id}`);
 
 export {
 	getCashRegisterControl,
@@ -17,4 +19,5 @@ export {
 	openCashRegisterControl,
 	approveCloseCashRegisterControl,
 	closeCashRegisterControl,
+	getCashMovement,
 };

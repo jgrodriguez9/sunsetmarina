@@ -26,7 +26,6 @@ const Navbar = (props) => {
 	}, [location.pathname]);
 
 	const removeActivation = (items) => {
-		console.log(items);
 		for (let i = 0; i < items.length; ++i) {
 			if (items[i].classList.contains('active')) {
 				items[i].classList.remove('active');
