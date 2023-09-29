@@ -25,8 +25,7 @@ function Users() {
 	const fetchList = async () => {
 		try {
 			const response = await getUserList();
-			//console.log(response)
-			setItems(response);
+			setItems(response.list);
 			setLoading(false);
 		} catch (error) {
 			let message = ERROR_SERVER;
@@ -47,7 +46,7 @@ function Users() {
 	}, []);
 
 	const onHandleShowDialog = (row) => {
-		console.log(row);
+		//console.log(row);
 		setItem({
 			id: row.original.id,
 			cashRegister: row.original.cashRegister,
@@ -73,7 +72,7 @@ function Users() {
 			},
 			{
 				Header: 'Caja asignada',
-				accessor: 'cashRegister.name',
+				accessor: 'cashRegister.description',
 				style: {
 					width: '20%',
 				},

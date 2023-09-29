@@ -88,6 +88,12 @@ export const navigations = [
 				route: '/cashconcept',
 				classIcon: null,
 			},
+			{
+				id: 'currencyExchange',
+				label: 'Moneda',
+				route: '/currencyexchange',
+				classIcon: null,
+			},
 		],
 	},
 	{

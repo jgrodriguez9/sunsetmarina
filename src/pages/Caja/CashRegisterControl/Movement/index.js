@@ -11,6 +11,7 @@ import { ERROR_SERVER } from '../../../../constants/messages';
 import extractMeaningfulMessage from '../../../../utils/extractMeaningfulMessage';
 import { useDispatch } from 'react-redux';
 import { addMessage } from '../../../../redux/messageSlice';
+import moment from 'moment';
 
 const CashMovement = () => {
 	const dispatch = useDispatch();
@@ -47,14 +48,14 @@ const CashMovement = () => {
 				Header: 'Caja',
 				accessor: 'cashRegister.description',
 				style: {
-					width: '40%',
+					width: '30%',
 				},
 			},
 			{
 				Header: 'Concepto',
 				accessor: 'cashConcept.description',
 				style: {
-					width: '30%',
+					width: '20%',
 				},
 			},
 			{
@@ -64,6 +65,26 @@ const CashMovement = () => {
 					width: '15%',
 				},
 				Cell: ({ value }) => (value === 'IN' ? 'Entrada' : 'Salida'),
+			},
+			{
+				Header: 'Fecha',
+				accessor: 'dateCreated',
+				style: {
+					width: '10%',
+				},
+				Cell: ({ value }) =>
+					moment(value, 'YYYY-MM-DDTHH:mm').format('DD-MM-YYYY'),
+			},
+			{
+				Header: 'Hora',
+				id: 'lastUpdated',
+				style: {
+					width: '10%',
+				},
+				Cell: ({ row }) =>
+					moment(row.original.dateCreated, 'YYYY-MM-DDTHH:mm').format(
+						'HH:mm'
+					),
 			},
 			{
 				Header: 'Monto',
@@ -82,9 +103,11 @@ const CashMovement = () => {
 			<Col xs="12" xl="12">
 				<TableLoader
 					columns={[
-						{ name: 'Caja', width: '40%' },
-						{ name: 'Concepto', width: '30%' },
+						{ name: 'Caja', width: '30%' },
+						{ name: 'Concepto', width: '20%' },
 						{ name: 'Tipo operación', width: '15%' },
+						{ name: 'Fecha', width: '10%' },
+						{ name: 'Hora', width: '10%' },
 						{ name: 'Monto', width: '15%' },
 					]}
 				/>

@@ -78,3 +78,6 @@ export const cashRegisterControl = '/cashRegisterControl';
 
 //user
 export const user = '/user';
+
+//currency
+export const currency = '/currencyExchange';

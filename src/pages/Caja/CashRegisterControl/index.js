@@ -60,7 +60,7 @@ function CashRegisterControl() {
 		},
 		{
 			label: 'Fecha inicio',
-			field: 'startDate',
+			field: 'openDateStart',
 			width: 3,
 			control: 'date',
 			type: '',
@@ -69,7 +69,7 @@ function CashRegisterControl() {
 		},
 		{
 			label: 'Fecha fin',
-			field: 'endDate',
+			field: 'opendDateEnd',
 			width: 3,
 			control: 'date',
 			type: '',

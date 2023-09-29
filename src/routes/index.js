@@ -57,6 +57,8 @@ import EditCashRegister from '../pages/Caja/CashRegister/Edit';
 import CashRegisterControl from '../pages/Caja/CashRegisterControl';
 import Users from '../pages/Seguridad/Users';
 import CashMovement from '../pages/Caja/CashRegisterControl/Movement';
+import CurrencyExchange from '../pages/Catalogos/CurrencyExchange';
+import CreateCurrencyExchange from '../pages/Catalogos/CurrencyExchange/Create';
 
 const authProtectedRoutes = [
 	{ path: '/dashboard', component: <Dashboard /> },
@@ -134,6 +136,18 @@ const adminRoutes = [
 		path: '/cashconcept/edit/:id',
 		exact: true,
 		component: <EditConceptoCaja />,
+	},
+	//moneda
+	{ path: '/currencyexchange', exact: true, component: <CurrencyExchange /> },
+	{
+		path: '/currencyexchange/edit/:id',
+		exact: true,
+		component: <EditTipoBarco />,
+	},
+	{
+		path: '/currencyexchange/create',
+		exact: true,
+		component: <CreateCurrencyExchange />,
 	},
 
 	//end catalogos
