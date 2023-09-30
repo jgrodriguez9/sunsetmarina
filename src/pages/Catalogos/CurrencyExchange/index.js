@@ -9,14 +9,18 @@ import CardMain from '../../../components/Common/CardMain';
 import FormFilter from '../../../components/Common/FormFilter';
 import TableLoader from '../../../components/Loader/TablaLoader';
 import Paginate from '../../../components/Tables/Paginate';
-import { ERROR_SERVER } from '../../../constants/messages';
+import { ERROR_SERVER, UPDATE_SUCCESS } from '../../../constants/messages';
 import { addMessage } from '../../../redux/messageSlice';
 import extractMeaningfulMessage from '../../../utils/extractMeaningfulMessage';
-import { getCurrencyExchangeListPaginado } from '../../../helpers/catalogos/currencyExchange';
+import {
+	getCurrencyExchangeListPaginado,
+	updateCurrencyExchange,
+} from '../../../helpers/catalogos/currencyExchange';
 import { numberFormat } from '../../../utils/numberFormat';
 import EditableTable from '../../../components/Tables/EditableTable';
 import DialogMain from '../../../components/Common/DialogMain';
 import FormCurrencyExchange from '../../../components/Catalogo/Moneda/FormCurrencyExchange';
+import ContentLoader from '../../../components/Loader/ContentLoader';
 
 function CurrencyExchange() {
 	const dispatch = useDispatch();
@@ -24,7 +28,7 @@ function CurrencyExchange() {
 	const [items, setItems] = useState([]);
 	const [totalPaginas, setTotalPaginas] = useState(0);
 	const [totalRegistros, setTotalRegistros] = useState(10);
-	const navigate = useNavigate();
+	const [isSubmiting, setIsSubmiting] = useState(false);
 	const [openModal, setOpenModal] = useState(false);
 	const [query, setQuery] = useState({
 		max: totalRegistros,
@@ -82,7 +86,7 @@ function CurrencyExchange() {
 		const onBlur = () => {
 			if (value === '') {
 				setValue(initialValue);
-			} else {
+			} else if (value !== initialValue) {
 				table.options.meta?.updateData(
 					row.original.id,
 					column.id,
@@ -189,6 +193,44 @@ function CurrencyExchange() {
 		setOpenModal(true);
 	};
 
+	const updateCurr = async (id, columnId, value) => {
+		const data = {
+			id: id,
+			[columnId]: value,
+		};
+		setIsSubmiting(true);
+		try {
+			let response = await updateCurrencyExchange(id, data);
+			if (response) {
+				dispatch(
+					addMessage({
+						type: 'success',
+						message: UPDATE_SUCCESS,
+					})
+				);
+				fetchList();
+			} else {
+				dispatch(
+					addMessage({
+						type: 'error',
+						message: ERROR_SERVER,
+					})
+				);
+			}
+			setIsSubmiting(false);
+		} catch (error) {
+			let message = ERROR_SERVER;
+			message = extractMeaningfulMessage(error, message);
+			dispatch(
+				addMessage({
+					type: 'error',
+					message: message,
+				})
+			);
+			setIsSubmiting(false);
+		}
+	};
+
 	const cardHandleList = loading ? (
 		<Row>
 			<Col xs="12" xl="12">
@@ -206,8 +248,11 @@ function CurrencyExchange() {
 	) : (
 		<Row>
 			<Col xl="12">
-				<EditableTable columns={columns} data={items} />
-				{/* <SimpleTable columns={columns} data={items} /> */}
+				<EditableTable
+					columns={columns}
+					data={items}
+					updateFn={updateCurr}
+				/>
 			</Col>
 			{items.length > 0 && (
 				<Paginate
@@ -236,6 +281,7 @@ function CurrencyExchange() {
 
 	return (
 		<>
+			{isSubmiting && <ContentLoader text="Procesando solicitud" />}
 			<div className="page-content">
 				<Container fluid>
 					{/* Render Breadcrumb */}
@@ -272,7 +318,12 @@ function CurrencyExchange() {
 				setOpen={setOpenModal}
 				title={'Nueva moneda'}
 				size="lg"
-				children={<FormCurrencyExchange />}
+				children={
+					<FormCurrencyExchange
+						handleCloseModal={() => setOpenModal(false)}
+						fetchList={fetchList}
+					/>
+				}
 			/>
 		</>
 	);

@@ -33,6 +33,7 @@ import { useRef } from 'react';
 import SimpleLoad from '../../Loader/SimpleLoad';
 import SelectAsync from '../../Common/SelectAsync';
 import { getBracaletListPaginado } from '../../../helpers/contabilidad/bracalet';
+import { paymentFormOpt } from '../../../constants/paymentForm';
 
 export default function FormBoardingPass({ cajero = false }) {
 	const navigate = useNavigate();
@@ -125,6 +126,7 @@ export default function FormBoardingPass({ cajero = false }) {
 				id: '',
 			},
 			bracelets: [],
+			paymentForm: 'CASH',
 		},
 		validationSchema: Yup.object({
 			amount: Yup.number().required(FIELD_REQUIRED),
@@ -491,6 +493,29 @@ export default function FormBoardingPass({ cajero = false }) {
 								)}
 							</Col>
 							<Col xs="12" md="3">
+								<Label htmlFor="paymentForm" className="mb-0">
+									Forma de pago
+								</Label>
+								<Select
+									value={{
+										value: formik.values.paymentForm,
+										label: paymentFormOpt.find(
+											(it) =>
+												it.value ===
+												formik.values.paymentForm
+										).label,
+									}}
+									onChange={(value) => {
+										formik.setFieldValue(
+											'paymentForm',
+											value.value
+										);
+									}}
+									options={paymentFormOpt}
+									classNamePrefix="select2-selection"
+								/>
+							</Col>
+							<Col xs="12" md="3">
 								<Label htmlFor="amount" className="mb-0">
 									Total
 								</Label>
@@ -525,14 +550,18 @@ export default function FormBoardingPass({ cajero = false }) {
 										isClearable
 										value={brazaletes}
 										onChange={(value) => {
-											console.log(value);
-											setBrazaletes(value);
-											formik.setFieldValue(
-												'bracelets',
-												value.map((it) => ({
-													id: it.value,
-												}))
-											);
+											if (
+												value.length <=
+												formik.values.pax
+											) {
+												setBrazaletes(value);
+												formik.setFieldValue(
+													'bracelets',
+													value.map((it) => ({
+														id: it.value,
+													}))
+												);
+											}
 										}}
 										isMulti={true}
 									/>

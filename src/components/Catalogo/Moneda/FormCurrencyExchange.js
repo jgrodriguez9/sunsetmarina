@@ -1,11 +1,9 @@
 import { useFormik } from 'formik';
 import { useDispatch } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
 import { Button, Col, Form, Input, Label, Row } from 'reactstrap';
 import * as Yup from 'yup';
 import {
 	ERROR_SERVER,
-	FIELD_INTEGER,
 	FIELD_NUMERIC,
 	FIELD_REQUIRED,
 	SAVE_SUCCESS,
@@ -22,8 +20,9 @@ import {
 export default function FormCurrencyExchange({
 	item,
 	btnTextSubmit = 'Aceptar',
+	handleCloseModal,
+	fetchList,
 }) {
-	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
 	const formik = useFormik({
@@ -60,7 +59,8 @@ export default function FormCurrencyExchange({
 								message: UPDATE_SUCCESS,
 							})
 						);
-						navigate('/currencyexchange');
+						fetchList();
+						handleCloseModal();
 					} else {
 						dispatch(
 							addMessage({
@@ -90,7 +90,8 @@ export default function FormCurrencyExchange({
 								message: SAVE_SUCCESS,
 							})
 						);
-						navigate('/currencyexchange');
+						fetchList();
+						handleCloseModal();
 					} else {
 						dispatch(
 							addMessage({
@@ -241,9 +242,14 @@ export default function FormCurrencyExchange({
 					<Button color="primary" type="submit" className="me-2">
 						{btnTextSubmit}
 					</Button>
-					<Link to="/currencyexchange" className="btn btn-danger">
+					<Button
+						color="danger"
+						type="button"
+						className="me-2"
+						onClick={handleCloseModal}
+					>
 						Cancelar
-					</Link>
+					</Button>
 				</div>
 			)}
 		</Form>

@@ -5,16 +5,14 @@ import {
 } from '@tanstack/react-table';
 import { Col, Row } from 'reactstrap';
 
-export default function EditableTable({ columns, data }) {
+export default function EditableTable({ columns, data, updateFn }) {
 	const table = useReactTable({
 		data,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
 		meta: {
 			updateData: (id: number, columnId: string, value: string) => {
-				console.log(id);
-				console.log(columnId);
-				console.log(value);
+				updateFn(id, columnId, value);
 			},
 		},
 	});
