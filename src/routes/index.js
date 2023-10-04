@@ -59,6 +59,7 @@ import Users from '../pages/Seguridad/Users';
 import CashMovement from '../pages/Caja/CashRegisterControl/Movement';
 import CurrencyExchange from '../pages/Catalogos/CurrencyExchange';
 import CreateCurrencyExchange from '../pages/Catalogos/CurrencyExchange/Create';
+import CashSummary from '../pages/Caja/CashRegisterControl/Summary';
 
 const authProtectedRoutes = [
 	{ path: '/dashboard', component: <Dashboard /> },
@@ -245,6 +246,11 @@ const adminRoutes = [
 		path: '/cashregistercontrol/movement/:id',
 		exact: true,
 		component: <CashMovement />,
+	},
+	{
+		path: '/cashregistercontrol/summary/:id',
+		exact: true,
+		component: <CashSummary />,
 	},
 	//end caja
 ];

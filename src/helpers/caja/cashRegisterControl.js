@@ -12,6 +12,8 @@ const approveCloseCashRegisterControl = (id) =>
 	post(`${url.cashRegisterControl}/approve/${id}`);
 const getCashMovement = (id) =>
 	get(`${url.cashRegisterControl}/listMovement/${id}`);
+const getCashSummary = (id) =>
+	get(`${url.cashRegisterControl}/listSummary/${id}`);
 
 export {
 	getCashRegisterControl,
@@ -20,4 +22,5 @@ export {
 	approveCloseCashRegisterControl,
 	closeCashRegisterControl,
 	getCashMovement,
+	getCashSummary,
 };

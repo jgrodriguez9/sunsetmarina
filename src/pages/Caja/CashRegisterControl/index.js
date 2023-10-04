@@ -155,7 +155,7 @@ function CashRegisterControl() {
 				id: 'horaApertura',
 				Header: 'Hora apertura',
 				style: {
-					width: '7%',
+					width: '6%',
 				},
 				Cell: ({ row }) =>
 					moment(row.original.openDate, 'YYYY-MM-DDTHH:mm:ss').format(
@@ -193,7 +193,7 @@ function CashRegisterControl() {
 				Header: 'Monto inicial',
 				accessor: 'initialAmount',
 				style: {
-					width: '7%',
+					width: '6%',
 				},
 				Cell: ({ value }) => numberFormat(value),
 			},
@@ -283,10 +283,27 @@ function CashRegisterControl() {
 								id={`btn-span-movement-cash-${row.original.id}`}
 							/>
 						</span>
+						<span
+							onClick={() => {
+								navigate(
+									`/cashregistercontrol/summary/${row.original.id}`
+								);
+							}}
+							className="pe-2"
+							id={`btn-span-summary-cash-${row.original.id}`}
+						>
+							<i
+								className={`fas fa-balance-scale text-info fs-6`}
+							/>
+							<TooltipDescription
+								text={`Resumen de caja`}
+								id={`btn-span-summary-cash-${row.original.id}`}
+							/>
+						</span>
 					</>
 				),
 				style: {
-					width: '8%',
+					width: '10%',
 				},
 			},
 		],
@@ -338,13 +355,13 @@ function CashRegisterControl() {
 						{ name: 'Caja', width: '9%' },
 						{ name: 'Fecha', width: '8%' },
 						{ name: 'Usuario de apertura', width: '14%' },
-						{ name: 'Hora apertura', width: '7%' },
+						{ name: 'Hora apertura', width: '6%' },
 						{ name: 'Usuario cierre', width: '14%' },
-						{ name: 'Fecha cierre', width: '10%' },
+						{ name: 'Fecha cierre', width: '12%' },
 						{ name: 'Usuario aprobó', width: '14%' },
-						{ name: 'Apertura inicial', width: '8%' },
-						{ name: 'Monto total', width: '8%' },
-						{ name: 'Acciones', width: '8%' },
+						{ name: 'Monto inicial', width: '6%' },
+						{ name: 'Monto total', width: '7%' },
+						{ name: 'Acciones', width: '10%' },
 					]}
 				/>
 			</Col>
