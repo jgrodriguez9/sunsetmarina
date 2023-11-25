@@ -43,7 +43,6 @@ const Navbar = (props) => {
 		}
 		return false;
 	}
-
 	return (
 		<React.Fragment>
 			<div className="topnav">
@@ -58,72 +57,81 @@ const Navbar = (props) => {
 							id="topnav-menu-content"
 						>
 							<ul className="navbar-nav">
-								{navigations.map((navigation) => (
-									<li
-										key={navigation.id}
-										className={`nav-item dropdown`}
-									>
-										<Link
-											to={navigation.route}
-											onClick={(e) => {
-												if (
-													navigation.items.length > 0
-												) {
-													e.preventDefault();
-													if (app === navigation.id) {
-														setapp(null);
-													} else {
-														setapp(navigation.id);
-													}
-												}
-											}}
-											className="nav-link dropdown-togglez arrow-none"
+								{navigations
+									.filter((it) => it.show)
+									.map((navigation) => (
+										<li
+											key={navigation.id}
+											className={`nav-item dropdown`}
 										>
-											{navigation.classIcon && (
-												<i
-													className={
-														navigation.classIcon
-													}
-												/>
-											)}
-											{navigation.label}
-											{navigation.items.length > 0 && (
-												<div className="arrow-down"></div>
-											)}
-										</Link>
-										{navigation.items.length > 0 && (
-											<div
-												className={classname(
-													'dropdown-menu',
-													{
-														show:
+											<Link
+												to={navigation.route}
+												onClick={(e) => {
+													if (
+														navigation.items
+															.length > 0
+													) {
+														e.preventDefault();
+														if (
 															app ===
-															navigation.id,
+															navigation.id
+														) {
+															setapp(null);
+														} else {
+															setapp(
+																navigation.id
+															);
+														}
 													}
-												)}
+												}}
+												className="nav-link dropdown-togglez arrow-none"
 											>
-												{navigation.items.map(
-													(item) => (
-														<Link
-															to={item.route}
-															className="dropdown-item"
-															key={item.id}
-														>
-															{item.classIcon && (
-																<i
-																	className={
-																		item.classIcon
-																	}
-																/>
-															)}
-															{item.label}
-														</Link>
-													)
+												{navigation.classIcon && (
+													<i
+														className={
+															navigation.classIcon
+														}
+													/>
 												)}
-											</div>
-										)}
-									</li>
-								))}
+												{navigation.label}
+												{navigation.items.length >
+													0 && (
+													<div className="arrow-down"></div>
+												)}
+											</Link>
+											{navigation.items.length > 0 && (
+												<div
+													className={classname(
+														'dropdown-menu',
+														{
+															show:
+																app ===
+																navigation.id,
+														}
+													)}
+												>
+													{navigation.items
+														.filter((it) => it.show)
+														.map((item) => (
+															<Link
+																to={item.route}
+																className="dropdown-item"
+																key={item.id}
+															>
+																{item.classIcon && (
+																	<i
+																		className={
+																			item.classIcon
+																		}
+																	/>
+																)}
+																{item.label}
+															</Link>
+														))}
+												</div>
+											)}
+										</li>
+									))}
 							</ul>
 						</Collapse>
 					</nav>

@@ -1,9 +1,11 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import {
 	adminRoutes,
-	agentRoutes,
 	authProtectedRoutes,
-	managerRoutes,
+	cajeroRoutes,
+	companyRoutes,
+	contabilidadRoutes,
+	operacionesRoutes,
 	publicRoutes,
 } from './routes';
 import NonAuthLayout from './components/Layout/NonAuthLayout';
@@ -19,6 +21,13 @@ import { setUser } from './redux/userSlice';
 import NotFoundPage from './pages/Utility/NotFoundPage';
 import { ToastContainer, toast } from 'react-toastify';
 import { clearMessage } from './redux/messageSlice';
+import {
+	ROLE_ADMINISTRACION,
+	ROLE_CAJA,
+	ROLE_COMPANIA,
+	ROLE_CONTABILIDAD,
+	ROLE_OPERACIONES,
+} from './constants/roles';
 
 function App() {
 	const [authRoutes, setAuthRoutes] = useState(authProtectedRoutes);
@@ -27,21 +36,16 @@ function App() {
 	const dispatch = useDispatch();
 	useMemo(() => {
 		if (user.name) {
-			if (user.roles.includes('ROLE_Administracion')) {
-				setAuthRoutes([
-					...authProtectedRoutes,
-					...agentRoutes,
-					...managerRoutes,
-					...adminRoutes,
-				]);
-			} else if (user.roles.includes('ROLE_ADMIN')) {
-				setAuthRoutes([
-					...authProtectedRoutes,
-					...agentRoutes,
-					...managerRoutes,
-				]);
-			} else {
-				//setAuthRoutes([...authProtectedRoutes, ...agentRoutes]);
+			if (user.roles.includes(ROLE_ADMINISTRACION)) {
+				setAuthRoutes([...adminRoutes]);
+			} else if (user.roles.includes(ROLE_COMPANIA)) {
+				setAuthRoutes([...companyRoutes]);
+			} else if (user.roles.includes(ROLE_CONTABILIDAD)) {
+				setAuthRoutes([...contabilidadRoutes]);
+			} else if (user.roles.includes(ROLE_OPERACIONES)) {
+				setAuthRoutes([...operacionesRoutes]);
+			} else if (user.roles.includes(ROLE_CAJA)) {
+				setAuthRoutes([...cajeroRoutes]);
 			}
 		}
 	}, [user.name, user.roles]);

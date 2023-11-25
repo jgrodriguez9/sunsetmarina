@@ -1,6 +1,7 @@
 import { useSelector } from 'react-redux';
 import { Row, Col, Card } from 'reactstrap';
 import profileImg from '../../assets/images/profile-img.png';
+import TooltipDescription from '../Common/TooltipDescription';
 
 const WelcomeCard = () => {
 	const user = useSelector((state) => state.user);
@@ -13,7 +14,13 @@ const WelcomeCard = () => {
 						<Col xs="7">
 							<div className="text-primary p-3">
 								<h5 className="text-primary">{user?.name}</h5>
-								<p>{user?.roles.join(' | ')}</p>
+								<p className="text-truncate" id="roles">
+									{user?.roles.join(' | ')}
+								</p>
+								<TooltipDescription
+									text={user?.roles.join(' | ')}
+									id="roles"
+								/>
 							</div>
 						</Col>
 						<Col xs="5" className="align-self-end">

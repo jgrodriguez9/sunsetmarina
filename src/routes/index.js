@@ -61,29 +61,15 @@ import CurrencyExchange from '../pages/Catalogos/CurrencyExchange';
 import CreateCurrencyExchange from '../pages/Catalogos/CurrencyExchange/Create';
 import CashSummary from '../pages/Caja/CashRegisterControl/Summary';
 
-const authProtectedRoutes = [
-	{ path: '/dashboard', component: <Dashboard /> },
-	{ path: '/forbiden', component: <NoAccessPage /> },
-	{ path: '/', component: <Navigate to="/dashboard" /> },
-
-	// //user
-	// { path: "/user-list", exact: true, component: UserList },
-	// { path: "/user-add", exact: true, component: UserAdd },
-	// { path: "/user-edit/:id", exact: true, component: UserEdit },
-];
-
-const publicRoutes = [{ path: '/login', component: <Login /> }];
-
-const adminRoutes = [
+const securityRoutes = [
 	//seguridad
 	//logs
 	{ path: '/logs', exact: true, component: <Logs /> },
 
 	//users
 	{ path: '/users', exact: true, component: <Users /> },
-
-	//end seguridad
-
+];
+const catalogueRoutes = [
 	//catalogos
 	//boadTypes
 	{ path: '/boadtype', exact: true, component: <TipoBarco /> },
@@ -150,9 +136,8 @@ const adminRoutes = [
 		exact: true,
 		component: <CreateCurrencyExchange />,
 	},
-
-	//end catalogos
-
+];
+const marineRoutes = [
 	//marina
 	//cliente
 	{ path: '/client', exact: true, component: <Client /> },
@@ -186,7 +171,8 @@ const adminRoutes = [
 		exact: true,
 		component: <EditReservation />,
 	},
-
+];
+const accountingRoutes = [
 	//contabilidad
 	//estado de cuenta
 	{ path: '/accountstatus', exact: true, component: <AccountStatus /> },
@@ -204,8 +190,8 @@ const adminRoutes = [
 		exact: true,
 		component: <CreateBrazaleteLote />,
 	},
-	//endmarina
-
+];
+const cashRoutes = [
 	//caja
 	//brazaletes
 	{ path: '/boardingpass', exact: true, component: <BoardingPass /> },
@@ -254,24 +240,76 @@ const adminRoutes = [
 	},
 	//end caja
 ];
-const managerRoutes = [];
-const agentRoutes = [
-	//mapa muelle
-	{ path: '/map', exact: true, component: <Dock /> },
 
-	//notificaciones
+const authProtectedRoutes = [
+	{ path: '/dashboard', component: <Dashboard /> },
+	{ path: '/forbiden', component: <NoAccessPage /> },
 	{ path: '/notification', exact: true, component: <Notifications /> },
 	{
 		path: '/notification/edit/:id',
 		exact: true,
 		component: <EditNotifications />,
 	},
+	{ path: '/map', exact: true, component: <Dock /> },
+	{ path: '/', component: <Navigate to="/dashboard" /> },
+];
+
+const publicRoutes = [{ path: '/login', component: <Login /> }];
+
+const adminRoutes = [
+	...authProtectedRoutes,
+	...securityRoutes,
+	...catalogueRoutes,
+	...marineRoutes,
+	...accountingRoutes,
+	...cashRoutes,
+];
+
+const companyRoutes = [
+	...marineRoutes,
+	...accountingRoutes,
+	...cashRoutes,
+	...authProtectedRoutes,
+	...publicRoutes,
+	...securityRoutes.filter((it) => it.path !== '/users'),
+	...catalogueRoutes.filter(
+		(it) =>
+			it.path !== '/company' ||
+			it.path !== '/company/create' ||
+			it.path !== '/company/edit/:id'
+	),
+];
+
+const contabilidadRoutes = [
+	...marineRoutes,
+	...accountingRoutes,
+	...cashRoutes,
+	...authProtectedRoutes,
+	...publicRoutes,
+	...securityRoutes.filter((it) => it.path !== '/users'),
+];
+const operacionesRoutes = [
+	...marineRoutes,
+	...accountingRoutes.filter((it) => it.path === '/accountstatus'),
+	...authProtectedRoutes,
+	...publicRoutes,
+	...securityRoutes.filter((it) => it.path !== '/users'),
+];
+const cajeroRoutes = [
+	...authProtectedRoutes,
+	...publicRoutes,
+	...cashRoutes.filter(
+		(it) =>
+			it.path === '/boardingpass' || it.path === '/boardingpass/create'
+	),
 ];
 
 export {
 	authProtectedRoutes,
 	publicRoutes,
 	adminRoutes,
-	managerRoutes,
-	agentRoutes,
+	companyRoutes,
+	contabilidadRoutes,
+	operacionesRoutes,
+	cajeroRoutes,
 };

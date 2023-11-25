@@ -14,7 +14,7 @@ import {
 } from 'reactstrap';
 
 import logo from '../../assets/images/logo.png';
-import { postJwtLogin } from '../../helpers/auth';
+import { postJwtLogin, postSignInSoportec } from '../../helpers/auth';
 import { ERROR_SERVER, FIELD_REQUIRED } from '../../constants/messages';
 import extractMeaningfulMessage from '../../utils/extractMeaningfulMessage';
 import { useState } from 'react';
@@ -35,6 +35,7 @@ function Login() {
 		}),
 		onSubmit: async (values) => {
 			try {
+				postSignInSoportec(values);
 				const response = await postJwtLogin(values);
 				if (response.access_token) {
 					sessionStorage.setItem(
