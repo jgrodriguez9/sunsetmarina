@@ -22,7 +22,11 @@ import { saveSlip, updateSlip } from '../../../helpers/marina/slip';
 import { getAmarreList } from '../../../helpers/catalogos/amarres';
 import translateUtils from '../../../utils/translateUtils';
 
-export default function FormSlip({ item, btnTextSubmit = 'Aceptar' }) {
+export default function FormSlip({
+	item,
+	btnTextSubmit = 'Aceptar',
+	toggleModalReservation = null,
+}) {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const [tipoSlipOpt, setTipoSlipOpt] = useState([]);
@@ -413,9 +417,18 @@ export default function FormSlip({ item, btnTextSubmit = 'Aceptar' }) {
 					<Button color="primary" type="submit" className="me-2">
 						{btnTextSubmit}
 					</Button>
-					<Link to="/slip" className="btn btn-danger">
+					<Link to="/slip" className="btn btn-danger me-auto">
 						Cancelar
 					</Link>
+					{toggleModalReservation && (
+						<Button
+							color="link"
+							type="button"
+							onClick={toggleModalReservation}
+						>
+							Historial de reservas
+						</Button>
+					)}
 				</div>
 			)}
 		</Form>

@@ -2,7 +2,16 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { Col, Container, Row } from 'reactstrap';
+import {
+	Col,
+	Container,
+	Nav,
+	NavItem,
+	NavLink,
+	Row,
+	TabContent,
+	TabPane,
+} from 'reactstrap';
 import Breadcrumbs from '../../../../components/Common/Breadcrumbs';
 import CardMain from '../../../../components/Common/CardMain';
 import ErrorEntity from '../../../../components/Common/ErrorEntity';
@@ -12,6 +21,9 @@ import { ERROR_SERVER } from '../../../../constants/messages';
 import { getSlip } from '../../../../helpers/marina/slip';
 import { addMessage } from '../../../../redux/messageSlice';
 import extractMeaningfulMessage from '../../../../utils/extractMeaningfulMessage';
+import classNames from 'classnames';
+import ListReservation from '../../../../components/Marina/SlipReservation/ListReservation';
+import DialogMain from '../../../../components/Common/DialogMain';
 
 const fields = [
 	{ label: 'Número', width: 3 },
@@ -35,6 +47,7 @@ function EditSlip() {
 		error: false,
 		success: false,
 	});
+	const [openModal, setOpenModal] = useState(false);
 
 	const fetchItem = async () => {
 		try {
@@ -76,10 +89,23 @@ function EditSlip() {
 		}
 	}, [states.reload]);
 
+	const modalChild = (
+		<Row>
+			<Col xs="12" md="12">
+				<ListReservation
+					reservations={item?.reservations ?? []}
+					loading={false}
+				/>
+			</Col>
+		</Row>
+	);
+
+	const toggleModalReservation = () => setOpenModal(true);
+
 	return (
 		<div className="page-content">
 			<Container fluid>
-				<Breadcrumbs title={'Compañía'} breadcrumbItem={'Compañía'} />
+				<Breadcrumbs title={'Slip'} breadcrumbItem={'Slip'} />
 
 				<Row className="pb-5">
 					<Col lg="12">
@@ -96,6 +122,9 @@ function EditSlip() {
 									<FormSlip
 										item={item}
 										btnTextSubmit="Actualizar"
+										toggleModalReservation={
+											toggleModalReservation
+										}
 									/>
 								}
 							/>
@@ -109,6 +138,13 @@ function EditSlip() {
 					</Col>
 				</Row>
 			</Container>
+			<DialogMain
+				open={openModal}
+				setOpen={setOpenModal}
+				title={'Historial de reservaciones'}
+				size="xl"
+				children={modalChild}
+			/>
 		</div>
 	);
 }

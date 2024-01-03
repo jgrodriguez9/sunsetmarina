@@ -27,6 +27,7 @@ import classNames from 'classnames';
 import { getBoatCrewByBoat } from '../../helpers/marina/boatCrew';
 import SimpleTable from '../Tables/SimpleTable';
 import TableLoader from '../Loader/TablaLoader';
+import { getContactByClient } from '../../helpers/marina/contact';
 
 export default function DockImage() {
 	const dispatch = useDispatch();
@@ -37,6 +38,9 @@ export default function DockImage() {
 	const [loadingBoatCrew, setLoadingBoatCrew] = useState(true);
 	const [boatId, setBoatId] = useState(null);
 	const [tripulantes, setTripulantes] = useState([]);
+	const [customerId, setCustometId] = useState(null);
+	const [contacts, setContacts] = useState([]);
+	const [loadContact, setLoadContacts] = useState(false);
 	const toggleCustom = (tab) => {
 		if (customActiveTab !== tab) {
 			setcustomActiveTab(tab);
@@ -70,8 +74,34 @@ export default function DockImage() {
 		],
 		[]
 	);
+	const columnsContacts = useMemo(
+		() => [
+			{
+				Header: 'Nombre',
+				accessor: 'name',
+				style: {
+					width: '60%',
+				},
+			},
+			{
+				Header: 'Teléfono',
+				accessor: 'phone',
+				style: {
+					width: '20%',
+				},
+			},
+			{
+				Header: 'Parentesco',
+				accessor: 'description',
+				style: {
+					width: '20%',
+				},
+			},
+		],
+		[]
+	);
 	useEffect(() => {
-		if (boatId) {
+		if (boatId && customActiveTab === '2') {
 			setLoadingBoatCrew(true);
 			const fetchBoatCrewByBoatApi = async () => {
 				try {
@@ -85,22 +115,92 @@ export default function DockImage() {
 			};
 			fetchBoatCrewByBoatApi();
 		}
-	}, [boatId]);
+		if (customerId && customActiveTab === '3') {
+			setLoadContacts(true);
+			const fetchItemsForClientApi = async () => {
+				try {
+					const response = await getContactByClient(customerId);
+					setContacts(response.list);
+					setLoadContacts(false);
+				} catch (error) {
+					setContacts([]);
+					setLoadContacts(false);
+				}
+			};
+			fetchItemsForClientApi();
+		}
+	}, [boatId, customActiveTab, customerId]);
 	const children = (
 		<Row>
 			<Col xs="12" md="12">
-				<ListGroup flush className="fs-5">
-					<ListGroupItem className="d-flex justify-content-between">
-						<h5 className="m-0">No. Slip</h5>
-						<Badge color="secondary">{slipInfo?.slip}</Badge>
-					</ListGroupItem>
-					<ListGroupItem className="d-flex justify-content-between">
-						<h5 className="m-0">Estado</h5>
-						<Badge color={classBadge(slipInfo?.estado)}>
-							{slipStatus(slipInfo?.estado)}
-						</Badge>
-					</ListGroupItem>
-					{/* {slipInfo?.estado !== 'AVAILABLE' && (
+				<Nav tabs className="nav-tabs-custom">
+					<NavItem>
+						<NavLink
+							style={{ cursor: 'pointer' }}
+							className={classNames({
+								active: customActiveTab === '1',
+							})}
+							onClick={() => {
+								toggleCustom('1');
+							}}
+						>
+							<span className="d-none d-sm-block">
+								Información general
+							</span>
+						</NavLink>
+					</NavItem>
+					<NavItem>
+						<NavLink
+							style={{ cursor: 'pointer' }}
+							className={classNames({
+								active: customActiveTab === '2',
+							})}
+							onClick={() => {
+								toggleCustom('2');
+							}}
+						>
+							<span className="d-none d-sm-block">
+								Tripulación
+							</span>
+						</NavLink>
+					</NavItem>
+					<NavItem>
+						<NavLink
+							style={{ cursor: 'pointer' }}
+							className={classNames({
+								active: customActiveTab === '3',
+							})}
+							onClick={() => {
+								toggleCustom('3');
+							}}
+						>
+							<span className="d-none d-sm-block">Contactos</span>
+						</NavLink>
+					</NavItem>
+				</Nav>
+				<TabContent
+					activeTab={customActiveTab}
+					className="p-3 text-muted bg-light bg-soft"
+				>
+					<TabPane tabId="1">
+						<Row>
+							<Col xs="12" md="12">
+								<ListGroup flush className="fs-5">
+									<ListGroupItem className="d-flex justify-content-between">
+										<h5 className="m-0">No. Slip</h5>
+										<Badge color="secondary">
+											{slipInfo?.slip}
+										</Badge>
+									</ListGroupItem>
+									<ListGroupItem className="d-flex justify-content-between">
+										<h5 className="m-0">Estado</h5>
+										<Badge
+											color={classBadge(slipInfo?.estado)}
+										>
+											{slipStatus(slipInfo?.estado)}
+										</Badge>
+									</ListGroupItem>
+									{/* {slipInfo?.estado !== 'AVAILABLE' && (
 						<ListGroupItem className="d-flex justify-content-between">
 							<h5 className="m-0">
 								{slipInfo?.estado === 'RESERVED'
@@ -115,86 +215,65 @@ export default function DockImage() {
 							</span>
 						</ListGroupItem>
 					)} */}
-					{slipInfo?.arrivalDate && (
-						<ListGroupItem className="d-flex justify-content-between">
-							<h5 className="m-0">Fecha inicio</h5>
-							<span>
-								{moment(
-									slipInfo?.arrivalDate,
-									'YYYY-MM-DD'
-								).format('DD-MM-YYYY')}
-							</span>
-						</ListGroupItem>
-					)}
-					{slipInfo?.departureDate && (
-						<ListGroupItem className="d-flex justify-content-between">
-							<h5 className="m-0">Fecha fin</h5>
-							<span>
-								{moment(
-									slipInfo?.departureDate,
-									'YYYY-MM-DD'
-								).format('DD-MM-YYYY')}
-							</span>
-						</ListGroupItem>
-					)}
-					{slipInfo?.debt && (
-						<ListGroupItem className="d-flex justify-content-between">
-							<h5 className="m-0">Deuda</h5>
-							<span
-								className={`${
-									slipInfo.debt > 0
-										? 'text-danger'
-										: 'text-black'
-								}`}
-							>
-								{numberFormat(slipInfo?.debt)}
-							</span>
-						</ListGroupItem>
-					)}
-					{slipInfo?.propietario && (
-						<ListGroupItem className="d-flex justify-content-between">
-							<h5 className="m-0">Propietario</h5>
-							<span>{slipInfo?.propietario}</span>
-						</ListGroupItem>
-					)}
-					{slipInfo?.embarcacion && (
-						<ListGroupItem className="d-flex justify-content-between">
-							<h5 className="m-0">Embarcación</h5>
-							<span>{slipInfo?.embarcacion}</span>
-						</ListGroupItem>
-					)}
-					<ListGroupItem className="d-flex justify-content-between">
-						<h5 className="m-0">Dimensiones</h5>
-						<span>{slipInfo?.dimensiones}</span>
-					</ListGroupItem>
-				</ListGroup>
-			</Col>
-			<Col xs="12" md="12">
-				<Nav tabs className="nav-tabs-custom">
-					<NavItem>
-						<NavLink
-							style={{ cursor: 'pointer' }}
-							className={classNames({
-								active: customActiveTab === '1',
-							})}
-							onClick={() => {
-								toggleCustom('1');
-							}}
-						>
-							<span className="d-block d-sm-none">
-								<i className="mdi mdi-tshirt-crew-outline"></i>
-							</span>
-							<span className="d-none d-sm-block">
-								Tripulación
-							</span>
-						</NavLink>
-					</NavItem>
-				</Nav>
-				<TabContent
-					activeTab={customActiveTab}
-					className="p-3 text-muted bg-light bg-soft"
-				>
-					<TabPane tabId="1">
+									{slipInfo?.arrivalDate && (
+										<ListGroupItem className="d-flex justify-content-between">
+											<h5 className="m-0">
+												Fecha inicio
+											</h5>
+											<span>
+												{moment(
+													slipInfo?.arrivalDate,
+													'YYYY-MM-DD'
+												).format('DD-MM-YYYY')}
+											</span>
+										</ListGroupItem>
+									)}
+									{slipInfo?.departureDate && (
+										<ListGroupItem className="d-flex justify-content-between">
+											<h5 className="m-0">Fecha fin</h5>
+											<span>
+												{moment(
+													slipInfo?.departureDate,
+													'YYYY-MM-DD'
+												).format('DD-MM-YYYY')}
+											</span>
+										</ListGroupItem>
+									)}
+									{slipInfo?.debt && (
+										<ListGroupItem className="d-flex justify-content-between">
+											<h5 className="m-0">Deuda</h5>
+											<span
+												className={`${
+													slipInfo.debt > 0
+														? 'text-danger'
+														: 'text-black'
+												}`}
+											>
+												{numberFormat(slipInfo?.debt)}
+											</span>
+										</ListGroupItem>
+									)}
+									{slipInfo?.propietario && (
+										<ListGroupItem className="d-flex justify-content-between">
+											<h5 className="m-0">Propietario</h5>
+											<span>{slipInfo?.propietario}</span>
+										</ListGroupItem>
+									)}
+									{slipInfo?.embarcacion && (
+										<ListGroupItem className="d-flex justify-content-between">
+											<h5 className="m-0">Embarcación</h5>
+											<span>{slipInfo?.embarcacion}</span>
+										</ListGroupItem>
+									)}
+									<ListGroupItem className="d-flex justify-content-between">
+										<h5 className="m-0">Dimensiones</h5>
+										<span>{slipInfo?.dimensiones}</span>
+									</ListGroupItem>
+								</ListGroup>
+							</Col>
+						</Row>
+					</TabPane>
+					<TabPane tabId="2">
 						{loadingBoatCrew ? (
 							<TableLoader
 								columns={[
@@ -208,6 +287,25 @@ export default function DockImage() {
 							/>
 						) : (
 							<SimpleTable columns={columns} data={tripulantes} />
+						)}
+					</TabPane>
+					<TabPane tabId="3">
+						{loadContact ? (
+							<TableLoader
+								columns={[
+									{ name: 'Nombre', width: '60%' },
+									{ name: 'Teléfono', width: '20%' },
+									{
+										name: 'Parentesco',
+										width: '20%',
+									},
+								]}
+							/>
+						) : (
+							<SimpleTable
+								columns={columnsContacts}
+								data={contacts}
+							/>
 						)}
 					</TabPane>
 				</TabContent>
@@ -252,6 +350,7 @@ export default function DockImage() {
 		});
 		if (slip.status !== 'AVAILABLE' && slip?.reservations.length > 0) {
 			setBoatId(slip?.reservations[0].boat.id);
+			setCustometId(slip?.reservations[0].customer.id);
 		}
 
 		setShowDialog(true);

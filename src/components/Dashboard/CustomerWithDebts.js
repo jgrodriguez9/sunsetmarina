@@ -7,6 +7,7 @@ import { numberFormat } from '../../utils/numberFormat';
 import TableLoader from '../Loader/TablaLoader';
 import { getCustomerWithDebts } from '../../helpers/dashobard/stats';
 import Paginate from '../Tables/Paginate';
+import { Link } from 'react-router-dom';
 
 export default function CustomerWithDebts() {
 	const [items, setItems] = useState(lastTransaction);
@@ -26,6 +27,11 @@ export default function CustomerWithDebts() {
 				style: {
 					width: '15%',
 				},
+				Cell: ({ row, value }) => (
+					<Link to={`/client/edit/${row.original.customer?.id}`}>
+						{value}
+					</Link>
+				),
 			},
 			{
 				Header: 'Cliente',
@@ -70,7 +76,7 @@ export default function CustomerWithDebts() {
 					.map((key) => `${key}=${query[key]}`)
 					.join('&');
 				const response = await getCustomerWithDebts(`?${q}`);
-				//console.log(response);
+				// console.log(response);
 				setTotalPaginas(response.pagination.totalPages);
 				setTotalRegistros(response.pagination.totalCount);
 				setItems(response.list);

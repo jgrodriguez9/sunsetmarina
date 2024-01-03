@@ -1,7 +1,7 @@
 import { NumericFormat } from 'react-number-format';
 
 export const numberFormat = (number) => {
-	if (number) return '$0.00';
+	if (!number) return '$0.00';
 	return (
 		<NumericFormat
 			value={number >= 0 ? number : ''}
