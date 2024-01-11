@@ -3,7 +3,6 @@ import moment from 'moment';
 import { getFormaPago } from '../../utils/getFormaPago';
 
 function TicketPayment({ ticket }) {
-	console.log(ticket);
 	const styles = StyleSheet.create({
 		body: {
 			paddingTop: 35,
