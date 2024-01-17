@@ -7,7 +7,6 @@ import { getClientList } from '../../../helpers/marina/client';
 import CardMain from '../../../components/Common/CardMain';
 import CellActions from '../../../components/Tables/CellActions';
 import SimpleTable from '../../../components/Tables/SimpleTable';
-import { listClientAccounsStatus } from '../../../data/testData';
 import TableLoader from '../../../components/Loader/TablaLoader';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import ReportAccountStatus from '../../../components/Contabilidad/ReportAccountStatus';
@@ -17,11 +16,20 @@ import extractMeaningfulMessage from '../../../utils/extractMeaningfulMessage';
 import { useDispatch } from 'react-redux';
 import { addMessage } from '../../../redux/messageSlice';
 import { numberFormat } from '../../../utils/numberFormat';
+import {
+	getSlipNames,
+	getTotalBalanceReduce,
+	getTotalChargesReduce,
+	getTotalInterestReduce,
+	getTotalPaymentsReduce,
+} from '../../../utils/reportsUtils';
+import moment from 'moment';
 
 function AccountStatus() {
 	const dispatch = useDispatch();
 	const [loading, setLoading] = useState(false);
 	const [items, setItems] = useState([]);
+	const [pdfData, setPdfData] = useState(null);
 	const [filters, setFilters] = useState([
 		{
 			label: 'Cliente',
@@ -82,6 +90,35 @@ function AccountStatus() {
 				.join('&');
 			const response = await getAccountStatusList(`?${q}`);
 			setItems(response);
+			const customerSelected = filts.find(
+				(it) => it.field === 'customer'
+			);
+			const startDate = filts.find((it) => it.field === 'startDate');
+			const endDate = filts.find((it) => it.field === 'endDate');
+			const customerName =
+				customerSelected.options.find(
+					(it) => it.value === customerSelected.value
+				)?.label ?? '';
+			const totalCharges = getTotalChargesReduce(response);
+			const totalInterest = getTotalInterestReduce(response);
+			const totalPayments = getTotalPaymentsReduce(response);
+			const balance = getTotalBalanceReduce(response);
+			const periodDays = moment(endDate.value, 'DD/MM/YYYY').diff(
+				moment(startDate.value, 'DD/MM/YYYY'),
+				'days'
+			);
+			const slipNames = getSlipNames(response);
+			setPdfData({
+				client: customerName,
+				range: `${startDate.value} al ${endDate.value}`,
+				totalCharges,
+				totalInterest,
+				totalPayments,
+				balance,
+				periodDays,
+				slipNames,
+				slips: response,
+			});
 			setLoading(false);
 		} catch (error) {
 			let message = ERROR_SERVER;
@@ -150,7 +187,6 @@ function AccountStatus() {
 		],
 		[]
 	);
-
 	const carHandleEstadoCuenta = loading ? (
 		<Row>
 			<Col xs="12" xl="12">
@@ -173,7 +209,7 @@ function AccountStatus() {
 		<Row>
 			<Col xs="12" xl="12">
 				<PDFDownloadLink
-					document={<ReportAccountStatus pdfData={null} />}
+					document={<ReportAccountStatus pdfData={pdfData} />}
 					fileName={`estado_cuenta.pdf`}
 				>
 					{({ blob, url, loading, error }) =>
