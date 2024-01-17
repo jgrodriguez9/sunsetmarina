@@ -81,3 +81,6 @@ export const user = '/user';
 
 //currency
 export const currency = '/currencyExchange';
+
+//reporte de estado de cuenta
+export const account = '/account';
