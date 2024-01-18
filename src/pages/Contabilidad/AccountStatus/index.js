@@ -134,10 +134,6 @@ function AccountStatus() {
 		}
 	};
 
-	const report = (row) => {
-		console.log(row);
-	};
-
 	const handleFilter = (
 		<Row>
 			<Col>
@@ -170,16 +166,69 @@ function AccountStatus() {
 			{
 				id: 'acciones',
 				Header: 'Acciones',
-				Cell: ({ row }) => (
-					<>
-						<CellActions
-							edit={{ allow: false }}
-							del={{ allow: false }}
-							report={{ allow: true, action: report }}
-							row={row}
-						/>
-					</>
-				),
+				Cell: ({ row }) => {
+					const customerSelected = filters.find(
+						(it) => it.field === 'customer'
+					);
+					const startDate = filters.find(
+						(it) => it.field === 'startDate'
+					);
+					const endDate = filters.find(
+						(it) => it.field === 'endDate'
+					);
+					const customerName =
+						customerSelected.options.find(
+							(it) => it.value === customerSelected.value
+						)?.label ?? '';
+					const periodDays = moment(endDate.value, 'DD/MM/YYYY').diff(
+						moment(startDate.value, 'DD/MM/YYYY'),
+						'days'
+					);
+					const data = {
+						client: customerName,
+						range: `${startDate.value} al ${endDate.value}`,
+						totalCharges: row.original.reservation.totalCharges,
+						totalInterest: row.original.reservation.totalInterest,
+						totalPayments: row.original.reservation.totalPayments,
+						balance: row.original.reservation.balanceCustomer,
+						periodDays,
+						slipNames: row.original.reservation.slip,
+						slips: [row.original],
+					};
+					return (
+						<PDFDownloadLink
+							document={<ReportAccountStatus pdfData={data} />}
+							fileName={`${moment().format(
+								'DDMMYYYY'
+							)}_estado_cuenta.pdf`}
+						>
+							{({ blob, url, loading, error }) =>
+								loading ? (
+									<Button
+										color="secondary"
+										outline
+										disabled
+										type="button"
+										size="sm"
+									>
+										<i className="far fa-file-pdf" />{' '}
+										Cargando documento
+									</Button>
+								) : (
+									<Button
+										color="info"
+										outline
+										className="mb-2"
+										size="sm"
+									>
+										<i className="far fa-file-pdf" />{' '}
+										Descargar
+									</Button>
+								)
+							}
+						</PDFDownloadLink>
+					);
+				},
 				style: {
 					width: '10%',
 				},
@@ -210,7 +259,9 @@ function AccountStatus() {
 			<Col xs="12" xl="12">
 				<PDFDownloadLink
 					document={<ReportAccountStatus pdfData={pdfData} />}
-					fileName={`estado_cuenta.pdf`}
+					fileName={`${moment().format(
+						'DDMMYYYY'
+					)}_estado_cuenta_general.pdf`}
 				>
 					{({ blob, url, loading, error }) =>
 						loading ? (

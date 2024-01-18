@@ -108,12 +108,6 @@ function ReportAccountStatus({ pdfData }) {
 						<View style={styles.flexRow}>
 							<View style={{ paddingRight: 80 }}>
 								<Text>RESUMEN DEL PERIODO</Text>
-								<View style={{ marginTop: 10 }}>
-									<Text style={{ width: 150 }}>
-										Saldo inicial
-									</Text>
-									<Text></Text>
-								</View>
 								<View
 									style={[styles.flexRow, { marginTop: 5 }]}
 								>
@@ -133,14 +127,6 @@ function ReportAccountStatus({ pdfData }) {
 									<Text>
 										{jsFormatNumber(pdfData.totalInterest)}
 									</Text>
-								</View>
-								<View
-									style={[styles.flexRow, { marginTop: 5 }]}
-								>
-									<Text style={{ width: 150 }}>
-										IVA de intereses moratorio
-									</Text>
-									<Text></Text>
 								</View>
 								<View
 									style={[styles.flexRow, { marginTop: 5 }]}
