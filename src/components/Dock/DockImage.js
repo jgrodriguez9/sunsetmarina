@@ -11,7 +11,7 @@ import {
 	TabContent,
 	TabPane,
 } from 'reactstrap';
-import marinaMap from '../../assets/images/dock/map.svg';
+import marinaMap from '../../assets/images/dock/maplast.webp';
 import DialogMain from '../Common/DialogMain';
 import { ERROR_SERVER } from '../../constants/messages';
 import extractMeaningfulMessage from '../../utils/extractMeaningfulMessage';
@@ -393,10 +393,30 @@ export default function DockImage() {
 										top: `${slip.yPosition}px`,
 										width: `${slip.width}px`,
 										height: `${slip.height}px`,
+										display: 'flex',
+										justifyContent: 'center',
+										alignItems: 'center',
 									}}
 									title={slip.number}
 									onClick={(e) => showDialogInfo(slip)}
-								/>
+								>
+									<span
+										style={{
+											color: '#fff',
+											background: '#a9752e',
+											fontWeight: 600,
+											fontSize: '12px',
+											borderRadius: '50%',
+											width: '20px',
+											height: '20px',
+											display: 'flex',
+											justifyContent: 'center',
+											alignItems: 'center',
+										}}
+									>
+										{slip.code}
+									</span>
+								</div>
 							))}
 							<img
 								src={marinaMap}
