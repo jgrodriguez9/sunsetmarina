@@ -11,7 +11,7 @@ import {
 	TabContent,
 	TabPane,
 } from 'reactstrap';
-import marinaMap from '../../assets/images/dock/maplast.webp';
+import marinaMap from '../../assets/images/dock/maplast2.webp';
 import DialogMain from '../Common/DialogMain';
 import { ERROR_SERVER } from '../../constants/messages';
 import extractMeaningfulMessage from '../../utils/extractMeaningfulMessage';
@@ -405,7 +405,7 @@ export default function DockImage() {
 											color: '#fff',
 											background: '#a9752e',
 											fontWeight: 600,
-											fontSize: '12px',
+											fontSize: '70%',
 											borderRadius: '50%',
 											width: '20px',
 											height: '20px',
