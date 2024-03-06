@@ -103,14 +103,18 @@ function AccountStatus() {
 			const totalInterest = getTotalInterestReduce(response);
 			const totalPayments = getTotalPaymentsReduce(response);
 			const balance = getTotalBalanceReduce(response);
-			const periodDays = moment(endDate.value, 'DD/MM/YYYY').diff(
-				moment(startDate.value, 'DD/MM/YYYY'),
-				'days'
-			);
+			const periodDays = endDate.value
+				? moment(endDate.value, 'DD/MM/YYYY').diff(
+						moment(startDate.value, 'DD/MM/YYYY'),
+						'days'
+				  )
+				: '-';
 			const slipNames = getSlipNames(response);
 			setPdfData({
 				client: customerName,
-				range: `${startDate.value} al ${endDate.value}`,
+				range: startDate.value
+					? `${startDate.value} al ${endDate.value}`
+					: '-',
 				totalCharges,
 				totalInterest,
 				totalPayments,
