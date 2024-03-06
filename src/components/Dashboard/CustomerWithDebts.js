@@ -76,7 +76,6 @@ export default function CustomerWithDebts() {
 					.map((key) => `${key}=${query[key]}`)
 					.join('&');
 				const response = await getCustomerWithDebts(`?${q}`);
-				// console.log(response);
 				setTotalPaginas(response.pagination.totalPages);
 				setTotalRegistros(response.pagination.totalCount);
 				setItems(response.list);

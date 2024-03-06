@@ -7,7 +7,6 @@ import SimpleTable from '../../Tables/SimpleTable';
 import { Link } from 'react-router-dom';
 
 function ListReservation({ loading = false, reservations = [] }) {
-	console.log(reservations);
 	const columns = useMemo(
 		() => [
 			{

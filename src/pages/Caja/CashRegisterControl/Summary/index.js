@@ -24,7 +24,6 @@ const CashSummary = () => {
 		const fetchApi = async () => {
 			try {
 				const response = await getCashSummary(id);
-				console.log(response);
 				setItemsByPaymentType(response.cashMovementsPaymentType);
 				setItemsByConcept(response.cashMovementsConcept);
 				setLoading(false);

@@ -31,7 +31,6 @@ export default function FormOpenCashRegisterControl({
 				const response = await getCashRegisterListPaginado(
 					`?max=1000&page=1`
 				);
-				//console.log(response)
 				setCashRegisterOpt(
 					response.list.map((item) => ({
 						label: item.description,

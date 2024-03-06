@@ -11,8 +11,6 @@ import jsFormatNumber from '../../utils/jsFormatNumber';
 import moment from 'moment';
 
 function ReportAccountStatus({ pdfData }) {
-	console.log('entro');
-	console.log(pdfData);
 	const styles = StyleSheet.create({
 		body: {
 			paddingTop: 30,

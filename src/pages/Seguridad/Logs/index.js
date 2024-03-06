@@ -86,7 +86,6 @@ function Logs() {
 			.join('&');
 		try {
 			const response = await getLogsListPaginado(`?${q}`);
-			//console.log(response)
 			setItems(response.list);
 			setTotalPaginas(response.pagination.totalPages);
 			setTotalRegistros(response.pagination.totalCount);

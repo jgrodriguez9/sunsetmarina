@@ -4,7 +4,7 @@ export const numberFormat = (number) => {
 	if (!number) return '$0.00';
 	return (
 		<NumericFormat
-			value={number >= 0 ? number : ''}
+			value={number}
 			displayType="text"
 			prefix="$"
 			thousandSeparator={true}

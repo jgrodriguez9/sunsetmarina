@@ -122,8 +122,7 @@ export default function FormReserva({ item, btnTextSubmit = 'Aceptar' }) {
 			}),
 		}),
 		onSubmit: async (values) => {
-			//validaciones antes de enviarlo
-			console.log(values);
+			//validaciones antes de enviarl
 			const data = {};
 			Object.entries(getObjectValid(values)).forEach((entry) => {
 				const [key, value] = entry;

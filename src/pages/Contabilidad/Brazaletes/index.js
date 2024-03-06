@@ -48,7 +48,6 @@ function Brazaletes() {
 			.join('&');
 		try {
 			const response = await getBracaletListPaginado(`?${q}`);
-			console.log(response);
 			setItems(response.list);
 			setTotalPaginas(response.pagination.totalPages);
 			setTotalRegistros(response.pagination.totalCount);

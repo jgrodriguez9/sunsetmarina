@@ -21,20 +21,22 @@ import { ERROR_SERVER } from '../../../../constants/messages';
 import { getSlip } from '../../../../helpers/marina/slip';
 import { addMessage } from '../../../../redux/messageSlice';
 import extractMeaningfulMessage from '../../../../utils/extractMeaningfulMessage';
-import classNames from 'classnames';
 import ListReservation from '../../../../components/Marina/SlipReservation/ListReservation';
 import DialogMain from '../../../../components/Common/DialogMain';
 
 const fields = [
-	{ label: 'Número', width: 3 },
-	{ label: 'Tipo de slip', width: 3 },
-	{ label: 'Muelle', width: 3 },
-	{ label: null, width: 3 },
-	{ label: 'Precio', width: 3 },
+	{ label: 'Número', width: 2 },
+	{ label: 'Tipo de slip', width: 2 },
+	{ label: 'Muelle', width: 2 },
+	{ label: 'Estado', width: 2 },
+	{ label: 'Tipo de rampa', width: 2 },
+	{ label: 'Precio', width: 2 },
 	{ label: 'Amperage', width: 2 },
 	{ label: 'Voltage', width: 2 },
 	{ label: 'Posición X', width: 2 },
 	{ label: 'Posición Y', width: 2 },
+	{ label: 'Altura', width: 1 },
+	{ label: 'Ancho', width: 1 },
 	{ label: 'Observaciones', width: 5 },
 ];
 function EditSlip() {

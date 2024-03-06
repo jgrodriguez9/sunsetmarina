@@ -54,7 +54,6 @@ function CashRegister() {
 			.join('&');
 		try {
 			const response = await getCashRegisterListPaginado(`?${q}`);
-			//console.log(response)
 			setItems(response.list);
 			setTotalPaginas(response.pagination.totalPages);
 			setTotalRegistros(response.pagination.totalCount);

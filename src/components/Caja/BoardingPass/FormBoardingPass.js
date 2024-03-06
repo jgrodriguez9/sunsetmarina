@@ -146,7 +146,6 @@ export default function FormBoardingPass({ cajero = false }) {
 				.min(1, 'Al menos debe escoger 1 brazalete'),
 		}),
 		onSubmit: async (values) => {
-			//console.log(values);
 			try {
 				let response = await saveBoardingPass(values);
 				if (response) {
@@ -180,7 +179,6 @@ export default function FormBoardingPass({ cajero = false }) {
 					);
 				}
 			} catch (error) {
-				//console.log('entro aqui');
 				let message = ERROR_SERVER;
 				message = extractMeaningfulMessage(error, message);
 				dispatch(
@@ -332,7 +330,6 @@ export default function FormBoardingPass({ cajero = false }) {
 			</div>
 		</>
 	);
-	//console.log(formik.values);
 	const calcularPrice = async (pax) => {
 		setIsCalculatingPrice(true);
 		try {
@@ -342,13 +339,10 @@ export default function FormBoardingPass({ cajero = false }) {
 			formik.setFieldValue('amount', response.price);
 			setIsCalculatingPrice(false);
 		} catch (error) {
-			//console.log(error);
 			setIsCalculatingPrice(false);
 			formik.setFieldValue('amount', 0);
 		}
 	};
-
-	//console.log(formik.isValid);
 
 	return (
 		<>

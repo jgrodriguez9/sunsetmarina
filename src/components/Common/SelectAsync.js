@@ -27,7 +27,6 @@ const SelectAsync = ({
 		timer.current = setTimeout(() => {
 			fnFilter(`${query}&${keyCompare}=${keyword}`)
 				.then((options) => {
-					console.log(options);
 					if (!options.list?.length) {
 						messageRef.current = MESSAGE.noOption;
 					}

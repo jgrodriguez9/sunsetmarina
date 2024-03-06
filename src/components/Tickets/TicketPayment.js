@@ -1,6 +1,7 @@
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import moment from 'moment';
 import { getFormaPago } from '../../utils/getFormaPago';
+import { months } from '../../constants/dates';
 
 function TicketPayment({ ticket }) {
 	const styles = StyleSheet.create({
@@ -59,6 +60,15 @@ function TicketPayment({ ticket }) {
 		if (number) return formatter.format(number);
 		return '$0.00';
 	};
+	const getConcept = (monthYear) => {
+		try {
+			const monthYears = monthYear.split('-');
+			const m = months.find((it) => it.value === parseInt(monthYears[1]));
+			return `${m.label}-${monthYears[0]}`;
+		} catch (error) {
+			return '';
+		}
+	};
 	return (
 		<Document>
 			<Page size="A4" style={styles.body}>
@@ -69,7 +79,7 @@ function TicketPayment({ ticket }) {
 					<Text
 						style={{ fontSize: 12, margin: 'auto', marginTop: 10 }}
 					>
-						COD: {ticket.payment.code}
+						FOLIO: {ticket.payment.code}
 					</Text>
 					<Text
 						style={{
@@ -127,7 +137,7 @@ function TicketPayment({ ticket }) {
 							key={`charge-${idx}`}
 						>
 							<View style={stylesTable.row1}>
-								<Text>{ticket.concept}</Text>
+								<Text>{getConcept(it.monthYear)}</Text>
 							</View>
 							<View style={stylesTable.row2}>
 								<Text>

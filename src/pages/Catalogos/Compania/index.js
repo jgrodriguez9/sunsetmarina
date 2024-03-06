@@ -80,7 +80,6 @@ function TipoBarco() {
 			.join('&');
 		try {
 			const response = await getCompaniaListPaginado(`?${q}`);
-			//console.log(response)
 			setItems(response.list);
 			setTotalPaginas(response.pagination.totalPages);
 			setTotalRegistros(response.pagination.totalCount);

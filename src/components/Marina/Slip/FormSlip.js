@@ -21,6 +21,7 @@ import Select from 'react-select';
 import { saveSlip, updateSlip } from '../../../helpers/marina/slip';
 import { getAmarreList } from '../../../helpers/catalogos/amarres';
 import translateUtils from '../../../utils/translateUtils';
+import { rampTypesOpt } from '../../../constants/rampTypes';
 
 export default function FormSlip({
 	item,
@@ -31,6 +32,7 @@ export default function FormSlip({
 	const dispatch = useDispatch();
 	const [tipoSlipOpt, setTipoSlipOpt] = useState([]);
 	const [tipoSlipDefault, setTipoSlipDefault] = useState(null);
+	const [tipoRampaDefault, setTipoRampaDefault] = useState(null);
 	const [muelleOpt, setMuelleOpt] = useState([]);
 	const [muelleDefault, setMuelleDefault] = useState(null);
 	useEffect(() => {
@@ -46,6 +48,14 @@ export default function FormSlip({
 			setMuelleDefault({
 				value: item.pier.id,
 				label: muelleOpt.find((c) => c.value === item.pier.id)?.label,
+			});
+		}
+		if (item) {
+			setTipoRampaDefault({
+				value: item.rampType,
+				label:
+					rampTypesOpt.find((c) => c.value === item.rampType)
+						?.label ?? null,
 			});
 		}
 	}, [item, tipoSlipOpt, muelleOpt]);
@@ -93,6 +103,7 @@ export default function FormSlip({
 			height: item?.height ?? '',
 			width: item?.width ?? '',
 			status: item?.status ?? 'AVAILABLE',
+			rampType: item?.rampType ?? '',
 		},
 		validationSchema: Yup.object({
 			code: Yup.string().required(FIELD_REQUIRED),
@@ -194,7 +205,7 @@ export default function FormSlip({
 			}}
 		>
 			<Row>
-				<Col xs="12" md="3">
+				<Col xs="12" md="2">
 					<Label htmlFor="code" className="mb-0">
 						Número
 					</Label>
@@ -213,7 +224,7 @@ export default function FormSlip({
 						</div>
 					)}
 				</Col>
-				<Col xs="12" md="3">
+				<Col xs="12" md="2">
 					<Label htmlFor="slipType" className="mb-0">
 						Tipo de slip
 					</Label>
@@ -236,7 +247,7 @@ export default function FormSlip({
 						</div>
 					)}
 				</Col>
-				<Col xs="12" md="3">
+				<Col xs="12" md="2">
 					<Label htmlFor="pier" className="mb-0">
 						Muelle
 					</Label>
@@ -256,7 +267,7 @@ export default function FormSlip({
 						</div>
 					)}
 				</Col>
-				<Col xs="12" md="3">
+				<Col xs="12" md="2">
 					<Label htmlFor="status" className="mb-0">
 						Estado
 					</Label>
@@ -264,8 +275,29 @@ export default function FormSlip({
 						{translateUtils(formik.values?.status ?? 'AVAILABLE')}
 					</div>
 				</Col>
-			</Row>
-			<Row>
+				<Col xs="12" md="2">
+					<Label htmlFor="slipType" className="mb-0">
+						Tipo de rampa
+					</Label>
+					<Select
+						value={tipoRampaDefault}
+						onChange={(value) => {
+							setTipoRampaDefault(value);
+							formik.setFieldValue(
+								'rampType',
+								value?.value ?? ''
+							);
+						}}
+						options={rampTypesOpt}
+						classNamePrefix="select2-selection"
+						placeholder={SELECT_OPTION}
+					/>
+					{formik.errors.slipType && (
+						<div className="invalid-tooltip d-block">
+							{formik.errors.slipType?.id}
+						</div>
+					)}
+				</Col>
 				<Col xs="12" md="2">
 					<Label htmlFor="price" className="mb-0">
 						Precio
@@ -285,6 +317,8 @@ export default function FormSlip({
 						</div>
 					)}
 				</Col>
+			</Row>
+			<Row>
 				<Col xs="12" md="2">
 					<Label htmlFor="amperage" className="mb-0">
 						Amperage

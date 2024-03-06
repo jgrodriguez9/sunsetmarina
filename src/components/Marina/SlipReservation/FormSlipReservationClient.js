@@ -190,7 +190,11 @@ export default function FormSlipReservationClient({
 
 	//checamos precio y si es valid el slip
 	useEffect(() => {
-		if (formik.values.boat.id && formik.values.slip.id) {
+		if (
+			!formik.values.id &&
+			formik.values.boat.id &&
+			formik.values.slip.id
+		) {
 			const fecthPriceAndValid = async () => {
 				setCheckValidationSlip((prev) => ({
 					...prev,

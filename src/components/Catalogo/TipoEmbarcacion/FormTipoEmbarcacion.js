@@ -35,7 +35,6 @@ export default function FormTipoEmbarcacion({
 		}),
 		onSubmit: async (values) => {
 			//validaciones antes de enviarlo
-			console.log(values);
 			if (values.id) {
 				//update
 				try {

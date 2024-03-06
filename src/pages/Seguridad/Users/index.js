@@ -46,7 +46,6 @@ function Users() {
 	}, []);
 
 	const onHandleShowDialog = (row) => {
-		//console.log(row);
 		setItem({
 			id: row.original.id,
 			cashRegister: row.original.cashRegister,

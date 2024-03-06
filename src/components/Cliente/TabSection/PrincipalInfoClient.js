@@ -23,15 +23,12 @@ export default function PrincipalInfoClient({ formik, item, setFile }) {
 					.filter((it) => it.enabled)
 					.map((it) => ({ value: it.id, label: it.name }))
 			);
-		} catch (error) {
-			console.log(error);
-		}
+		} catch (error) {}
 	};
 
 	useEffect(() => {
 		fecthClientsCategoryAPi();
 	}, []);
-	//console.log(formik.values)
 	return (
 		<Row>
 			<Col xs="12" md="12"></Col>

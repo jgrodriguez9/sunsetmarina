@@ -260,9 +260,7 @@ const ChargesCanvas = ({
 																'MMMM YYYY'
 															)}`,
 														}}
-														onChange={(value) => {
-															console.log(value);
-														}}
+														onChange={(value) => {}}
 														options={[]}
 														classNamePrefix="select2-selection"
 														styles={{

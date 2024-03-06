@@ -5,7 +5,6 @@ import FormFilter from '../../../components/Common/FormFilter';
 import { useEffect, useMemo, useState } from 'react';
 import { getClientList } from '../../../helpers/marina/client';
 import CardMain from '../../../components/Common/CardMain';
-import CellActions from '../../../components/Tables/CellActions';
 import SimpleTable from '../../../components/Tables/SimpleTable';
 import TableLoader from '../../../components/Loader/TablaLoader';
 import { PDFDownloadLink } from '@react-pdf/renderer';
@@ -76,7 +75,11 @@ function AccountStatus() {
 		fetchClientsApi();
 	}, []);
 
-	const fireSearch = async (filts) => {
+	const fireSearch = async (filts, isClean) => {
+		if (isClean) {
+			setItems([]);
+			return;
+		}
 		setLoading(true);
 		const activeFilters = filts
 			.filter((fl) => fl.value)
@@ -145,6 +148,7 @@ function AccountStatus() {
 					filters={filters}
 					setFilters={setFilters}
 					fireSearch={fireSearch}
+					validate={['customer', 'startDate', 'endDate']}
 				/>
 			</Col>
 		</Row>
@@ -156,14 +160,35 @@ function AccountStatus() {
 				Header: 'No. Slip',
 				accessor: 'reservation.slip',
 				style: {
-					width: '60%',
+					width: '10%',
+				},
+			},
+			{
+				Header: 'Cod. Reservación',
+				accessor: 'reservation.code',
+				style: {
+					width: '15%',
+				},
+			},
+			{
+				Header: 'Cliente',
+				accessor: 'reservation.customer',
+				style: {
+					width: '25%',
+				},
+			},
+			{
+				Header: 'Embarcación',
+				accessor: 'reservation.boat',
+				style: {
+					width: '20%',
 				},
 			},
 			{
 				Header: 'Deuda',
 				accessor: 'reservation.balanceCustomer',
 				style: {
-					width: '30%',
+					width: '20%',
 				},
 				Cell: ({ value }) => numberFormat(value),
 			},

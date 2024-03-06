@@ -38,7 +38,6 @@ function EditReservation() {
 	const fetchItem = async () => {
 		try {
 			const response = await getReservation(id);
-			console.log(response);
 			setItem(response);
 			setStates((prev) => ({
 				...prev,

@@ -7,7 +7,6 @@ import extractMeaningfulMessage from '../../../utils/extractMeaningfulMessage';
 import { ERROR_SERVER } from '../../../constants/messages';
 import { addMessage } from '../../../redux/messageSlice';
 import { getPaymentByClient } from '../../../helpers/marina/payment';
-import TabActionHeader from '../Common/TabActionHeader';
 import { Badge, Button, Col, Row } from 'reactstrap';
 import TableLoader from '../../Loader/TablaLoader';
 import SimpleTable from '../../Tables/SimpleTable';

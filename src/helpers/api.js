@@ -22,8 +22,6 @@ axiosApi.defaults.headers.common['Content-Type'] = 'multipart/form-data';
 axiosApi.interceptors.response.use(
 	(response) => response,
 	(error) => {
-		console.log(error);
-		console.log(error.code);
 		if (error.code === 'ERR_NETWORK') {
 			dispatch(
 				addMessage({
@@ -36,7 +34,6 @@ axiosApi.interceptors.response.use(
 			error.response.status === 403 ||
 			error.response.status === 401
 		) {
-			console.log('entro aqui');
 			redirect('/forbiden');
 			//window.sessionStorage.removeItem('sunsetadmiralauth');
 			//window.location.reload();

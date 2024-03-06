@@ -243,7 +243,6 @@ function Client() {
 		const obj = activeFilters.reduce((accumulator, value) => {
 			return { ...accumulator, [value.name]: value.value };
 		}, {});
-		//console.log(obj);
 
 		setQuery((prev) => ({
 			max: prev.max,

@@ -22,9 +22,7 @@ function NotificationDropdown() {
 			try {
 				const response = await getMyNotifcations();
 				dispatch(addNotifications(response));
-			} catch (error) {
-				console.log(error);
-			}
+			} catch (error) {}
 		};
 		if (page !== 'home' || location.pathname === '/dashboard') {
 			fecthApiNotifications();
