@@ -74,6 +74,7 @@ export default function FormFilter({
 				fireSearch(filters);
 			}
 		} else {
+			fireSearch(filters);
 		}
 	};
 

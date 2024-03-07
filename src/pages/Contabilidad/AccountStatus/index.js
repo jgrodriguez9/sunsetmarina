@@ -332,7 +332,7 @@ function AccountStatus() {
 					breadcrumbItem={'Estado de cuenta'}
 				/>
 
-				<Row className="pb-5">
+				<Row className="pb-2">
 					<Col lg="12">
 						<CardBasic title="Filtros" children={handleFilter} />
 					</Col>

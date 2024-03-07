@@ -3,5 +3,7 @@ import * as url from '../url';
 
 const getAccountStatusList = (query) =>
 	get(`${url.account}/reportAccount${query}`);
+const reportBoardingPass = (query) =>
+	get(`${url.account}/reportBoardingPass${query}`);
 
-export { getAccountStatusList };
+export { getAccountStatusList, reportBoardingPass };
