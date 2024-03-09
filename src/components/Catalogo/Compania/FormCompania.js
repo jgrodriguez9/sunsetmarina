@@ -47,9 +47,13 @@ export default function FormCompania({ item, btnTextSubmit = 'Aceptar' }) {
 			address: item?.address ?? '',
 			website: item?.website ?? '',
 			enabled: item?.enabled ?? true,
+			braceletInventoryLeft: item?.braceletInventoryLeft ?? 0,
+			boardingPassPrice: item?.boardingPassPrice ?? 5,
 		},
 		validationSchema: Yup.object({
 			name: Yup.string().required(FIELD_REQUIRED),
+			boardingPassPrice: Yup.number().required(FIELD_REQUIRED),
+			braceletInventoryLeft: Yup.number(),
 		}),
 		onSubmit: async (values) => {
 			//validaciones antes de enviarlo
@@ -147,7 +151,7 @@ export default function FormCompania({ item, btnTextSubmit = 'Aceptar' }) {
 			}}
 		>
 			<Row>
-				<Col xs="12" md="3">
+				<Col xs="12" md="4">
 					<Label htmlFor="name" className="mb-0">
 						Nombre
 					</Label>
@@ -166,7 +170,7 @@ export default function FormCompania({ item, btnTextSubmit = 'Aceptar' }) {
 						</div>
 					)}
 				</Col>
-				<Col xs="12" md="3">
+				<Col xs="12" md="4">
 					<Label htmlFor="website" className="mb-0">
 						Sitio web
 					</Label>
@@ -180,7 +184,7 @@ export default function FormCompania({ item, btnTextSubmit = 'Aceptar' }) {
 						value={formik.values.website}
 					/>
 				</Col>
-				<Col xs="12" md="3">
+				<Col xs="12" md="4">
 					<Label htmlFor="phone" className="mb-0">
 						Teléfono
 					</Label>
@@ -194,7 +198,42 @@ export default function FormCompania({ item, btnTextSubmit = 'Aceptar' }) {
 						value={formik.values.phone}
 					/>
 				</Col>
-				<Col xs="12" md="3">
+				<Col xs="12" md="4">
+					<Label htmlFor="braceletInventoryLeft" className="mb-0">
+						Alerta inventario brazaletes
+					</Label>
+					<Input
+						id="braceletInventoryLeft"
+						name="braceletInventoryLeft"
+						className={`form-control ${
+							formik.errors.braceletInventoryLeft
+								? 'is-invalid'
+								: ''
+						}`}
+						onChange={formik.handleChange}
+						value={formik.values.braceletInventoryLeft}
+					/>
+				</Col>
+				<Col xs="12" md="4">
+					<Label htmlFor="boardingPassPrice" className="mb-0">
+						Impuesto de muelle
+					</Label>
+					<Input
+						id="boardingPassPrice"
+						name="boardingPassPrice"
+						className={`form-control ${
+							formik.errors.boardingPassPrice ? 'is-invalid' : ''
+						}`}
+						onChange={formik.handleChange}
+						value={formik.values.boardingPassPrice}
+					/>
+					{formik.errors.boardingPassPrice && (
+						<div className="invalid-tooltip">
+							{formik.errors.boardingPassPrice}
+						</div>
+					)}
+				</Col>
+				<Col xs="12" md="4">
 					<Label className="mb-0 opacity-0 d-block">Habilitado</Label>
 					<Input
 						id="enabled"
@@ -210,7 +249,7 @@ export default function FormCompania({ item, btnTextSubmit = 'Aceptar' }) {
 				</Col>
 			</Row>
 			<Row>
-				<Col xs="12" md="3">
+				<Col xs="12" md="4">
 					<Label htmlFor="country" className="mb-0">
 						País
 					</Label>
@@ -232,7 +271,7 @@ export default function FormCompania({ item, btnTextSubmit = 'Aceptar' }) {
 						placeholder={SELECT_OPTION}
 					/>
 				</Col>
-				<Col xs="12" md="3">
+				<Col xs="12" md="4">
 					<Label htmlFor="state" className="mb-0">
 						Estado
 					</Label>
@@ -251,7 +290,7 @@ export default function FormCompania({ item, btnTextSubmit = 'Aceptar' }) {
 						placeholder={SELECT_OPTION}
 					/>
 				</Col>
-				<Col xs="12" md="3">
+				<Col xs="12" md="4">
 					<Label htmlFor="city" className="mb-0">
 						Ciudad
 					</Label>
@@ -271,7 +310,7 @@ export default function FormCompania({ item, btnTextSubmit = 'Aceptar' }) {
 				</Col>
 			</Row>
 			<Row>
-				<Col xs="12" md="9">
+				<Col xs="12" md="8">
 					<Label htmlFor="address" className="mb-0">
 						Dirección
 					</Label>

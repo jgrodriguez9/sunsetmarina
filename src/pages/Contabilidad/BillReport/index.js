@@ -4,7 +4,7 @@ import CardBasic from '../../../components/Common/CardBasic';
 import FormFilter from '../../../components/Common/FormFilter';
 import { useMemo, useState } from 'react';
 import CardMain from '../../../components/Common/CardMain';
-import { reportBoardingPass } from '../../../helpers/reports/accountStatus';
+import { reportDocktaxBill } from '../../../helpers/reports/accountStatus';
 import { ERROR_SERVER } from '../../../constants/messages';
 import extractMeaningfulMessage from '../../../utils/extractMeaningfulMessage';
 import { useDispatch } from 'react-redux';
@@ -38,7 +38,6 @@ function BillReport() {
 	]);
 
 	const fireSearch = async (filts, isClean) => {
-		console.log(filts);
 		if (isClean) {
 			setItems([]);
 			return;
@@ -54,7 +53,7 @@ function BillReport() {
 			let q = Object.keys(obj)
 				.map((key) => `${key}=${obj[key]}`)
 				.join('&');
-			const response = await reportBoardingPass(`?${q}`);
+			const response = await reportDocktaxBill(`?${q}`);
 			console.log(response);
 			setItems(response.items);
 			setLoading(false);

@@ -3,7 +3,7 @@ import * as url from '../url';
 
 const getAccountStatusList = (query) =>
 	get(`${url.account}/reportAccount${query}`);
-const reportBoardingPass = (query) =>
+const reportDocktaxBill = (query) =>
 	get(`${url.account}/reportBoardingPass${query}`);
 
-export { getAccountStatusList, reportBoardingPass };
+export { getAccountStatusList, reportDocktaxBill };

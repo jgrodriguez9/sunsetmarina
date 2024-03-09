@@ -34,6 +34,7 @@ import SimpleLoad from '../../Loader/SimpleLoad';
 import SelectAsync from '../../Common/SelectAsync';
 import { getBracaletListPaginado } from '../../../helpers/contabilidad/bracalet';
 import { paymentFormOpt } from '../../../constants/paymentForm';
+import { currencyOpt } from '../../../constants/currencies';
 
 export default function FormBoardingPass({ cajero = false }) {
 	const navigate = useNavigate();
@@ -47,6 +48,7 @@ export default function FormBoardingPass({ cajero = false }) {
 	const [boatOpt, setBoatOpt] = useState([]);
 	const [slip, setSlip] = useState(null);
 	const [slipOpt, setSlipOpt] = useState([]);
+	const [priceMXN, setPriceMXN] = useState(0);
 	//reservaciones paginado
 	const [reservationSelected, setReservationSelected] = useState(null);
 	const [openModal, setOpenModal] = useState(false);
@@ -120,8 +122,8 @@ export default function FormBoardingPass({ cajero = false }) {
 
 	const formik = useFormik({
 		initialValues: {
-			priceUSD: 0,
-			priceMXN: 0,
+			amount: 0,
+			currency: 'USD',
 			currencyExchange: 0,
 			pax: 0,
 			reservation: {
@@ -129,10 +131,11 @@ export default function FormBoardingPass({ cajero = false }) {
 			},
 			bracelets: [],
 			paymentForm: 'CASH',
+			price: 0,
 		},
 		validationSchema: Yup.object({
-			priceUSD: Yup.number().required(FIELD_REQUIRED),
-			priceMXN: Yup.number().required(FIELD_REQUIRED),
+			amount: Yup.number().required(FIELD_REQUIRED),
+			currency: Yup.string().required(FIELD_REQUIRED),
 			pax: Yup.number()
 				.integer(FIELD_INTEGER)
 				.typeError(FIELD_NUMERIC)
@@ -339,17 +342,20 @@ export default function FormBoardingPass({ cajero = false }) {
 			const reservationId = formik.values.reservation.id;
 			const q = `?pax=${pax}`;
 			const response = await getBoardingPassPrice(reservationId, q);
-			formik.setFieldValue('priceUSD', response.priceUSD);
-			formik.setFieldValue('priceMXN', response.priceMXN);
+			formik.setFieldValue('amount', response.priceUSD);
+			formik.setFieldValue('price', response.tax);
+			setPriceMXN(response.priceMXN);
 			formik.setFieldValue('currencyExchange', response.currencyExchange);
 			setIsCalculatingPrice(false);
 		} catch (error) {
 			setIsCalculatingPrice(false);
-			formik.setFieldValue('priceUSD', 0);
-			formik.setFieldValue('priceMXN', 0);
+			formik.setFieldValue('amount', 0);
+			setPriceMXN(0);
 			formik.setFieldValue('currencyExchange', 0);
+			formik.setFieldValue('price', 0);
 		}
 	};
+	console.log(formik.errors);
 
 	return (
 		<>
@@ -476,7 +482,7 @@ export default function FormBoardingPass({ cajero = false }) {
 							</Col>
 						</Row>
 						<Row>
-							<Col xs="12" md="2">
+							<Col xs="12" md="4">
 								<Label htmlFor="pax" className="mb-0">
 									Pax
 								</Label>
@@ -504,7 +510,7 @@ export default function FormBoardingPass({ cajero = false }) {
 									</div>
 								)}
 							</Col>
-							<Col xs="12" md="3">
+							<Col xs="12" md="4">
 								<Label htmlFor="paymentForm" className="mb-0">
 									Forma de pago
 								</Label>
@@ -527,12 +533,40 @@ export default function FormBoardingPass({ cajero = false }) {
 									classNamePrefix="select2-selection"
 								/>
 							</Col>
-							<Col xs="12" md="2">
-								<Label htmlFor="priceUSD" className="mb-0">
+							<Col xs="12" md="4">
+								<Label htmlFor="paymentForm" className="mb-0">
+									Moneda
+								</Label>
+								<Select
+									value={{
+										value: formik.values.currency,
+										label: currencyOpt.find(
+											(it) =>
+												it.value ===
+												formik.values.currency
+										).label,
+									}}
+									onChange={(value) => {
+										formik.setFieldValue(
+											'currency',
+											value.value
+										);
+									}}
+									options={currencyOpt}
+									classNamePrefix="select2-selection"
+								/>
+								{formik.errors.currency && (
+									<div className="invalid-tooltip">
+										{formik.errors.currency}
+									</div>
+								)}
+							</Col>
+							<Col xs="12" md="4">
+								<Label htmlFor="amount" className="mb-0">
 									Total (USD)
 								</Label>
 								<div className="form-control bg-light text-success fw-bold">
-									{numberFormat(formik.values?.priceUSD ?? 0)}{' '}
+									{numberFormat(formik.values?.amount ?? 0)}{' '}
 								</div>
 								{isCalculatingPrice && (
 									<SimpleLoad
@@ -540,13 +574,13 @@ export default function FormBoardingPass({ cajero = false }) {
 										extraClass="text-secondary"
 									/>
 								)}
-								{formik.errors.priceUSD && (
+								{formik.errors.amount && (
 									<div className="invalid-tooltip">
-										{formik.errors.priceUSD}
+										{formik.errors.amount}
 									</div>
 								)}
 							</Col>
-							<Col xs="12" md="2">
+							<Col xs="12" md="4">
 								<Label htmlFor="priceMXN" className="mb-0">
 									Tipo Cambio
 								</Label>
@@ -562,23 +596,18 @@ export default function FormBoardingPass({ cajero = false }) {
 									/>
 								)}
 							</Col>
-							<Col xs="12" md="2">
+							<Col xs="12" md="4">
 								<Label htmlFor="priceMXN" className="mb-0">
 									Total (MXN)
 								</Label>
 								<div className="form-control bg-light text-success fw-bold">
-									{numberFormat(formik.values?.priceMXN ?? 0)}{' '}
+									{numberFormat(priceMXN ?? 0)}{' '}
 								</div>
 								{isCalculatingPrice && (
 									<SimpleLoad
 										text={'Cargando precio'}
 										extraClass="text-secondary"
 									/>
-								)}
-								{formik.errors.priceMXN && (
-									<div className="invalid-tooltip">
-										{formik.errors.priceMXN}
-									</div>
 								)}
 							</Col>
 						</Row>
