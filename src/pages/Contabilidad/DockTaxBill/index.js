@@ -20,6 +20,7 @@ function DockTaxBill() {
 	const dispatch = useDispatch();
 	const [loading, setLoading] = useState(false);
 	const [items, setItems] = useState([]);
+	const [totals, setTotals] = useState(null);
 	const [filters, setFilters] = useState([
 		{
 			label: 'Fecha inicio',
@@ -63,6 +64,15 @@ function DockTaxBill() {
 				totalIVABase: it.totalIVABase.toFixed(2),
 			}));
 			setItems(itemsParse);
+			setTotals({
+				totalPax: response.totalPax,
+				totalAmount: response.totalAmount.toFixed(2),
+				totalIVA2: response.totalIVA2.toFixed(2),
+				totalIVABase: response.totalIVABase.toFixed(2),
+				totalMXN: response.totalMXN.toFixed(2),
+				totalTax: response.totalTax,
+				totalUSD: response.totalUSD.toFixed(2),
+			});
 			setLoading(false);
 		} catch (error) {
 			let message = ERROR_SERVER;
@@ -175,7 +185,7 @@ function DockTaxBill() {
 		[]
 	);
 
-	const downloadToCSV = () => {
+	const downloadToCSV = async () => {
 		const workbook = new ExcelJS.Workbook();
 		workbook.creator = 'Sunset Admiral';
 		workbook.created = new Date();
@@ -184,57 +194,162 @@ function DockTaxBill() {
 		workbook.properties.date1904 = true;
 		workbook.calcProperties.fullCalcOnLoad = true;
 
-		const sheet = workbook.addWorksheet('Cobranza impuestos muelle');
+		const sheet = workbook.addWorksheet('Cobranza impuestos muelle', {
+			headerFooter: {
+				firstHeader: 'Hello Exceljs',
+				firstFooter: 'Hello World',
+			},
+		});
 		sheet.views = [{ state: 'frozen', xSplit: 0, ySplit: 1 }];
 
-		const arrDatos = items.map((it) => [
-			it.date,
-			it.hour,
-			it.boat,
-			it.customer,
-			it.currencyExchange,
-			it.pax,
-			it.amountMXN,
-			it.amountUSD,
-			it.total,
-			it.totalIVABase,
-			it.tax,
-			it.IVA2,
-		]);
-		const columns = [
-			{ name: 'Fecha' },
-			{ name: 'Horario' },
-			{ name: 'Nombre embarcación' },
-			{ name: 'Propietario' },
-			{ name: 'Tipo cambio' },
-			{ name: 'Pax' },
-			{ name: 'Efectivo MXN' },
-			{ name: 'Efectivo USD' },
-			{ name: 'Total' },
-			{ name: 'IVA' },
-			{ name: 'Impuesto muelle' },
-			{ name: 'IVA' },
-		];
+		// const imageSrc = '../../../assets/images/logoExcel.png';
+		// const response = await fetch(imageSrc);
+		// const buffer = await response.arrayBuffer();
+		// //console.log(buffer);
+		// const image = workbook.addImage({
+		// 	buffer: buffer,
+		// 	extension: 'png',
+		// });
+		// sheet.addImage(image, 'A1:C4');
 
-		sheet.addTable({
-			name: 'Table',
-			ref: 'A8',
-			headerRow: true,
-			columns: columns,
-			rows: arrDatos,
+		// en items tengo toda la info
+		console.log(items);
+		const columns = [
+			{
+				key: 'date',
+				header: 'Fecha',
+				width: 14,
+			},
+			{
+				key: 'hour',
+				header: 'Horario',
+				width: 14,
+			},
+			{
+				key: 'boat',
+				header: 'Nombre embarcación',
+				width: 35,
+			},
+			{
+				key: 'customer',
+				header: 'Propietario',
+				width: 35,
+			},
+			{
+				key: 'currencyExchange',
+				header: 'Tipo cambio',
+				width: 10,
+				style: {
+					alignment: { horizontal: 'right', wrapText: true },
+				},
+			},
+			{
+				key: 'pax',
+				header: 'Pax',
+				width: 12,
+			},
+			{
+				key: 'amountMXN',
+				header: 'Efectivo MXN',
+				width: 14,
+				style: {
+					alignment: { horizontal: 'right' },
+				},
+			},
+			{
+				key: 'amountUSD',
+				header: 'Efectivo USD',
+				width: 14,
+				style: {
+					alignment: { horizontal: 'right' },
+				},
+			},
+			{
+				key: 'total',
+				header: 'Total',
+				width: 14,
+				style: {
+					alignment: { horizontal: 'right' },
+				},
+			},
+			{
+				key: 'totalIVABase',
+				header: 'IVA',
+				width: 14,
+				style: {
+					alignment: { horizontal: 'right' },
+				},
+			},
+			{
+				key: 'tax',
+				header: 'Impuesto muelle',
+				width: 12,
+				style: {
+					alignment: { horizontal: 'right', wrapText: true },
+				},
+			},
+			{
+				key: 'IVA2',
+				header: 'IVA',
+				width: 14,
+				style: {
+					alignment: { horizontal: 'right' },
+				},
+			},
+		];
+		sheet.columns = columns;
+		items.forEach((val, i, _) => {
+			sheet.addRow(val);
 		});
-		sheet.getColumn(1).width = 12;
-		sheet.getColumn(2).width = 12;
-		sheet.getColumn(3).width = 45;
-		sheet.getColumn(4).width = 40;
-		sheet.getColumn(5).width = 16;
-		sheet.getColumn(6).width = 12;
-		sheet.getColumn(7).width = 14;
-		sheet.getColumn(8).width = 14;
-		sheet.getColumn(9).width = 14;
-		sheet.getColumn(10).width = 14;
-		sheet.getColumn(11).width = 14;
-		sheet.getColumn(12).width = 14;
+
+		sheet.getRow(1).font = { bold: true };
+		sheet.getCell('E1').alignment = {
+			horizontal: 'center',
+			wrapText: true,
+		};
+		sheet.getCell('K1').alignment = {
+			horizontal: 'center',
+			wrapText: true,
+		};
+
+		//totals
+		const totalLabel = `A${items.length + 5}`;
+		sheet.getCell(totalLabel).value = 'TOTALES';
+		sheet.getCell(totalLabel).font = { bold: true };
+
+		const totalPax = 'F' + (items.length + 5);
+		sheet.getCell(totalPax).value = totals.totalPax;
+		sheet.getCell(totalPax).font = { bold: true };
+
+		const totalMXN = 'G' + (items.length + 5);
+		sheet.getCell(totalMXN).value = totals.totalMXN;
+		sheet.getCell(totalMXN).font = { bold: true };
+		sheet.getCell(totalMXN).numFmt = '"$"#,###.##';
+
+		const totalUSD = 'H' + (items.length + 5);
+		sheet.getCell(totalUSD).value = totals.totalUSD;
+		sheet.getCell(totalUSD).font = { bold: true };
+		sheet.getCell(totalUSD).numFmt = '"$"#,###.##';
+
+		const totalAmount = 'I' + (items.length + 5);
+		sheet.getCell(totalAmount).value = totals.totalAmount;
+		sheet.getCell(totalAmount).font = { bold: true };
+		sheet.getCell(totalAmount).numFmt = '"$"#,###.##';
+
+		const totalIVABase = 'J' + (items.length + 5);
+		sheet.getCell(totalIVABase).value = totals.totalIVABase;
+		sheet.getCell(totalIVABase).font = { bold: true };
+		sheet.getCell(totalIVABase).numFmt = '"$"#,###.##';
+
+		const totalTax = 'K' + (items.length + 5);
+		sheet.getCell(totalTax).value = totals.totalTax;
+		sheet.getCell(totalTax).font = { bold: true };
+		// sheet.getCell(totalTax).numFmt = '"$"#,###.##';
+
+		const totalIVA2 = 'L' + (items.length + 5);
+		sheet.getCell(totalIVA2).value = totals.totalIVA2;
+		sheet.getCell(totalIVA2).font = { bold: true };
+		sheet.getCell(totalIVA2).numFmt = '"$"#,###.##';
 
 		workbook.xlsx
 			.writeBuffer()
@@ -249,6 +364,7 @@ function DockTaxBill() {
 			})
 			.catch((error) => {
 				console.log('Error');
+				console.log(error);
 			});
 	};
 
