@@ -303,6 +303,10 @@ function DockTaxBill() {
 		});
 
 		sheet.getRow(1).font = { bold: true };
+		sheet.getRow(1).border = {
+			top: { style: 'medium', color: { argb: '021e4c' } },
+			bottom: { style: 'medium', color: { argb: '021e4c' } },
+		};
 		sheet.getCell('E1').alignment = {
 			horizontal: 'center',
 			wrapText: true,
@@ -311,6 +315,36 @@ function DockTaxBill() {
 			horizontal: 'center',
 			wrapText: true,
 		};
+		// sheet.getCell('A1').fill = {
+		// 	type: 'pattern',
+		// 	pattern: 'solid',
+		// 	fgColor: { argb: 'F3FF33' },
+		// };
+		// sheet.getCell('B1').fill = {
+		// 	type: 'pattern',
+		// 	pattern: 'solid',
+		// 	fgColor: { argb: 'F3FF33' },
+		// };
+		// sheet.getCell('C1').fill = {
+		// 	type: 'pattern',
+		// 	pattern: 'solid',
+		// 	fgColor: { argb: 'F3FF33' },
+		// };
+		// sheet.getCell('D1').fill = {
+		// 	type: 'pattern',
+		// 	pattern: 'solid',
+		// 	fgColor: { argb: 'F3FF33' },
+		// };
+		// sheet.getCell('E1').fill = {
+		// 	type: 'pattern',
+		// 	pattern: 'solid',
+		// 	fgColor: { argb: 'F3FF33' },
+		// };
+		// sheet.getCell('F1').fill = {
+		// 	type: 'pattern',
+		// 	pattern: 'solid',
+		// 	fgColor: { argb: 'F3FF33' },
+		// };
 
 		//totals
 		const totalLabel = `A${items.length + 5}`;
