@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Col, Container, Row } from 'reactstrap';
+import { Col, Container, Row, Button } from 'reactstrap';
 import { useDispatch } from 'react-redux';
 import Breadcrumbs from '../../../components/Common/Breadcrumbs';
 import CardBasic from '../../../components/Common/CardBasic';
@@ -12,11 +12,16 @@ import extractMeaningfulMessage from '../../../utils/extractMeaningfulMessage';
 import { addMessage } from '../../../redux/messageSlice';
 import TableLoader from '../../../components/Loader/TablaLoader';
 import SimpleTable from '../../../components/Tables/SimpleTable';
+import { numberFormat } from '../../../utils/numberFormat';
+import * as ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
+import moment from 'moment';
 
 function IncomeReport() {
 	const dispatch = useDispatch();
 	const [loading, setLoading] = useState(false);
 	const [items, setItems] = useState([]);
+	const [totals, setTotals] = useState(null);
 	const [filters, setFilters] = useState([
 		{
 			label: 'Fecha inicio',
@@ -57,6 +62,11 @@ function IncomeReport() {
 			const response = await reportCobranza(`?${q}`);
 			console.log(response);
 			setItems(response.items);
+			setTotals({
+				totalBase: response.totalBase.toFixed(2),
+				totalIVA: response.totalIVA.toFixed(2),
+				totalUSD: response.totalUSD.toFixed(2),
+			});
 			setLoading(false);
 		} catch (error) {
 			let message = ERROR_SERVER;
@@ -108,6 +118,7 @@ function IncomeReport() {
 				style: {
 					width: '5%',
 				},
+				Cell: ({ value }) => numberFormat(value),
 			},
 			{
 				Header: 'Observación',
@@ -136,6 +147,7 @@ function IncomeReport() {
 				style: {
 					width: '5%',
 				},
+				Cell: ({ value }) => numberFormat(value),
 			},
 			{
 				Header: 'IVA',
@@ -143,6 +155,7 @@ function IncomeReport() {
 				style: {
 					width: '5%',
 				},
+				Cell: ({ value }) => numberFormat(value),
 			},
 			{
 				Header: 'Total',
@@ -150,6 +163,7 @@ function IncomeReport() {
 				style: {
 					width: '5%',
 				},
+				Cell: ({ value }) => numberFormat(value),
 			},
 			{
 				Header: 'Pago',
@@ -161,6 +175,154 @@ function IncomeReport() {
 		],
 		[]
 	);
+
+	const downloadToCSV = async () => {
+		const workbook = new ExcelJS.Workbook();
+		workbook.creator = 'Sunset Admiral';
+		workbook.created = new Date();
+		workbook.modified = new Date();
+		workbook.lastPrinted = new Date();
+		workbook.properties.date1904 = true;
+		workbook.calcProperties.fullCalcOnLoad = true;
+
+		const sheet = workbook.addWorksheet('Ingresos', {
+			headerFooter: {
+				firstHeader: 'Ingresos',
+				firstFooter: 'Ingresos',
+			},
+		});
+		sheet.views = [{ state: 'frozen', xSplit: 0, ySplit: 1 }];
+
+		// en items tengo toda la info
+		const columns = [
+			{
+				key: 'period',
+				header: 'Periodo',
+				width: 14,
+			},
+			{
+				key: 'monthPayment',
+				header: 'Mes de pago',
+				width: 14,
+			},
+			{
+				key: 'paymentMethod',
+				header: 'Forma de pago',
+				width: 14,
+			},
+			{
+				key: 'yearPayment',
+				header: 'Año de pago',
+				width: 14,
+			},
+			{
+				key: 'amount',
+				header: 'Importe',
+				width: 14,
+				style: {
+					alignment: { horizontal: 'right' },
+				},
+			},
+			{
+				key: 'observation',
+				header: 'Observación',
+				width: 34,
+			},
+			{
+				key: 'boatType',
+				header: 'Tipo embarcación',
+				width: 24,
+			},
+			{
+				key: 'ramType',
+				header: 'Tipo rampa',
+				width: 24,
+			},
+			{
+				key: 'base',
+				header: 'Base',
+				width: 14,
+				style: {
+					alignment: { horizontal: 'right' },
+				},
+			},
+			{
+				key: 'iva',
+				header: 'IVA',
+				width: 14,
+				style: {
+					alignment: { horizontal: 'right' },
+				},
+			},
+			{
+				key: 'total',
+				header: 'Total',
+				width: 14,
+				style: {
+					alignment: { horizontal: 'right' },
+				},
+			},
+			{
+				key: 'paymentDescription',
+				header: 'Pago',
+				width: 34,
+			},
+		];
+		sheet.columns = columns;
+		items.forEach((val, i, _) => {
+			sheet.addRow(val);
+		});
+
+		sheet.getRow(1).font = { bold: true };
+		sheet.getRow(1).border = {
+			top: { style: 'medium', color: { argb: '021e4c' } },
+			bottom: { style: 'medium', color: { argb: '021e4c' } },
+		};
+		sheet.getCell('E1').alignment = {
+			horizontal: 'center',
+			wrapText: true,
+		};
+		sheet.getCell('K1').alignment = {
+			horizontal: 'center',
+			wrapText: true,
+		};
+
+		//totals
+		const totalLabel = `A${items.length + 5}`;
+		sheet.getCell(totalLabel).value = 'TOTALES';
+		sheet.getCell(totalLabel).font = { bold: true };
+
+		const totalBase = 'I' + (items.length + 5);
+		sheet.getCell(totalBase).value = totals.totalBase;
+		sheet.getCell(totalBase).font = { bold: true };
+		sheet.getCell(totalBase).numFmt = '"$"#,###.##';
+
+		const totalIVA = 'J' + (items.length + 5);
+		sheet.getCell(totalIVA).value = totals.totalIVA;
+		sheet.getCell(totalIVA).font = { bold: true };
+		sheet.getCell(totalIVA).numFmt = '"$"#,###.##';
+
+		const totalUSD = 'K' + (items.length + 5);
+		sheet.getCell(totalUSD).value = totals.totalUSD;
+		sheet.getCell(totalUSD).font = { bold: true };
+		sheet.getCell(totalUSD).numFmt = '"$"#,###.##';
+
+		workbook.xlsx
+			.writeBuffer()
+			.then((response) => {
+				var blob = new Blob([response], {
+					type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+				});
+				saveAs(
+					blob,
+					`resporteIngreso${moment().format('DDMMYYYYHHmmss')}`
+				);
+			})
+			.catch((error) => {
+				console.log('Error');
+				console.log(error);
+			});
+	};
 
 	const handleFilter = (
 		<Row>
@@ -202,6 +364,18 @@ function IncomeReport() {
 		</Row>
 	) : (
 		<Row>
+			<Col xs="12" md="2">
+				<Button
+					color="info"
+					size="sm"
+					type="button"
+					onClick={downloadToCSV}
+					className="mb-2"
+				>
+					<i className="far fa-file-pdf me-2" />
+					Descargar
+				</Button>
+			</Col>
 			<Col xs="12" xl="12">
 				<SimpleTable columns={columns} data={items} />
 			</Col>

@@ -260,17 +260,17 @@ export const navigations = [
 					ROLE_CONTABILIDAD,
 				]),
 			},
-			{
-				id: 'cobranza',
-				label: 'Reporte de cobranza',
-				route: '/billreport',
-				classIcon: null,
-				show: existsRole(sessionStorage.getItem('roles'), [
-					ROLE_ADMINISTRACION,
-					ROLE_COMPANIA,
-					ROLE_CONTABILIDAD,
-				]),
-			},
+			// {
+			// 	id: 'cobranza',
+			// 	label: 'Reporte de cobranza',
+			// 	route: '/billreport',
+			// 	classIcon: null,
+			// 	show: existsRole(sessionStorage.getItem('roles'), [
+			// 		ROLE_ADMINISTRACION,
+			// 		ROLE_COMPANIA,
+			// 		ROLE_CONTABILIDAD,
+			// 	]),
+			// },
 			{
 				id: 'ingresos',
 				label: 'Reporte de ingresos',
