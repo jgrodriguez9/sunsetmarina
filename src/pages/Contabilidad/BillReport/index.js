@@ -54,7 +54,6 @@ function BillReport() {
 				.map((key) => `${key}=${obj[key]}`)
 				.join('&');
 			const response = await reportDocktaxBill(`?${q}`);
-			console.log(response);
 			setItems(response.items);
 			setLoading(false);
 		} catch (error) {
@@ -103,7 +102,7 @@ function BillReport() {
 			},
 			{
 				Header: 'Tipo cambio',
-				accessor: 'customer',
+				accessor: 'currencyExchange',
 				style: {
 					width: '5%',
 				},

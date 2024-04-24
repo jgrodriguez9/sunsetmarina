@@ -5,5 +5,6 @@ const getAccountStatusList = (query) =>
 	get(`${url.account}/reportAccount${query}`);
 const reportDocktaxBill = (query) =>
 	get(`${url.account}/reportBoardingPass${query}`);
+const reportCobranza = (query) => get(`${url.account}/reportIncome${query}`);
 
-export { getAccountStatusList, reportDocktaxBill };
+export { getAccountStatusList, reportDocktaxBill, reportCobranza };

@@ -1,5 +1,4 @@
-import { useEffect } from 'react';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
 	Button,
 	Col,
@@ -29,20 +28,14 @@ moment.locale('es');
 
 const getTotalToPay = (charges, isFullMonth) => {
 	if (isFullMonth) {
-		return charges.reduce(
-			(acc, cValue) => acc + cValue.totalMonth + cValue.interest,
-			0
-		);
+		return charges.reduce((acc, cValue) => acc + cValue.totalMonth, 0);
 	} else {
 		if (charges.length === 1) {
 			return charges[0].amount + charges[0].interest;
 		} else {
 			const sumTotal = charges
 				.filter((it, idx) => idx < charges.length - 1)
-				.reduce(
-					(acc, cValue) => acc + cValue.totalMonth + cValue.interest,
-					0
-				);
+				.reduce((acc, cValue) => acc + cValue.totalMonth, 0);
 
 			return (
 				sumTotal +
@@ -61,10 +54,10 @@ const ChargesCanvas = ({
 	setRefetch,
 }) => {
 	const [charge, setCharge] = useState([]);
-	const [total, setTotal] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [desde, setDesde] = useState(null);
 	const [hasta, setHasta] = useState(null);
+	const [hastOpt, setHastaOpt] = useState([]);
 	const [chargesToPay, setChargesToPay] = useState([]);
 	const [concept, setConcept] = useState('');
 	const [reference, setReference] = useState('');
@@ -93,10 +86,10 @@ const ChargesCanvas = ({
 						monthYear: it.monthYear,
 						fullMonth: true,
 						totalMonth: it.totalMonth,
+						price: it.reservation.price,
 					}));
 				setCharge(list);
 				setChargesToPay(list);
-				setTotal(getTotalToPay(list, true));
 				setLoading(false);
 
 				if (list.length > 0) {
@@ -105,9 +98,18 @@ const ChargesCanvas = ({
 						date: list[0].monthYear,
 					});
 					setHasta({
-						id: list[0].id,
-						date: list[0].monthYear,
+						id: list[list.length - 1].id,
+						date: list[list.length - 1].monthYear,
 					});
+					setHastaOpt(
+						list.map((it) => ({
+							value: it.id,
+							date: it.monthYear,
+							label: moment(it.monthYear, 'YYYY-MM').format(
+								'MMMM YYYY'
+							),
+						}))
+					);
 				}
 			} catch (error) {
 				setCharge([]);
@@ -123,6 +125,14 @@ const ChargesCanvas = ({
 	const toggle = () => {
 		setOpen(!open);
 	};
+
+	const total = useMemo(() => {
+		if (chargesToPay.length > 0) {
+			return getTotalToPay(chargesToPay, !finalizarReserva);
+		} else {
+			return 0;
+		}
+	}, [chargesToPay, finalizarReserva]);
 
 	const onHandlePayment = async () => {
 		setIsPaying(true);
@@ -168,7 +178,6 @@ const ChargesCanvas = ({
 	const onHandleChangeFinalizarReserva = (isFinalizar) => {
 		setFinalizarReserva(isFinalizar);
 		const copyChargesToPay = [...chargesToPay];
-		setTotal(getTotalToPay(chargesToPay, !isFinalizar));
 		if (isFinalizar) {
 			copyChargesToPay[copyChargesToPay.length - 1].fullMonth = false;
 			setChargesToPay(copyChargesToPay);
@@ -183,6 +192,18 @@ const ChargesCanvas = ({
 			setOpen(false);
 		}
 	}, [showSuccess, ticket.payment]);
+
+	const updateChargesToPay = (date) => {
+		const updatedChargesToPay = charge.filter((it) =>
+			moment(it.monthYear, 'YYYY-MM').isSameOrBefore(
+				moment(date, 'YYYY-MM')
+			)
+		);
+		setChargesToPay(updatedChargesToPay);
+		if (updatedChargesToPay.length !== charge.length) {
+			setFinalizarReserva(false);
+		}
+	};
 
 	return (
 		<Offcanvas
@@ -240,7 +261,7 @@ const ChargesCanvas = ({
 													{desde
 														? moment(
 																desde.date,
-																'YYYYY-MM'
+																'YYYY-MM'
 														  ).format('MMMM YYYY')
 														: '-'}
 												</strong>
@@ -255,13 +276,23 @@ const ChargesCanvas = ({
 															value: hasta.id,
 															label: `${moment(
 																hasta.date,
-																'YYYYY-MM'
+																'YYYY-MM'
 															).format(
 																'MMMM YYYY'
 															)}`,
 														}}
-														onChange={(value) => {}}
-														options={[]}
+														onChange={(value) => {
+															if (value) {
+																setHasta({
+																	id: value.value,
+																	date: value.date,
+																});
+																updateChargesToPay(
+																	value.date
+																);
+															}
+														}}
+														options={hastOpt}
 														classNamePrefix="select2-selection"
 														styles={{
 															control: (
@@ -287,6 +318,10 @@ const ChargesCanvas = ({
 															name="enabled"
 															type="checkbox"
 															className={`form-check-Input form-check-input`}
+															disabled={
+																charge.length !==
+																chargesToPay.length
+															}
 															checked={
 																finalizarReserva
 															}

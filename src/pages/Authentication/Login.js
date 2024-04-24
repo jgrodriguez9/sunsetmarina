@@ -35,7 +35,7 @@ function Login() {
 		}),
 		onSubmit: async (values) => {
 			try {
-				postSignInSoportec(values);
+				await postSignInSoportec(values);
 				const response = await postJwtLogin(values);
 				if (response.access_token) {
 					sessionStorage.setItem(
