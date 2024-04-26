@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
@@ -18,11 +18,15 @@ import FormFilter from '../../Common/FormFilter';
 import CardBasic from '../../Common/CardBasic';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import TicketPayment from '../../Tickets/TicketPayment';
+import DialogMain from '../../Common/DialogMain';
+import TicketClientPayment from '../../Tickets/TicketClientPayment';
 
 export default function PaymentClient({ formik }) {
 	const dispatch = useDispatch();
 	const [loading, setLoading] = useState(true);
 	const [items, setItems] = useState([]);
+	const [paymentDialog, setPaymentDialog] = useState(false);
+	const [paymentData, setPaymentData] = useState(null);
 
 	//paginar
 	const [totalPaginas, setTotalPaginas] = useState(0);
@@ -68,6 +72,11 @@ export default function PaymentClient({ formik }) {
 			valueDate: '',
 		},
 	]);
+
+	const generatePayment = useCallback((row) => {
+		console.log(row);
+		setPaymentDialog(true);
+	}, []);
 
 	const columns = useMemo(
 		() => [
@@ -138,43 +147,16 @@ export default function PaymentClient({ formik }) {
 				id: 'acciones',
 				Header: 'Acciones',
 				Cell: ({ row }) => {
-					const ticket = {
-						reservation: null,
-						payment: row.original,
-						chargesSuccess: row.original.charges,
-						concept: row.original.concept,
-					};
-
 					return (
-						<>
-							<PDFDownloadLink
-								document={<TicketPayment ticket={ticket} />}
-								fileName={`pago.pdf`}
-							>
-								{({ blob, url, loading, error }) =>
-									loading ? (
-										<Button
-											color="secondary"
-											size="sm"
-											outline
-											type="button"
-										>
-											<i className="bx bx-download" />{' '}
-											Cargando documento
-										</Button>
-									) : (
-										<Button
-											color="primary"
-											size="sm"
-											outline
-											type="button"
-										>
-											<i className="bx bx-download" />
-										</Button>
-									)
-								}
-							</PDFDownloadLink>
-						</>
+						<Button
+							color="primary"
+							size="sm"
+							outline
+							type="button"
+							onClick={() => generatePayment(row)}
+						>
+							<i className="bx bx-download" />
+						</Button>
 					);
 				},
 				style: {
@@ -284,7 +266,21 @@ export default function PaymentClient({ formik }) {
 						/>
 					) : (
 						<>
-							<SimpleTable columns={columns} data={items} />
+							<SimpleTable
+								columns={columns}
+								data={[
+									{
+										id: 1,
+										code: '123',
+										concept: 'test',
+										dateCreated: '2024-03-11',
+										amount: 15,
+										paymentForm: 'cash',
+										status: 'pending',
+									},
+								]}
+							/>
+							{/* <SimpleTable columns={columns} data={items} /> */}
 							{items.length > 0 && (
 								<Paginate
 									page={query.page}
@@ -299,6 +295,13 @@ export default function PaymentClient({ formik }) {
 					)}
 				</Col>
 			</Row>
+			<DialogMain
+				open={paymentDialog}
+				setOpen={setPaymentDialog}
+				title={''}
+				size="xl"
+				children={<TicketClientPayment data={paymentData} />}
+			/>
 		</>
 	);
 }

@@ -11,9 +11,9 @@ const token = sessionStorage.getItem('sunsetadmiralauth')
 	: '';
 //apply base url for axios
 //test:
-const API_URL = 'https://apiadmiral.sunset.com.mx/api';
+//const API_URL = 'https://apiadmiral.sunset.com.mx/api';
 //prod
-// const API_URL = 'https://apiadmiral-prod.sunset.com.mx/api';
+const API_URL = 'https://apiadmiral-prod.sunset.com.mx/api';
 
 const axiosApi = axios.create({
 	baseURL: API_URL,
