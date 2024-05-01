@@ -9,14 +9,16 @@ import {
 	OffcanvasHeader,
 	Row,
 } from 'reactstrap';
-import { getChargeByReservation } from '../../helpers/marina/charges';
+import {
+	getChargeByReservation,
+	getTotalChargeUpdated,
+} from '../../helpers/marina/charges';
 import TableCharges from '../Marina/Charge/TableCharges';
 import { numberFormat } from '../../utils/numberFormat';
 import SpinLoader from '../Loader/SpinLoader';
 import Select from 'react-select';
 import moment from 'moment';
 import 'moment/locale/es';
-import TooltipDescription from '../Common/TooltipDescription';
 import { savePayment } from '../../helpers/marina/payment';
 import { ERROR_SERVER } from '../../constants/messages';
 import extractMeaningfulMessage from '../../utils/extractMeaningfulMessage';
@@ -24,28 +26,19 @@ import { addMessage } from '../../redux/messageSlice';
 import { useDispatch } from 'react-redux';
 import SuccessPaymentDialog from '../Common/SuccessPaymentDialog';
 import { paymentFormOpt } from '../../constants/paymentForm';
+import TooltipDescription from '../Common/TooltipDescription';
+import { monthsOpt, yearsOpt } from '../../constants/dates';
 moment.locale('es');
 
-const getTotalToPay = (charges, isFullMonth) => {
-	if (isFullMonth) {
-		return charges.reduce((acc, cValue) => acc + cValue.totalMonth, 0);
-	} else {
-		if (charges.length === 1) {
-			return charges[0].amount + charges[0].interest;
-		} else {
-			const sumTotal = charges
-				.filter((it, idx) => idx < charges.length - 1)
-				.reduce((acc, cValue) => acc + cValue.totalMonth, 0);
-
-			return (
-				sumTotal +
-				(charges[charges.length - 1].amount +
-					charges[charges.length - 1].interest)
-			);
-		}
-	}
+const objStyle = {
+	border: '1px solid #2A7EC3',
+	fontWeight: 'bolder',
+	textTransform: 'uppercase',
+	backgroundColor: 'transparent!important',
+	boxShadow: 0,
+	padding: 0,
+	height: '24px',
 };
-
 const ChargesCanvas = ({
 	reservation,
 	open,
@@ -56,8 +49,6 @@ const ChargesCanvas = ({
 	const [charge, setCharge] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [desde, setDesde] = useState(null);
-	const [hasta, setHasta] = useState(null);
-	const [hastOpt, setHastaOpt] = useState([]);
 	const [chargesToPay, setChargesToPay] = useState([]);
 	const [concept, setConcept] = useState('');
 	const [reference, setReference] = useState('');
@@ -66,12 +57,15 @@ const ChargesCanvas = ({
 	const dispatch = useDispatch();
 	const [isPaying, setIsPaying] = useState(false);
 	const [showSuccess, setShowSuccess] = useState(false);
+	const [month, setMonth] = useState(null);
+	const [year, setYear] = useState(null);
+	const [isCalculating, setIsCalculating] = useState(false);
+	const [totalToPay, setTotalToPay] = useState(null);
 	const [ticket, setTicket] = useState({
 		reservation: null,
 		payment: null,
 		chargesSuccess: [],
 	});
-
 	useEffect(() => {
 		const fecthChargesByReservation = async () => {
 			try {
@@ -97,19 +91,6 @@ const ChargesCanvas = ({
 						id: list[0].id,
 						date: list[0].monthYear,
 					});
-					setHasta({
-						id: list[list.length - 1].id,
-						date: list[list.length - 1].monthYear,
-					});
-					setHastaOpt(
-						list.map((it) => ({
-							value: it.id,
-							date: it.monthYear,
-							label: moment(it.monthYear, 'YYYY-MM').format(
-								'MMMM YYYY'
-							),
-						}))
-					);
 				}
 			} catch (error) {
 				setCharge([]);
@@ -126,19 +107,14 @@ const ChargesCanvas = ({
 		setOpen(!open);
 	};
 
-	const total = useMemo(() => {
-		if (chargesToPay.length > 0) {
-			return getTotalToPay(chargesToPay, !finalizarReserva);
-		} else {
-			return 0;
-		}
-	}, [chargesToPay, finalizarReserva]);
-
 	const onHandlePayment = async () => {
 		setIsPaying(true);
 		const data = {
+			endDate: moment(`${year.value}-${month.value}`)
+				.endOf('month')
+				.format('YYYY-MM-DD'),
 			payment: {
-				amount: total,
+				amount: totalToPay,
 				concept: concept,
 				reference: reference,
 				paymentForm: paymentForm,
@@ -156,8 +132,6 @@ const ChargesCanvas = ({
 			setTicket((prev) => ({
 				reservation: reservation,
 				payment: response,
-				chargesSuccess: chargesToPay,
-				concept: concept,
 			}));
 			setShowSuccess(true);
 			setIsPaying(false);
@@ -193,18 +167,40 @@ const ChargesCanvas = ({
 		}
 	}, [showSuccess, ticket.payment]);
 
-	const updateChargesToPay = (date) => {
-		const updatedChargesToPay = charge.filter((it) =>
-			moment(it.monthYear, 'YYYY-MM').isSameOrBefore(
-				moment(date, 'YYYY-MM')
-			)
-		);
-		setChargesToPay(updatedChargesToPay);
-		if (updatedChargesToPay.length !== charge.length) {
-			setFinalizarReserva(false);
+	useEffect(() => {
+		async function getTotalToPay() {
+			try {
+				if (month !== null && year !== null && charge.length > 0) {
+					setIsCalculating(true);
+					const data = {
+						endDate: moment(`${year.value}-${month.value}`)
+							.endOf('month')
+							.format('YYYY-MM-DD'),
+						finished: finalizarReserva,
+						charges: charge.map((it) => ({ id: it.id })),
+					};
+					const response = await getTotalChargeUpdated(data);
+					setIsCalculating(false);
+					setTotalToPay(response.totalAmountMXN);
+				} else {
+					setIsCalculating(false);
+					setTotalToPay(null);
+				}
+			} catch (error) {
+				let message = ERROR_SERVER;
+				message = extractMeaningfulMessage(error, message);
+				dispatch(
+					addMessage({
+						type: 'error',
+						message: message,
+					})
+				);
+				setIsCalculating(false);
+				setTotalToPay(null);
+			}
 		}
-	};
-
+		getTotalToPay();
+	}, [month, year, charge, finalizarReserva, dispatch]);
 	return (
 		<Offcanvas
 			isOpen={open}
@@ -268,89 +264,115 @@ const ChargesCanvas = ({
 											</div>
 										</div>
 										<div className="d-flex justify-content-between align-items-center mb-2">
-											<div>Hasta</div>
-											{hasta ? (
-												<div>
-													<Select
-														value={{
-															value: hasta.id,
-															label: `${moment(
-																hasta.date,
-																'YYYY-MM'
-															).format(
-																'MMMM YYYY'
-															)}`,
-														}}
-														onChange={(value) => {
-															if (value) {
-																setHasta({
-																	id: value.value,
-																	date: value.date,
-																});
-																updateChargesToPay(
-																	value.date
-																);
-															}
-														}}
-														options={hastOpt}
-														classNamePrefix="select2-selection"
-														styles={{
-															control: (
-																baseStyles,
-																state
-															) => ({
-																...baseStyles,
-																border: '1px solid #2A7EC3',
-																fontWeight:
-																	'bolder',
-																textTransform:
-																	'uppercase',
-																backgroundColor:
-																	'transparent!important',
-																boxShadow: 0,
-																padding: 0,
-															}),
-														}}
-													/>
-													<div className="text-end">
-														<Input
-															id="enabled"
-															name="enabled"
-															type="checkbox"
-															className={`form-check-Input form-check-input`}
-															disabled={
-																charge.length !==
-																chargesToPay.length
-															}
-															checked={
-																finalizarReserva
-															}
-															onChange={(e) =>
-																onHandleChangeFinalizarReserva(
-																	e.target
-																		.checked
-																)
-															}
-														/>
-														<Label
-															htmlFor={`enabled`}
-															className="mb-0 ms-1 me-2 text-danger"
-														>
-															Finalizar reserva
-														</Label>
-														<i
-															className="far fa-question-circle text-dark"
-															id="help"
-														/>
-														<TooltipDescription
-															text="Si marca esta casilla el monto a cobrar será hasta el día actual"
-															id="help"
-														/>
+											<div className="flex-1">Hasta</div>
+											<div>
+												<div className="w-100">
+													<div className="d-flex">
+														<div className="me-1">
+															<Select
+																value={month}
+																onChange={(
+																	value
+																) => {
+																	setMonth(
+																		value
+																	);
+																}}
+																options={
+																	year?.value >
+																	moment().year()
+																		? monthsOpt
+																		: monthsOpt.filter(
+																				(
+																					it
+																				) =>
+																					parseInt(
+																						it.value
+																					) >=
+																					parseInt(
+																						desde?.date?.split(
+																							'-'
+																						)[1] ??
+																							0
+																					)
+																		  )
+																}
+																placeholder="Mes"
+																classNamePrefix="select2-selection"
+																styles={{
+																	control: (
+																		baseStyles,
+																		state
+																	) => ({
+																		...baseStyles,
+																		...objStyle,
+																	}),
+																}}
+															/>
+														</div>
+														<div>
+															<Select
+																value={year}
+																onChange={(
+																	value
+																) => {
+																	setYear(
+																		value
+																	);
+																}}
+																placeholder="Año"
+																options={yearsOpt().map(
+																	(it) => it
+																)}
+																classNamePrefix="select2-selection"
+																styles={{
+																	control: (
+																		baseStyles,
+																		state
+																	) => ({
+																		...baseStyles,
+																		...objStyle,
+																	}),
+																}}
+															/>
+														</div>
 													</div>
 												</div>
-											) : (
-												<strong>-</strong>
-											)}
+												<div className="text-end">
+													<Input
+														id="enabled"
+														name="enabled"
+														type="checkbox"
+														className={`form-check-Input form-check-input`}
+														disabled={
+															charge.length !==
+															chargesToPay.length
+														}
+														checked={
+															finalizarReserva
+														}
+														onChange={(e) =>
+															onHandleChangeFinalizarReserva(
+																e.target.checked
+															)
+														}
+													/>
+													<Label
+														htmlFor={`enabled`}
+														className="mb-0 ms-1 me-2 text-danger"
+													>
+														Finalizar reserva
+													</Label>
+													<i
+														className="far fa-question-circle text-dark"
+														id="help"
+													/>
+													<TooltipDescription
+														text="Si marca esta casilla el monto a cobrar será hasta el día actual"
+														id="help"
+													/>
+												</div>
+											</div>
 										</div>
 										<div className="mb-2">
 											<Label
@@ -417,12 +439,16 @@ const ChargesCanvas = ({
 												</span>
 											</div>
 											<div>
-												{total >= 0 ? (
-													<h3 className="text-primary m-0">
-														{numberFormat(total)}
-													</h3>
-												) : (
+												{isCalculating ? (
 													<SpinLoader />
+												) : (
+													<h3 className="text-primary m-0">
+														{totalToPay
+															? numberFormat(
+																	totalToPay
+															  )
+															: '-'}
+													</h3>
 												)}
 											</div>
 										</div>
@@ -442,7 +468,7 @@ const ChargesCanvas = ({
 													color="primary"
 													className="fs-4"
 													disabled={
-														total <= 0 ||
+														totalToPay <= 0 ||
 														!paymentForm
 													}
 													block

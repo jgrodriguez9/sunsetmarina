@@ -95,7 +95,7 @@ export default function FormSlipReservationClient({
 			slip: item?.slip ?? { id: '' },
 			arrivalDate: item?.arrivalDate ?? '',
 			departureDate: item?.departureDate ?? '',
-			status: item?.status ?? 'PENDING',
+			status: item?.status ?? 'CONFIRMED',
 		},
 		validationSchema: Yup.object({
 			boat: Yup.object({
@@ -267,7 +267,7 @@ export default function FormSlipReservationClient({
 						<Label htmlFor="boatType" className="mb-0">
 							Embarcación
 						</Label>
-						{formik.values.status === 'CONFIRMED' ? (
+						{formik.values.id ? (
 							<div className="form-control bg-light">
 								{formik.values.boat.name}
 							</div>
@@ -309,7 +309,7 @@ export default function FormSlipReservationClient({
 						<Label htmlFor="boatType" className="mb-0">
 							Slip
 						</Label>
-						{formik.values.status === 'CONFIRMED' ? (
+						{formik.values.id ? (
 							<div className="form-control bg-light">
 								{formik.values.slip.code}
 							</div>
@@ -393,7 +393,7 @@ export default function FormSlipReservationClient({
 						<Label htmlFor="price" className="mb-0">
 							Fecha inicio
 						</Label>
-						{formik.values.status === 'CONFIRMED' ? (
+						{formik.values.id ? (
 							<div className="form-control bg-light">
 								{moment(arrivalDate).format('DD-MM-YYYY')}
 							</div>

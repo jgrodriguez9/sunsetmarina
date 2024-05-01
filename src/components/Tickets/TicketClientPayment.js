@@ -6,6 +6,8 @@ import SpanControl from './common/SpanControl';
 import RowControl from './common/RowControl';
 import moment from 'moment';
 import ButtonsDisabled from '../Common/ButtonsDisabled';
+import jsFormatNumber from '../../utils/jsFormatNumber';
+import { getFormaPago } from '../../utils/getFormaPago';
 
 const options: Options = {
 	filename: `recibo-pago-${moment().format('YYYYMMDDHHMMSS')}.pdf`,
@@ -14,14 +16,14 @@ const options: Options = {
 	// increases the image quality but also the size of the PDF, so be careful
 	// using values higher than 10 when having multiple pages generated, it
 	// might cause the page to crash or hang.
-	resolution: Resolution.EXTREME,
+	resolution: Resolution.HIGH,
 	page: {
 		// margin is in MM, default is Margin.NONE = 0
-		margin: Margin.SMALL,
+		margin: Margin.LARGE,
 		// default is 'A4'
 		format: 'letter',
 		// default is 'portrait'
-		orientation: 'landscape',
+		orientation: 'portrait',
 	},
 	canvas: {
 		// default is 'image/jpeg' for better size performance
@@ -45,18 +47,18 @@ const options: Options = {
 
 const getTargetElement = () => document.getElementById('ticketclientpayment');
 
-const TicketClientPayment = ({ data }) => {
-	console.log(data);
+const TicketClientPayment = ({ data, show, toggle = null }) => {
 	const [loading, setLoading] = useState(false);
 	const exportToPdf = async () => {
 		setLoading(true);
 		await generatePDF(getTargetElement, options);
 		setLoading(false);
+		if (toggle) toggle();
 	};
 
 	return (
 		<>
-			<div id="ticketclientpayment">
+			<div id="ticketclientpayment" style={{ visibility: 0 }}>
 				<Container>
 					<Row>
 						<Col
@@ -89,14 +91,19 @@ const TicketClientPayment = ({ data }) => {
 								>
 									<SpanControl text="Folio recibo" />
 									<SpanControl
-										text="PAY-000001"
+										text={data?.payment?.code}
 										style={{
 											fontSize: '16px',
 											color: '#f46a69',
 										}}
 									/>
 									<SpanControl text="Fecha" />
-									<SpanControl text="02/10/2024" />
+									<SpanControl
+										text={moment(
+											data?.payment?.dateCreated,
+											'YYYY-MM-DD'
+										).format('DD/MM/YYYY')}
+									/>
 									<SpanControl text="Año del mes de pago" />
 									<SpanControl text="2024" />
 								</div>
@@ -117,7 +124,7 @@ const TicketClientPayment = ({ data }) => {
 								>
 									<RowControl
 										title="Propietario"
-										text="Javier Test Gonzalez"
+										text={`${data?.payment?.customer?.name} ${data?.payment?.customer?.lastName}`}
 										titleStyle={{
 											borderRight: '1px solid #004a8f',
 										}}
@@ -131,7 +138,7 @@ const TicketClientPayment = ({ data }) => {
 								>
 									<RowControl
 										title="EMBARCACION"
-										text="Javier Test Gonzalez"
+										text={data?.reservation?.boat?.name}
 										titleStyle={{
 											borderLeft: '1px solid #004a8f',
 											borderRight: '1px solid #004a8f',
@@ -149,7 +156,9 @@ const TicketClientPayment = ({ data }) => {
 								>
 									<RowControl
 										title="SUMA DE IMPORTE"
-										text="$200.30"
+										text={jsFormatNumber(
+											data?.payment?.amount ?? 0
+										)}
 										titleStyle={{
 											borderRight: '1px solid #004a8f',
 										}}
@@ -163,7 +172,9 @@ const TicketClientPayment = ({ data }) => {
 								>
 									<RowControl
 										title="FORMA DE PAGO"
-										text="Efectivo"
+										text={getFormaPago(
+											data?.payment?.paymentForm
+										)}
 										titleStyle={{
 											borderLeft: '1px solid #004a8f',
 											borderRight: '1px solid #004a8f',
@@ -270,7 +281,9 @@ const TicketClientPayment = ({ data }) => {
 								>
 									<RowControl
 										title="GRAN TOTAL"
-										text="$200.30"
+										text={jsFormatNumber(
+											data?.payment?.amount ?? 0
+										)}
 										titleStyle={{
 											borderRight: '1px solid #004a8f',
 										}}
@@ -417,6 +430,16 @@ const TicketClientPayment = ({ data }) => {
 								>
 									Descargar
 								</Button>
+								{toggle && (
+									<Button
+										color="link"
+										type="button"
+										className={'text-danger'}
+										onClick={exportToPdf}
+									>
+										Cerrar
+									</Button>
+								)}
 							</div>
 						)}
 					</Col>

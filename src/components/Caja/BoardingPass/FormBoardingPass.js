@@ -35,11 +35,15 @@ import SelectAsync from '../../Common/SelectAsync';
 import { getBracaletListPaginado } from '../../../helpers/contabilidad/bracalet';
 import { paymentFormOpt } from '../../../constants/paymentForm';
 import { currencyOpt } from '../../../constants/currencies';
+import moment from 'moment';
+import SimpleDate from '../../DatePicker/SimpleDate';
+import getObjectValid from '../../../utils/getObjectValid';
 
 export default function FormBoardingPass({ cajero = false }) {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	let timer = useRef();
+	const [fecha, setFecha] = useState(moment().toDate());
 
 	//info para los filtros de la reserva
 	const [client, setClient] = useState(null);
@@ -132,6 +136,7 @@ export default function FormBoardingPass({ cajero = false }) {
 			bracelets: [],
 			paymentForm: 'CASH',
 			price: 0,
+			departureDate: moment().format('YYYY-MM-DDTHH:mm'),
 		},
 		validationSchema: Yup.object({
 			amount: Yup.number().required(FIELD_REQUIRED),
@@ -150,10 +155,22 @@ export default function FormBoardingPass({ cajero = false }) {
 					})
 				)
 				.min(1, 'Al menos debe escoger 1 brazalete'),
+			departureDate: Yup.string().required(FIELD_REQUIRED),
 		}),
 		onSubmit: async (values) => {
 			try {
-				let response = await saveBoardingPass(values);
+				const data = {};
+				Object.entries(getObjectValid(values)).forEach((entry) => {
+					const [key, value] = entry;
+					if (key === 'departureDate') {
+						data[key] = moment(values.departureDate).format(
+							'YYYY-MM-DDTHH:mm'
+						);
+					} else {
+						data[key] = value;
+					}
+				});
+				let response = await saveBoardingPass(data);
 				if (response) {
 					dispatch(
 						addMessage({
@@ -169,6 +186,7 @@ export default function FormBoardingPass({ cajero = false }) {
 								id: '',
 							},
 							bracelets: [],
+							departureDate: moment().format('YYYY-MM-DD'),
 						});
 						setBoat(null);
 						setClient(null);
@@ -336,6 +354,7 @@ export default function FormBoardingPass({ cajero = false }) {
 			</div>
 		</>
 	);
+	console.log(formik.errors);
 	const calcularPrice = async (pax) => {
 		setIsCalculatingPrice(true);
 		try {
@@ -343,8 +362,8 @@ export default function FormBoardingPass({ cajero = false }) {
 			const q = `?pax=${pax}`;
 			const response = await getBoardingPassPrice(reservationId, q);
 			formik.setFieldValue('amount', response.priceUSD);
-			formik.setFieldValue('price', response.tax);
-			setPriceMXN(response.priceMXN);
+			formik.setFieldValue('price', response.price);
+			setPriceMXN(response.price);
 			formik.setFieldValue('currencyExchange', response.currencyExchange);
 			setIsCalculatingPrice(false);
 		} catch (error) {
@@ -355,7 +374,6 @@ export default function FormBoardingPass({ cajero = false }) {
 			formik.setFieldValue('price', 0);
 		}
 	};
-	console.log(formik.errors);
 
 	return (
 		<>
@@ -534,6 +552,39 @@ export default function FormBoardingPass({ cajero = false }) {
 								/>
 							</Col>
 							<Col xs="12" md="4">
+								<Label htmlFor="departureDate" className="mb-0">
+									Fecha de salida
+								</Label>
+								<SimpleDate
+									date={fecha}
+									setDate={(value) => {
+										setFecha(value[0]);
+										if (value.length > 0) {
+											formik.setFieldValue(
+												`departureDate`,
+												value[0]
+											);
+										} else {
+											formik.setFieldValue(
+												`departureDate`,
+												''
+											);
+										}
+									}}
+									dateFormat="d-m-Y H:i"
+									options={{
+										time_24hr: true,
+										enableTime: true,
+									}}
+									placeholder="dd-MM-YYYY HH:mm"
+								/>
+								{formik.errors.departureDate && (
+									<div className="invalid-tooltip">
+										{formik.errors.departureDate}
+									</div>
+								)}
+							</Col>
+							<Col xs="12" md="3">
 								<Label htmlFor="paymentForm" className="mb-0">
 									Moneda
 								</Label>
@@ -561,7 +612,7 @@ export default function FormBoardingPass({ cajero = false }) {
 									</div>
 								)}
 							</Col>
-							<Col xs="12" md="4">
+							<Col xs="12" md="3">
 								<Label htmlFor="amount" className="mb-0">
 									Total (USD)
 								</Label>
@@ -580,7 +631,7 @@ export default function FormBoardingPass({ cajero = false }) {
 									</div>
 								)}
 							</Col>
-							<Col xs="12" md="4">
+							<Col xs="12" md="3">
 								<Label htmlFor="priceMXN" className="mb-0">
 									Tipo Cambio
 								</Label>
@@ -596,7 +647,7 @@ export default function FormBoardingPass({ cajero = false }) {
 									/>
 								)}
 							</Col>
-							<Col xs="12" md="4">
+							<Col xs="12" md="3">
 								<Label htmlFor="priceMXN" className="mb-0">
 									Total (MXN)
 								</Label>

@@ -1,7 +1,7 @@
 import { Badge, Col, Row } from 'reactstrap';
 import TabActionHeader from '../Common/TabActionHeader';
 import DialogMain from '../../Common/DialogMain';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import SimpleTable from '../../Tables/SimpleTable';
 import {
 	CANCEL_RESERVATION_SUCCESS,
@@ -58,20 +58,28 @@ export default function SlipReservationClient({ formik }) {
 		setOpenModalAdd(true);
 	};
 
+	const getDebt = useCallback((debts, type) => {
+		if (type === 'MXN') {
+			return debts?.reduce((acc, curr) => acc + curr.debt, 0);
+		} else {
+			return debts?.reduce((acc, curr) => acc + curr.debtUSD, 0);
+		}
+	}, []);
+
 	const columns = useMemo(
 		() => [
 			{
 				Header: 'Código',
 				accessor: 'code',
 				style: {
-					width: '15%',
+					width: '12%',
 				},
 			},
 			{
 				Header: 'Slip',
 				accessor: 'slip.code',
 				style: {
-					width: '10%',
+					width: '6%',
 				},
 			},
 			{
@@ -85,7 +93,7 @@ export default function SlipReservationClient({ formik }) {
 				Header: 'Fecha llegada',
 				accessor: 'arrivalDate',
 				style: {
-					width: '10%',
+					width: '9%',
 				},
 				Cell: ({ value }) =>
 					moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY'),
@@ -94,36 +102,67 @@ export default function SlipReservationClient({ formik }) {
 				Header: 'Fecha salida',
 				accessor: 'departureDate',
 				style: {
-					width: '10%',
+					width: '9%',
 				},
 				Cell: ({ value }) =>
 					moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY'),
 			},
 			{
-				Header: 'Precio diario',
+				Header: 'Precio (MXN)',
 				accessor: 'price',
 				style: {
-					width: '10%',
+					width: '8%',
 				},
 				Cell: ({ value }) => numberFormat(value),
 			},
 			{
-				Header: 'Deuda',
+				Header: 'Deuda (MXN)',
 				accessor: 'debt',
 				style: {
-					width: '10%',
+					width: '8%',
 				},
 				Cell: ({ row, value }) =>
 					row.original.status === 'CONFIRMED' ? (
 						<span
 							className={
-								value > 0 ? 'text-danger' : 'text-success'
+								getDebt(value, 'MXN') > 0
+									? 'text-danger'
+									: 'text-success'
 							}
 						>
-							{numberFormat(value)}
+							{numberFormat(getDebt(value, 'MXN'))}
 						</span>
 					) : (
-						numberFormat(value)
+						numberFormat(getDebt(value, 'MXN'))
+					),
+			},
+			{
+				Header: 'Precio (USD)',
+				accessor: 'priceUSD',
+				style: {
+					width: '8%',
+				},
+				Cell: ({ value }) => numberFormat(value),
+			},
+			{
+				Header: 'Deuda (USD)',
+				id: 'debtUSD',
+				style: {
+					width: '8%',
+				},
+				Cell: ({ row }) =>
+					row.original.status === 'CONFIRMED' ? (
+						<span
+							className={
+								getDebt(row.original.debt, 'USD') > 0
+									? 'text-danger'
+									: 'text-success'
+							}
+						>
+							{numberFormat(getDebt(row.original.debt, 'USD'))}
+						</span>
+					) : (
+						numberFormat(getDebt(row.original.debt, 'USD'))
 					),
 			},
 			{
@@ -207,12 +246,14 @@ export default function SlipReservationClient({ formik }) {
 	};
 
 	useEffect(() => {
-		if (refetch) {
+		if (refetch && formik.values.id) {
 			setLoadingItems(true);
 			fetchItemsForClientApi();
 			setRefetch(false);
+		} else {
+			setLoadingItems(false);
 		}
-	}, [refetch]);
+	}, [refetch, formik.values.id]);
 
 	const onCloseCancel = () => {
 		setOpenModalCancel(false);
@@ -261,7 +302,7 @@ export default function SlipReservationClient({ formik }) {
 		<>
 			<TabActionHeader
 				add={{
-					allow: true,
+					allow: formik.values.id ? true : false,
 					handleAction: addNewModal,
 				}}
 			/>
@@ -270,13 +311,15 @@ export default function SlipReservationClient({ formik }) {
 					{loadingItems ? (
 						<TableLoader
 							columns={[
-								{ name: 'Código', width: '15%' },
-								{ name: 'Slip', width: '10%' },
+								{ name: 'Código', width: '12%' },
+								{ name: 'Slip', width: '6%' },
 								{ name: 'Embarcación', width: '15%' },
-								{ name: 'Fecha llegada', width: '10%' },
-								{ name: 'Fecha salida', width: '10%' },
-								{ name: 'Precio diario', width: '10%' },
-								{ name: 'Deuda', width: '10%' },
+								{ name: 'Fecha llegada', width: '9%' },
+								{ name: 'Fecha salida', width: '9%' },
+								{ name: 'Precio (MXN)', width: '8%' },
+								{ name: 'Deuda (MXN)', width: '8%' },
+								{ name: 'Precio (USD)', width: '8%' },
+								{ name: 'Deuda (USD)', width: '8%' },
 								{ name: 'Estado', width: '10%' },
 								{ name: 'Acciones', width: '10%' },
 							]}

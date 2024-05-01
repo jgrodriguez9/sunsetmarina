@@ -16,7 +16,6 @@ import {
 	getCurrencyExchangeListPaginado,
 	updateCurrencyExchange,
 } from '../../../helpers/catalogos/currencyExchange';
-import { numberFormat } from '../../../utils/numberFormat';
 import EditableTable from '../../../components/Tables/EditableTable';
 import DialogMain from '../../../components/Common/DialogMain';
 import FormCurrencyExchange from '../../../components/Catalogo/Moneda/FormCurrencyExchange';
@@ -124,7 +123,7 @@ function CurrencyExchange() {
 				header: 'Código',
 				accessorKey: 'code',
 				style: {
-					width: '20%',
+					width: '10%',
 				},
 				cell: TableCell,
 			},
@@ -151,9 +150,25 @@ function CurrencyExchange() {
 				header: 'Tipo de cambio',
 				accessorKey: 'currencyExchange',
 				style: {
-					width: '20%',
+					width: '10%',
 				},
 				cell: TableCell,
+			},
+			{
+				id: 'yesterdayCurrencyExchange',
+				header: 'Tipo de cambio de ayer',
+				accessorKey: 'yesterdayCurrencyExchange',
+				style: {
+					width: '10%',
+				},
+			},
+			{
+				id: 'difference',
+				header: 'Diferencia',
+				accessorKey: 'difference',
+				style: {
+					width: '10%',
+				},
 			},
 		],
 		[]
@@ -237,10 +252,12 @@ function CurrencyExchange() {
 				<TableLoader
 					columns={[
 						{ name: 'Nombre', width: '30%' },
-						{ name: 'Código', width: '20%' },
+						{ name: 'Código', width: '10%' },
 						{ name: 'Moneda', width: '10%' },
 						{ name: 'ISO3', width: '10%' },
-						{ name: 'Tipo de cambio', width: '20%' },
+						{ name: 'Tipo de cambio', width: '10%' },
+						{ name: 'Tipo de cambio de ayer', width: '10%' },
+						{ name: 'Diferencia', width: '10%' },
 					]}
 				/>
 			</Col>

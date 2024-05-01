@@ -290,3 +290,11 @@
 .link-noti:hover h6{
   color: #50a5f1
 } 
+.only-months .flatpickr-days,
+.only-months .flatpickr-weekdays {
+  display: none !important;
+}
+.only-months .flatpickr-months {
+  height: 50px;
+  background: #004a8f !important;
+}

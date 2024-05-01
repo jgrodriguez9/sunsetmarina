@@ -172,6 +172,22 @@ export default function PrincipalInfoClient({ formik, item, setFile }) {
 					</div>
 				</Row>
 				<Row className="align-items-center mb-2">
+					<Label htmlFor="balance" className="mb-0 col-md-3 col-12">
+						Balance
+					</Label>
+					<div className="col-md-9 col-12">
+						<Input
+							id="balance"
+							name="balance"
+							className={`form-control ${
+								formik.errors.balance ? 'is-invalid' : ''
+							}`}
+							onChange={formik.handleChange}
+							value={formik.values.balance}
+						/>
+					</div>
+				</Row>
+				<Row className="align-items-center mb-2">
 					<Label
 						htmlFor="needInvoice"
 						className="mb-0 col-md-3 col-12"

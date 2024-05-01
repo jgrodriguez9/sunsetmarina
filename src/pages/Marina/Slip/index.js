@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -17,6 +17,8 @@ import { addMessage } from '../../../redux/messageSlice';
 import extractMeaningfulMessage from '../../../utils/extractMeaningfulMessage';
 import { deleteSlip, getSlipListPaginado } from '../../../helpers/marina/slip';
 import { numberFormat } from '../../../utils/numberFormat';
+import DialogMain from '../../../components/Common/DialogMain';
+import FormUpdatePrice from '../../../components/Marina/Slip/FormUpdatePrice';
 
 function Slip() {
 	const dispatch = useDispatch();
@@ -28,6 +30,7 @@ function Slip() {
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	const [isDeleting, setDeleting] = useState(false);
 	const [selectedIdDelete, setSelectedIdDeleted] = useState(null);
+	const [showModalUpdatePrice, setShowModalUpdatePrice] = useState(false);
 	const [query, setQuery] = useState({
 		max: totalRegistros,
 		page: 1,
@@ -206,6 +209,15 @@ function Slip() {
 		}
 	};
 
+	const showModalToUpdatePrice = useCallback(() => {
+		setShowModalUpdatePrice(true);
+	}, []);
+
+	const successAction = useCallback(() => {
+		setShowModalUpdatePrice(false);
+		fetchList();
+	}, []);
+
 	const cardHandleList = loading ? (
 		<Row>
 			<Col xs="12" xl="12">
@@ -261,6 +273,11 @@ function Slip() {
 							text: 'Crear Nuevo',
 							goPageCreate: goPageCreate,
 						}}
+						updatePrice={{
+							allow: true,
+							text: 'Actualizar precio slips',
+							goPageCreate: showModalToUpdatePrice,
+						}}
 					/>
 
 					<Row>
@@ -286,6 +303,15 @@ function Slip() {
 				show={showDeleteDialog}
 				setShow={setShowDeleteDialog}
 				isDeleting={isDeleting}
+			/>
+			<DialogMain
+				open={showModalUpdatePrice}
+				setOpen={setShowModalUpdatePrice}
+				title={'Actualizar precio de slips'}
+				size="md"
+				children={
+					<FormUpdatePrice toggleModalReservation={successAction} />
+				}
 			/>
 		</>
 	);

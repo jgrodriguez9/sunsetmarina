@@ -4,9 +4,12 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import extractMeaningfulMessage from '../../../utils/extractMeaningfulMessage';
-import { ERROR_SERVER } from '../../../constants/messages';
+import { DELETE_SUCCESS, ERROR_SERVER } from '../../../constants/messages';
 import { addMessage } from '../../../redux/messageSlice';
-import { getPaymentByClient } from '../../../helpers/marina/payment';
+import {
+	cancelPayment,
+	getPaymentByClient,
+} from '../../../helpers/marina/payment';
 import { Badge, Button, Col, Row } from 'reactstrap';
 import TableLoader from '../../Loader/TablaLoader';
 import SimpleTable from '../../Tables/SimpleTable';
@@ -16,10 +19,9 @@ import { getFormaPago } from '../../../utils/getFormaPago';
 import { getTipoPago } from '../../../utils/getTipoPago';
 import FormFilter from '../../Common/FormFilter';
 import CardBasic from '../../Common/CardBasic';
-import { PDFDownloadLink } from '@react-pdf/renderer';
-import TicketPayment from '../../Tickets/TicketPayment';
 import DialogMain from '../../Common/DialogMain';
 import TicketClientPayment from '../../Tickets/TicketClientPayment';
+import DeleteDialog from '../../Common/DeleteDialog';
 
 export default function PaymentClient({ formik }) {
 	const dispatch = useDispatch();
@@ -27,6 +29,10 @@ export default function PaymentClient({ formik }) {
 	const [items, setItems] = useState([]);
 	const [paymentDialog, setPaymentDialog] = useState(false);
 	const [paymentData, setPaymentData] = useState(null);
+	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+	const [isDeleting, setIsDeleting] = useState(false);
+	const [idPayment, setIdPayment] = useState(null);
+	const [paymentToCancel, setPaymentToCancel] = useState(null);
 
 	//paginar
 	const [totalPaginas, setTotalPaginas] = useState(0);
@@ -74,9 +80,85 @@ export default function PaymentClient({ formik }) {
 	]);
 
 	const generatePayment = useCallback((row) => {
-		console.log(row);
+		const reservation = row.original.charges[0].reservation;
+		setPaymentData({
+			reservation: reservation,
+			payment: row.original,
+		});
 		setPaymentDialog(true);
 	}, []);
+
+	const fecthApiPaymentForClient = async () => {
+		try {
+			let q = Object.keys(query)
+				.map((key) => `${key}=${query[key]}`)
+				.join('&');
+			const response = await getPaymentByClient(
+				formik.values.id,
+				`?${q}`
+			);
+			setItems(response.list);
+			setTotalPaginas(response.pagination.totalPages);
+			setTotalRegistros(response.pagination.totalCount);
+			setLoading(false);
+		} catch (error) {
+			let message = ERROR_SERVER;
+			message = extractMeaningfulMessage(error, message);
+			dispatch(
+				addMessage({
+					type: 'error',
+					message: message,
+				})
+			);
+			setItems([]);
+			setLoading(false);
+		}
+	};
+
+	const handleCancelPayment = useCallback((row) => {
+		console.log(row.original);
+		setIdPayment(row.original.id);
+		setPaymentToCancel({
+			payment: {
+				amount: row.original.amount,
+				concept: row.original.concept,
+				reference: 'necoPina',
+				customer: {
+					id: row.original.customer.id,
+				},
+				systemId: row.original.systemId,
+				systemPayment: row.original.systemPayment,
+			},
+			charges: row.original.charges.map((it) => ({ id: it.id })),
+		});
+		setShowDeleteDialog(true);
+	}, []);
+
+	const handleDelete = async () => {
+		setIsDeleting(true);
+		try {
+			await cancelPayment(idPayment, paymentToCancel);
+			fecthApiPaymentForClient();
+			setIsDeleting(false);
+			setShowDeleteDialog(false);
+			dispatch(
+				addMessage({
+					message: DELETE_SUCCESS,
+					type: 'success',
+				})
+			);
+		} catch (error) {
+			let message = ERROR_SERVER;
+			message = extractMeaningfulMessage(error, message);
+			dispatch(
+				addMessage({
+					message: message,
+					type: 'error',
+				})
+			);
+			setIsDeleting(false);
+		}
+	};
 
 	const columns = useMemo(
 		() => [
@@ -98,7 +180,7 @@ export default function PaymentClient({ formik }) {
 				Header: 'Fecha',
 				accessor: 'dateCreated',
 				style: {
-					width: '15%',
+					width: '10%',
 				},
 				Cell: ({ value }) =>
 					moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY'),
@@ -148,19 +230,37 @@ export default function PaymentClient({ formik }) {
 				Header: 'Acciones',
 				Cell: ({ row }) => {
 					return (
-						<Button
-							color="primary"
-							size="sm"
-							outline
-							type="button"
-							onClick={() => generatePayment(row)}
-						>
-							<i className="bx bx-download" />
-						</Button>
+						<div className="d-flex">
+							<Button
+								color="primary"
+								size="sm"
+								outline
+								type="button"
+								className={'me-2 fs-4 px-2 py-0'}
+								onClick={
+									row.original.status === 'APPROVED'
+										? () => generatePayment(row)
+										: () => {}
+								}
+								disabled={row.original.status !== 'APPROVED'}
+							>
+								<i className="bx bx-download" />
+							</Button>
+							<Button
+								color="danger"
+								size="sm"
+								outline
+								className={'fs-4 px-2 py-0'}
+								type="button"
+								onClick={() => handleCancelPayment(row)}
+							>
+								<i className="mdi mdi-cash-remove" />
+							</Button>
+						</div>
 					);
 				},
 				style: {
-					width: '5%',
+					width: '10%',
 					textAlign: 'center',
 				},
 			},
@@ -169,34 +269,12 @@ export default function PaymentClient({ formik }) {
 	);
 
 	useEffect(() => {
-		const fecthApiPaymentForClient = async () => {
-			try {
-				let q = Object.keys(query)
-					.map((key) => `${key}=${query[key]}`)
-					.join('&');
-				const response = await getPaymentByClient(
-					formik.values.id,
-					`?${q}`
-				);
-				setItems(response.list);
-				setTotalPaginas(response.pagination.totalPages);
-				setTotalRegistros(response.pagination.totalCount);
-				setLoading(false);
-			} catch (error) {
-				let message = ERROR_SERVER;
-				message = extractMeaningfulMessage(error, message);
-				dispatch(
-					addMessage({
-						type: 'error',
-						message: message,
-					})
-				);
-				setItems([]);
-				setLoading(false);
-			}
-		};
-		setLoading(true);
-		fecthApiPaymentForClient();
+		if (formik.values.id) {
+			setLoading(true);
+			fecthApiPaymentForClient();
+		} else {
+			setLoading(false);
+		}
 	}, [JSON.stringify(query)]);
 
 	const handlePageClick = (page) => {
@@ -266,21 +344,7 @@ export default function PaymentClient({ formik }) {
 						/>
 					) : (
 						<>
-							<SimpleTable
-								columns={columns}
-								data={[
-									{
-										id: 1,
-										code: '123',
-										concept: 'test',
-										dateCreated: '2024-03-11',
-										amount: 15,
-										paymentForm: 'cash',
-										status: 'pending',
-									},
-								]}
-							/>
-							{/* <SimpleTable columns={columns} data={items} /> */}
+							<SimpleTable columns={columns} data={items} />
 							{items.length > 0 && (
 								<Paginate
 									page={query.page}
@@ -301,6 +365,12 @@ export default function PaymentClient({ formik }) {
 				title={''}
 				size="xl"
 				children={<TicketClientPayment data={paymentData} />}
+			/>
+			<DeleteDialog
+				handleDelete={handleDelete}
+				show={showDeleteDialog}
+				setShow={setShowDeleteDialog}
+				isDeleting={isDeleting}
 			/>
 		</>
 	);

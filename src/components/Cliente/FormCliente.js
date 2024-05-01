@@ -38,7 +38,6 @@ import getObjectValid from '../../utils/getObjectValid';
 import DocumentClient from './TabSection/DocumentClient';
 import SlipReservationClient from './TabSection/SlipReservationClient';
 import PaymentClient from './TabSection/PaymentClient';
-import TicketClientPayment from '../Tickets/TicketClientPayment';
 
 export default function FormCliente({ item, btnTextSubmit = 'Aceptar' }) {
 	const navigate = useNavigate();
@@ -75,6 +74,7 @@ export default function FormCliente({ item, btnTextSubmit = 'Aceptar' }) {
 			profilePicture: item?.profilePicture ?? '',
 			observations: item?.observations ?? '',
 			needInvoice: item?.needInvoice ?? false,
+			balance: item?.balance ?? 0,
 		},
 		validationSchema: Yup.object({
 			name: Yup.string().required(FIELD_REQUIRED),
