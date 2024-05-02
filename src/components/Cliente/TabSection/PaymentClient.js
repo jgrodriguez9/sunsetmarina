@@ -28,7 +28,6 @@ export default function PaymentClient({ formik }) {
 	const [loading, setLoading] = useState(true);
 	const [items, setItems] = useState([]);
 	const [paymentDialog, setPaymentDialog] = useState(false);
-	const [paymentData, setPaymentData] = useState(null);
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [idPayment, setIdPayment] = useState(null);
@@ -80,11 +79,7 @@ export default function PaymentClient({ formik }) {
 	]);
 
 	const generatePayment = useCallback((row) => {
-		const reservation = row.original.charges[0].reservation;
-		setPaymentData({
-			reservation: reservation,
-			payment: row.original,
-		});
+		setIdPayment(row.original.id);
 		setPaymentDialog(true);
 	}, []);
 
@@ -364,7 +359,7 @@ export default function PaymentClient({ formik }) {
 				setOpen={setPaymentDialog}
 				title={''}
 				size="xl"
-				children={<TicketClientPayment data={paymentData} />}
+				children={<TicketClientPayment idPayment={idPayment} />}
 			/>
 			<DeleteDialog
 				handleDelete={handleDelete}

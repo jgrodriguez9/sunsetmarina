@@ -286,7 +286,7 @@ const contabilidadRoutes = [
 	...cashRoutes,
 	...authProtectedRoutes,
 	...publicRoutes,
-	...securityRoutes.filter((it) => it.path !== '/users'),
+	...securityRoutes,
 ];
 const operacionesRoutes = [
 	...marineRoutes,
@@ -300,7 +300,9 @@ const cajeroRoutes = [
 	...publicRoutes,
 	...cashRoutes.filter(
 		(it) =>
-			it.path === '/boardingpass' || it.path === '/boardingpass/create'
+			it.path === '/boardingpass' ||
+			it.path === '/boardingpass/create' ||
+			it.path === '/cashregistercontrol'
 	),
 ];
 

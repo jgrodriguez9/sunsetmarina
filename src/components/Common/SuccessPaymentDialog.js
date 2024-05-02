@@ -1,10 +1,16 @@
 import { Col, Modal, ModalBody, Row } from 'reactstrap';
 import TicketClientPayment from '../Tickets/TicketClientPayment';
+import { useEffect, useState } from 'react';
 
 export default function SuccessPaymentDialog({ ticket, show, setShow }) {
+	const [idPayment, setIdPayment] = useState(null);
 	const onCloseClick = () => {
 		setShow(false);
 	};
+
+	useEffect(() => {
+		setIdPayment(ticket.idPayment);
+	}, [ticket.idPayment]);
 
 	return (
 		<Modal
@@ -36,7 +42,7 @@ export default function SuccessPaymentDialog({ ticket, show, setShow }) {
 					<Col>
 						<div className="mt-3">
 							<TicketClientPayment
-								data={ticket}
+								idPayment={idPayment}
 								show={false}
 								toggle={onCloseClick}
 							/>

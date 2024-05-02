@@ -171,6 +171,7 @@ export default function FormBoardingPass({ cajero = false }) {
 					}
 				});
 				let response = await saveBoardingPass(data);
+				console.log(response);
 				if (response) {
 					dispatch(
 						addMessage({
@@ -192,7 +193,7 @@ export default function FormBoardingPass({ cajero = false }) {
 						setClient(null);
 						setSlip(null);
 					} else {
-						navigate('/boardingpass');
+						// navigate('/boardingpass');
 					}
 				} else {
 					dispatch(

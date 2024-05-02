@@ -160,6 +160,11 @@ const DashBoardCajero = () => {
 				</Col>
 			</Row>
 			<Row>
+				<Col>
+					<CajeroPaseSalidaForm />
+				</Col>
+			</Row>
+			<Row>
 				<Col xl="4">
 					<ChartAnalisisRenta
 						title={'Analisis de Renta'}
@@ -172,11 +177,6 @@ const DashBoardCajero = () => {
 						revenueFilter={revenueFilter}
 						setRevenueFilter={setRevenueFilter}
 					/>
-				</Col>
-			</Row>
-			<Row>
-				<Col>
-					<CajeroPaseSalidaForm />
 				</Col>
 			</Row>
 		</>

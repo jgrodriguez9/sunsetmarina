@@ -1,11 +1,11 @@
 export const existsRole = (roles, rolesToCheck) => {
-	if (!rolesToCheck) return true;
-	if (!roles) return true;
-
-	return roles.every((r) => {
+	if (!rolesToCheck) return false;
+	if (!roles) return false;
+	let found = false;
+	roles.forEach((r) => {
 		if (rolesToCheck.includes(r)) {
-			return true;
+			found = true;
 		}
-		return false;
 	});
+	return found;
 };

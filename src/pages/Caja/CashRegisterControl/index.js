@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useMemo, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Col, Container, Row } from 'reactstrap';
 import Breadcrumbs from '../../../components/Common/Breadcrumbs';
 import CardBasic from '../../../components/Common/CardBasic';
@@ -30,10 +30,15 @@ import CloseCashRegister from '../../../components/Caja/CashRegisterControl/Clos
 import ApproveCloseCashRegister from '../../../components/Caja/CashRegisterControl/ApproveCloseCashRegister';
 import { getCashRegisterListPaginado } from '../../../helpers/caja/cashRegister';
 import { useNavigate } from 'react-router-dom';
+import {
+	ROLE_ADMINISTRACION,
+	ROLE_CONTABILIDAD,
+} from '../../../constants/roles';
 
 function CashRegisterControl() {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
+	const user = useSelector((state) => state.user);
 	const [loading, setLoading] = useState(true);
 	const [items, setItems] = useState([]);
 	const [totalPaginas, setTotalPaginas] = useState(0);
@@ -235,38 +240,44 @@ function CashRegisterControl() {
 								id={`btn-span-close-cash-${row.original.id}`}
 							/>
 						</span>
-						<span
-							onClick={() => {
-								setCurrentChidlren('approveCloseCashRegister');
-								if (
-									row.original.approvedBy === null &&
-									row.original.closedBy !== null
-								) {
-									handleCloseCash(row.original.id);
-								}
-							}}
-							className="pe-2"
-							id={`btn-span-approve-close-cash-${row.original.id}`}
-						>
-							<i
-								className={`mdi mdi-account-key-outline text-primary fs-5 ${
-									row.original.approvedBy === null &&
-									row.original.closedBy !== null
-										? 'opacity-1'
-										: 'opacity-50'
-								}`}
-							/>
-							<TooltipDescription
-								text={`${
-									row.original.closedBy === null
-										? 'Debe cerrar la caja primero'
-										: row.original.approvedBy === null
-										? 'Aprobar cierre de caja'
-										: 'Cierre de caja aprobado'
-								}`}
-								id={`btn-span-approve-close-cash-${row.original.id}`}
-							/>
-						</span>
+						{user.roles.includes(ROLE_ADMINISTRACION) ||
+							(user.roles.includes(ROLE_CONTABILIDAD) && (
+								<span
+									onClick={() => {
+										setCurrentChidlren(
+											'approveCloseCashRegister'
+										);
+										if (
+											row.original.approvedBy === null &&
+											row.original.closedBy !== null
+										) {
+											handleCloseCash(row.original.id);
+										}
+									}}
+									className="pe-2"
+									id={`btn-span-approve-close-cash-${row.original.id}`}
+								>
+									<i
+										className={`mdi mdi-account-key-outline text-primary fs-5 ${
+											row.original.approvedBy === null &&
+											row.original.closedBy !== null
+												? 'opacity-1'
+												: 'opacity-50'
+										}`}
+									/>
+									<TooltipDescription
+										text={`${
+											row.original.closedBy === null
+												? 'Debe cerrar la caja primero'
+												: row.original.approvedBy ===
+												  null
+												? 'Aprobar cierre de caja'
+												: 'Cierre de caja aprobado'
+										}`}
+										id={`btn-span-approve-close-cash-${row.original.id}`}
+									/>
+								</span>
+							))}
 						<span
 							onClick={() => {
 								navigate(

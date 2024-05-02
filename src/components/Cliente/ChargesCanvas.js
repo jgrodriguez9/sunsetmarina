@@ -61,11 +61,7 @@ const ChargesCanvas = ({
 	const [year, setYear] = useState(null);
 	const [isCalculating, setIsCalculating] = useState(false);
 	const [totalToPay, setTotalToPay] = useState(null);
-	const [ticket, setTicket] = useState({
-		reservation: null,
-		payment: null,
-		chargesSuccess: [],
-	});
+	const [ticket, setTicket] = useState({ idPayment: null });
 	useEffect(() => {
 		const fecthChargesByReservation = async () => {
 			try {
@@ -129,10 +125,7 @@ const ChargesCanvas = ({
 
 		try {
 			const response = await savePayment(data);
-			setTicket((prev) => ({
-				reservation: reservation,
-				payment: response,
-			}));
+			setTicket({ idPayment: response.id });
 			setShowSuccess(true);
 			setIsPaying(false);
 			setRefetch(true);

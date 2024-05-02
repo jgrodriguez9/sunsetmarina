@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Container, Row, Col, Button } from 'reactstrap';
 import generatePDF, { Resolution, Margin } from 'react-to-pdf';
 import logo from '../../assets/images/logo.png';
@@ -8,6 +8,11 @@ import moment from 'moment';
 import ButtonsDisabled from '../Common/ButtonsDisabled';
 import jsFormatNumber from '../../utils/jsFormatNumber';
 import { getFormaPago } from '../../utils/getFormaPago';
+import { getPayment } from '../../helpers/marina/payment';
+import SpinLoader from '../Loader/SpinLoader';
+
+import 'moment/locale/es';
+moment.locale('es');
 
 const options: Options = {
 	filename: `recibo-pago-${moment().format('YYYYMMDDHHMMSS')}.pdf`,
@@ -47,8 +52,10 @@ const options: Options = {
 
 const getTargetElement = () => document.getElementById('ticketclientpayment');
 
-const TicketClientPayment = ({ data, show, toggle = null }) => {
+const TicketClientPayment = ({ idPayment, show, toggle = null }) => {
+	const [isRequesting, setIsRequesting] = useState(true);
 	const [loading, setLoading] = useState(false);
+	const [payment, setPayment] = useState(null);
 	const exportToPdf = async () => {
 		setLoading(true);
 		await generatePDF(getTargetElement, options);
@@ -56,7 +63,42 @@ const TicketClientPayment = ({ data, show, toggle = null }) => {
 		if (toggle) toggle();
 	};
 
-	return (
+	useEffect(() => {
+		async function getPaymentApi() {
+			setIsRequesting(true);
+			try {
+				const response = await getPayment(idPayment);
+				setPayment(response);
+				setIsRequesting(false);
+			} catch (error) {
+				setPayment(null);
+				setIsRequesting(false);
+			}
+		}
+		if (idPayment) {
+			getPaymentApi();
+		}
+	}, [idPayment]);
+
+	const paymentsMonths = useMemo(() => {
+		if (!payment) return '';
+		return payment.charges
+			.map((it) => moment(it.monthYear, 'YYYY-MM').format('MMMM'))
+			.join(',');
+	}, [payment]);
+	const paymentsYears = useMemo(() => {
+		if (!payment) return '';
+		const years = payment.charges.map((it) =>
+			moment(it.monthYear, 'YYYY-MM').format('YYYY')
+		);
+		const res = Array.from(new Set(years));
+		return res.join(',');
+	}, [payment]);
+	return isRequesting ? (
+		<div className="d-flex p-5 justify-content-center">
+			<SpinLoader />
+		</div>
+	) : (
 		<>
 			<div id="ticketclientpayment" style={{ visibility: 0 }}>
 				<Container>
@@ -91,7 +133,7 @@ const TicketClientPayment = ({ data, show, toggle = null }) => {
 								>
 									<SpanControl text="Folio recibo" />
 									<SpanControl
-										text={data?.payment?.code}
+										text={payment?.code}
 										style={{
 											fontSize: '16px',
 											color: '#f46a69',
@@ -100,12 +142,12 @@ const TicketClientPayment = ({ data, show, toggle = null }) => {
 									<SpanControl text="Fecha" />
 									<SpanControl
 										text={moment(
-											data?.payment?.dateCreated,
+											payment?.dateCreated,
 											'YYYY-MM-DD'
 										).format('DD/MM/YYYY')}
 									/>
 									<SpanControl text="Año del mes de pago" />
-									<SpanControl text="2024" />
+									<SpanControl text={paymentsYears} />
 								</div>
 							</div>
 
@@ -124,7 +166,7 @@ const TicketClientPayment = ({ data, show, toggle = null }) => {
 								>
 									<RowControl
 										title="Propietario"
-										text={`${data?.payment?.customer?.name} ${data?.payment?.customer?.lastName}`}
+										text={`${payment?.customer?.name} ${payment?.customer?.lastName}`}
 										titleStyle={{
 											borderRight: '1px solid #004a8f',
 										}}
@@ -138,7 +180,7 @@ const TicketClientPayment = ({ data, show, toggle = null }) => {
 								>
 									<RowControl
 										title="EMBARCACION"
-										text={data?.reservation?.boat?.name}
+										text={''}
 										titleStyle={{
 											borderLeft: '1px solid #004a8f',
 											borderRight: '1px solid #004a8f',
@@ -157,7 +199,7 @@ const TicketClientPayment = ({ data, show, toggle = null }) => {
 									<RowControl
 										title="SUMA DE IMPORTE"
 										text={jsFormatNumber(
-											data?.payment?.amount ?? 0
+											payment?.amount ?? 0
 										)}
 										titleStyle={{
 											borderRight: '1px solid #004a8f',
@@ -173,7 +215,7 @@ const TicketClientPayment = ({ data, show, toggle = null }) => {
 									<RowControl
 										title="FORMA DE PAGO"
 										text={getFormaPago(
-											data?.payment?.paymentForm
+											payment?.paymentForm
 										)}
 										titleStyle={{
 											borderLeft: '1px solid #004a8f',
@@ -252,10 +294,13 @@ const TicketClientPayment = ({ data, show, toggle = null }) => {
 								<Col
 									md="3"
 									style={{
-										padding: 0,
+										padding: '4px 8px',
 									}}
 								>
-									<div style={{ padding: '14px 8px' }} />
+									<SpanControl
+										text={paymentsMonths}
+										style={{ textTransform: 'uppercase' }}
+									/>
 								</Col>
 								<Col
 									md="6"
@@ -282,7 +327,7 @@ const TicketClientPayment = ({ data, show, toggle = null }) => {
 									<RowControl
 										title="GRAN TOTAL"
 										text={jsFormatNumber(
-											data?.payment?.amount ?? 0
+											payment?.amount ?? 0
 										)}
 										titleStyle={{
 											borderRight: '1px solid #004a8f',
