@@ -8,7 +8,7 @@ import {
 } from '../constants/roles';
 import { existsRole } from '../utils/roles';
 
-const roles = JSON.parse(sessionStorage.getItem('sunsetadmiralauth')).roles;
+const roles = JSON.parse(sessionStorage.getItem('sunsetadmiralauth'))?.roles;
 export const navigations = [
 	{
 		id: 'inicio',
