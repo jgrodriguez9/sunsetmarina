@@ -1,6 +1,6 @@
 import { useFormik } from 'formik';
 import { useDispatch } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Button, Col, Form, Input, Label, Row } from 'reactstrap';
 import * as Yup from 'yup';
 import {
@@ -38,9 +38,9 @@ import { currencyOpt } from '../../../constants/currencies';
 import moment from 'moment';
 import SimpleDate from '../../DatePicker/SimpleDate';
 import getObjectValid from '../../../utils/getObjectValid';
+import jsFormatNumber from '../../../utils/jsFormatNumber';
 
 export default function FormBoardingPass({ cajero = false }) {
-	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	let timer = useRef();
 	const [fecha, setFecha] = useState(moment().toDate());
@@ -355,7 +355,6 @@ export default function FormBoardingPass({ cajero = false }) {
 			</div>
 		</>
 	);
-	console.log(formik.errors);
 	const calcularPrice = async (pax) => {
 		setIsCalculatingPrice(true);
 		try {
@@ -375,6 +374,12 @@ export default function FormBoardingPass({ cajero = false }) {
 			formik.setFieldValue('price', 0);
 		}
 	};
+
+	useEffect(() => {
+		if (!client && !boat && !slip) {
+			setReservationSelected(null);
+		}
+	}, [client, boat, slip]);
 
 	return (
 		<>
@@ -401,6 +406,7 @@ export default function FormBoardingPass({ cajero = false }) {
 											...prev,
 											customerId: value?.value ?? null,
 										}));
+										setReservationSelected(null);
 									}}
 									options={clientOpt}
 									classNamePrefix="select2-selection"
@@ -417,6 +423,7 @@ export default function FormBoardingPass({ cajero = false }) {
 											...prev,
 											boatId: value?.value ?? null,
 										}));
+										setReservationSelected(null);
 									}}
 									options={boatOpt}
 									classNamePrefix="select2-selection"
@@ -433,6 +440,7 @@ export default function FormBoardingPass({ cajero = false }) {
 											...prev,
 											slipId: value?.value ?? null,
 										}));
+										setReservationSelected(null);
 									}}
 									options={slipOpt}
 									classNamePrefix="select2-selection"
@@ -495,6 +503,15 @@ export default function FormBoardingPass({ cajero = false }) {
 											Embarcación:
 										</strong>
 										{reservationSelected?.boat?.name}
+									</div>
+									<div>
+										<strong className="me-2">
+											Balance:
+										</strong>
+										{jsFormatNumber(
+											reservationSelected?.customer
+												?.balance
+										)}
 									</div>
 								</div>
 								<hr />
@@ -724,7 +741,9 @@ export default function FormBoardingPass({ cajero = false }) {
 					/>
 				) : (
 					<div className="d-flex">
-						{formik.isValid && formik.values.reservation.id ? (
+						{formik.isValid &&
+						formik.values.reservation.id &&
+						reservationSelected ? (
 							<Button
 								color="primary"
 								type="submit"
