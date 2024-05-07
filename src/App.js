@@ -16,7 +16,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import { getUserLogued } from './helpers/auth';
+import { getUserLogued, getUserLoguedInfo } from './helpers/auth';
 import { setUser } from './redux/userSlice';
 import NotFoundPage from './pages/Utility/NotFoundPage';
 import { ToastContainer, toast } from 'react-toastify';
@@ -53,20 +53,16 @@ function App() {
 	useEffect(() => {
 		if (sessionStorage.getItem('sunsetadmiralauth')) {
 			async function fetchUserInfoApi() {
-				const response = await getUserLogued();
-				if (response.data.length > 0) {
-					const user = {
-						...response.data[0],
-						...JSON.parse(
-							sessionStorage.getItem('sunsetadmiralauth')
-						),
-					};
-					dispatch(setUser(user));
-				}
+				const response = await getUserLoguedInfo();
+				const user = {
+					...response,
+					...JSON.parse(sessionStorage.getItem('sunsetadmiralauth')),
+				};
+				dispatch(setUser(user));
 			}
 			fetchUserInfoApi();
 		}
-	}, [sessionStorage.getItem('sunsetadmiralauth')]);
+	}, [dispatch]);
 
 	useEffect(() => {
 		if (message.type) {

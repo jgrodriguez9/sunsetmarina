@@ -77,9 +77,6 @@ function TicketPayment({ ticket }) {
 			<Page size="A4" style={styles.body}>
 				<Image style={styles.image} src={logo} />
 				<View style={[styles.containerFlexCenter, styles.flexCenter]}>
-					<Text style={{ fontSize: 14, margin: 'auto' }}>
-						Sunset Admiral
-					</Text>
 					<Text
 						style={{ fontSize: 12, margin: 'auto', marginTop: 10 }}
 					>
