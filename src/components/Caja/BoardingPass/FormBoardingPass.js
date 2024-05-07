@@ -375,7 +375,6 @@ export default function FormBoardingPass({ cajero = false }) {
 					type="button"
 					className="btn btn-light ms-2"
 					onClick={() => {
-						formik.setFieldValue('reservation.id', '');
 						setReservationSelected(null);
 						setOpenModal(false);
 					}}
@@ -504,7 +503,7 @@ export default function FormBoardingPass({ cajero = false }) {
 						</Row>
 					</Col>
 				</Row>
-				{!openModal && formik.values.reservation.id && (
+				{formik.values.reservation.id && (
 					<div className="bg-light py-3 px-2 my-3 border">
 						<Row>
 							<Col xs="12" md="12">
@@ -759,7 +758,7 @@ export default function FormBoardingPass({ cajero = false }) {
 					<ButtonsDisabled
 						buttons={[
 							{
-								text: 'Guardar',
+								text: 'Generar ticket',
 								color: 'primary',
 								className: '',
 								loader: true,
@@ -782,7 +781,7 @@ export default function FormBoardingPass({ cajero = false }) {
 								type="submit"
 								className="me-2"
 							>
-								Guardar
+								Generar ticket
 							</Button>
 						) : (
 							<Button

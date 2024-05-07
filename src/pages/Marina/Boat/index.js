@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { Col, Container, Row } from 'reactstrap';
+import { Badge, Col, Container, Row } from 'reactstrap';
 import Breadcrumbs from '../../../components/Common/Breadcrumbs';
 import CardBasic from '../../../components/Common/CardBasic';
 import CardMain from '../../../components/Common/CardMain';
@@ -101,14 +101,30 @@ function Boat() {
 				Cell: ({ row, value }) =>
 					`${row.original.customer.name} ${row.original.customer.lastName}`,
 				style: {
-					width: '30%',
+					width: '25%',
+				},
+			},
+			{
+				Header: 'Estado',
+				accessor: 'status',
+				style: {
+					width: '10%',
+				},
+				Cell: ({ value }) => {
+					if (value === 'AVAILABLE') {
+						return <Badge color="secondary">Disponible</Badge>;
+					} else if (value === 'RESERVED') {
+						return <Badge color="success">Reservado</Badge>;
+					} else {
+						return <Badge color="danger">Cancelado</Badge>;
+					}
 				},
 			},
 			{
 				Header: 'Número de registro',
 				accessor: 'registrationNumber',
 				style: {
-					width: '20%',
+					width: '15%',
 				},
 			},
 			{
@@ -214,8 +230,9 @@ function Boat() {
 				<TableLoader
 					columns={[
 						{ name: 'Nombre', width: '20%' },
-						{ name: 'Cliente', width: '30%' },
-						{ name: 'Número de registro', width: '20%' },
+						{ name: 'Cliente', width: '25%' },
+						{ name: 'Estado', width: '10%' },
+						{ name: 'Número de registro', width: '15%' },
 						{ name: 'Fecha expiración seguro', width: '20%' },
 						{ name: 'Acciones', width: '10%' },
 					]}

@@ -1,8 +1,8 @@
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { Button, Col, Container, Row } from 'reactstrap';
+import { Badge, Button, Col, Container, Row } from 'reactstrap';
 import Breadcrumbs from '../../../components/Common/Breadcrumbs';
 import CardBasic from '../../../components/Common/CardBasic';
 import CardMain from '../../../components/Common/CardMain';
@@ -20,13 +20,11 @@ import {
 import DeleteDialog from '../../../components/Common/DeleteDialog';
 import { numberFormat } from '../../../utils/numberFormat';
 import moment from 'moment';
-import DialogMain from '../../../components/Common/DialogMain';
-import TicketBoardingPass from '../../../components/Tickets/TicketBoardingPass';
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import TicketPayment from '../../../components/Tickets/TicketPayment';
 
 function BoardingPass() {
 	const dispatch = useDispatch();
-	const [ticket, setTicket] = useState(null);
-	const [ticketDialog, setTicketDialog] = useState(false);
 	const [loading, setLoading] = useState(true);
 	const [items, setItems] = useState([]);
 	const [totalPaginas, setTotalPaginas] = useState(0);
@@ -99,11 +97,6 @@ function BoardingPass() {
 		fetchList();
 	}, [JSON.stringify(query)]);
 
-	const generateTicket = useCallback((row) => {
-		setTicket(row.original);
-		setTicketDialog(true);
-	}, []);
-
 	const columns = useMemo(
 		() => [
 			{
@@ -126,8 +119,15 @@ function BoardingPass() {
 				style: {
 					width: '50%',
 				},
-				Cell: ({ value }) =>
-					value.map((it) => it.color + ' ' + it.code).join(', '),
+				Cell: ({ value }) => (
+					<div className="d-flex flex-wrap">
+						{value.map((it, idx) => (
+							<Badge color="secondary" key={`braz-${idx}`}>
+								{`${it.color} ${it.code}`}
+							</Badge>
+						))}
+					</div>
+				),
 			},
 			{
 				Header: 'Total',
@@ -152,25 +152,38 @@ function BoardingPass() {
 				Cell: ({ row }) => {
 					return (
 						<div className="d-flex">
-							<Button
-								color={
-									row.original.deleted
-										? 'secondary'
-										: 'primary'
-								}
-								size="sm"
-								outline
-								type="button"
-								disabled={row.original.deleted}
-								className={'me-1 fs-5 py-0'}
-								onClick={
-									!row.original.deleted
-										? () => generateTicket(row)
-										: () => {}
-								}
-							>
-								<i className="bx bx-download" />
-							</Button>
+							{row.original.deleted ? (
+								<Button
+									color="secondary"
+									size="sm"
+									outline
+									type="button"
+									disabled
+									className={'me-1 fs-5 py-0'}
+								>
+									<i className="bx bx-download" />
+								</Button>
+							) : (
+								<PDFDownloadLink
+									className="btn btn-outline-primary btn-sm me-1 fs-5 py-0"
+									document={
+										row.original ? (
+											<TicketPayment
+												ticket={row.original}
+											/>
+										) : null
+									}
+									fileName={`${row.original.code}.pdf`}
+								>
+									{({ blob, url, loading, error }) =>
+										loading ? (
+											<i className="mdi mdi-timer-sand" />
+										) : (
+											<i className="bx bx-download" />
+										)
+									}
+								</PDFDownloadLink>
+							)}
 							<Button
 								color={
 									row.original.deleted
@@ -199,7 +212,7 @@ function BoardingPass() {
 				},
 			},
 		],
-		[generateTicket]
+		[]
 	);
 
 	const handleShowDialogDelete = (row) => {
@@ -349,13 +362,6 @@ function BoardingPass() {
 				show={showDeleteDialog}
 				setShow={setShowDeleteDialog}
 				isDeleting={isDeleting}
-			/>
-			<DialogMain
-				open={ticketDialog}
-				setOpen={setTicketDialog}
-				title={'Ticket'}
-				size="md"
-				children={<TicketBoardingPass ticket={ticket} />}
 			/>
 		</>
 	);
