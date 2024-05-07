@@ -134,7 +134,7 @@ export default function DocumentClient({ formik }) {
 			setLoadingItems(true);
 			fetchItemsForClientApi();
 			setRefetch(false);
-		} else {
+		} else if (!formik.values.id) {
 			setLoadingItems(false);
 		}
 	}, [refetch, formik.values.id]);

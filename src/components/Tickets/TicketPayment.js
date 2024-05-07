@@ -1,7 +1,14 @@
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import {
+	Document,
+	Page,
+	Text,
+	View,
+	StyleSheet,
+	Image,
+} from '@react-pdf/renderer';
 import moment from 'moment';
 import { getFormaPago } from '../../utils/getFormaPago';
-import { months } from '../../constants/dates';
+import logo from '../../assets/images/logo.png';
 
 function TicketPayment({ ticket }) {
 	const styles = StyleSheet.create({
@@ -25,6 +32,10 @@ function TicketPayment({ ticket }) {
 		flexCenter: {
 			justifyContent: 'center',
 		},
+		image: {
+			marginVertical: 15,
+			marginHorizontal: 100,
+		},
 	});
 	const stylesTable = StyleSheet.create({
 		table: {
@@ -45,10 +56,10 @@ function TicketPayment({ ticket }) {
 		},
 		// So Declarative and unDRY 👌
 		row1: {
-			width: '80%',
+			width: '70%',
 		},
 		row2: {
-			width: '20%',
+			width: '30%',
 		},
 	});
 
@@ -60,18 +71,10 @@ function TicketPayment({ ticket }) {
 		if (number) return formatter.format(number);
 		return '$0.00';
 	};
-	const getConcept = (monthYear) => {
-		try {
-			const monthYears = monthYear.split('-');
-			const m = months.find((it) => it.value === parseInt(monthYears[1]));
-			return `${m.label}-${monthYears[0]}`;
-		} catch (error) {
-			return '';
-		}
-	};
 	return (
 		<Document>
 			<Page size="A4" style={styles.body}>
+				<Image style={styles.image} src={logo} />
 				<View style={[styles.containerFlexCenter, styles.flexCenter]}>
 					<Text style={{ fontSize: 14, margin: 'auto' }}>
 						Sunset Admiral
@@ -79,7 +82,7 @@ function TicketPayment({ ticket }) {
 					<Text
 						style={{ fontSize: 12, margin: 'auto', marginTop: 10 }}
 					>
-						FOLIO: {ticket.payment.code}
+						FOLIO: {ticket.code}
 					</Text>
 					<Text
 						style={{
@@ -89,14 +92,14 @@ function TicketPayment({ ticket }) {
 							textTransform: 'uppercase',
 						}}
 					>
-						FORMA DE PAGO:{' '}
-						{getFormaPago(ticket.payment.paymentForm)}
+						FORMA DE PAGO: {getFormaPago(ticket.paymentForm)}
 					</Text>
 				</View>
 
 				<View style={{ marginTop: 35, textAlign: 'center' }}>
 					<Text style={{ fontSize: 12 }}>
 						* * * * * * * * * * * * * * * * * * * * * * * * * * * *
+						* * * * * * * * *
 					</Text>
 					<Text
 						style={{ fontSize: 12, marginTop: 5, marginBottom: 10 }}
@@ -105,6 +108,7 @@ function TicketPayment({ ticket }) {
 					</Text>
 					<Text style={{ fontSize: 12 }}>
 						* * * * * * * * * * * * * * * * * * * * * * * * * * * *
+						* * * * * * * * *
 					</Text>
 				</View>
 
@@ -127,54 +131,28 @@ function TicketPayment({ ticket }) {
 							stylesTable.header,
 						]}
 					>
-						<Text style={stylesTable.row1}>Concepto</Text>
+						<Text style={stylesTable.row1}>Descripción</Text>
 						<Text style={stylesTable.row2}>Pago</Text>
 					</View>
-					{ticket.chargesSuccess.map((it, idx) => (
-						<View
-							style={stylesTable.row}
-							wrap={false}
-							key={`charge-${idx}`}
-						>
-							<View style={stylesTable.row1}>
-								<Text>{getConcept(it.monthYear)}</Text>
-							</View>
-							<View style={stylesTable.row2}>
-								<Text>
-									{it.fullMonth
-										? formatNumber(it.totalMonth)
-										: formatNumber(it.amount)}
-								</Text>
-								<Text>
-									{it.interest === 0
-										? '$0.00'
-										: formatNumber(it.interest)}
-								</Text>
-							</View>
+					<View style={stylesTable.row} wrap={false}>
+						<View style={stylesTable.row1}>
+							<Text>{`Brazaletes: ${ticket.pax}`}</Text>
 						</View>
-					))}
+						<View style={stylesTable.row2}>
+							<Text>{formatNumber(ticket.amount)}</Text>
+						</View>
+					</View>
+
 					<Text style={{ fontSize: 12, marginTop: 20 }}>
 						* * * * * * * * * * * * * * * * * * * * * * * * * * * *
 						* * * * * * * * *
 					</Text>
-					<View
-						style={[stylesTable.row, { margintTop: 20 }]}
-						wrap={false}
-					>
-						<View style={stylesTable.row1}>
-							<Text>Total</Text>
-						</View>
-						<View style={stylesTable.row2}>
-							<Text>{formatNumber(ticket.payment.amount)}</Text>
-						</View>
-					</View>
 				</View>
 				<View style={{ marginTop: 35, textAlign: 'center' }}>
 					<Text style={{ fontSize: 12, marginBottom: 5 }}>
-						{moment(
-							ticket.payment.dateCreated,
-							'YYYY-MM-DDTHH:mm'
-						).format('DD-MM-YYYY')}
+						{moment(ticket.dateCreated, 'YYYY-MM-DDTHH:mm').format(
+							'DD-MM-YYYY'
+						)}
 					</Text>
 					<Text style={{ fontSize: 12, marginBottom: 5 }}>
 						Gracias

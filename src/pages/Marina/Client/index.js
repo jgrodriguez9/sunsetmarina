@@ -39,7 +39,7 @@ function Client() {
 		{
 			label: 'Código',
 			field: 'code',
-			width: 3,
+			width: 2,
 			control: 'input',
 			type: 'text',
 			value: '',
@@ -47,7 +47,7 @@ function Client() {
 		{
 			label: 'Nombre',
 			field: 'name',
-			width: 3,
+			width: 2,
 			control: 'input',
 			type: 'text',
 			value: '',
@@ -55,7 +55,7 @@ function Client() {
 		{
 			label: 'Apellido',
 			field: 'lastName',
-			width: 3,
+			width: 2,
 			control: 'input',
 			type: 'text',
 			value: '',

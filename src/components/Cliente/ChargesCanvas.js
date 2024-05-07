@@ -128,6 +128,7 @@ const ChargesCanvas = ({
 			setTicket({ idPayment: response.id });
 			setShowSuccess(true);
 			setIsPaying(false);
+			setOpen(false);
 			setRefetch(true);
 		} catch (error) {
 			setIsPaying(false);

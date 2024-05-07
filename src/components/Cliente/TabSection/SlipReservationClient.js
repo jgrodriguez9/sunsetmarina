@@ -58,14 +58,6 @@ export default function SlipReservationClient({ formik }) {
 		setOpenModalAdd(true);
 	};
 
-	const getDebt = useCallback((debts, type) => {
-		if (type === 'MXN') {
-			return debts?.reduce((acc, curr) => acc + curr.debt, 0);
-		} else {
-			return debts?.reduce((acc, curr) => acc + curr.debtUSD, 0);
-		}
-	}, []);
-
 	const columns = useMemo(
 		() => [
 			{
@@ -117,7 +109,7 @@ export default function SlipReservationClient({ formik }) {
 			},
 			{
 				Header: 'Deuda (MXN)',
-				accessor: 'debt',
+				accessor: 'debt.debt',
 				style: {
 					width: '8%',
 				},
@@ -125,15 +117,13 @@ export default function SlipReservationClient({ formik }) {
 					row.original.status === 'CONFIRMED' ? (
 						<span
 							className={
-								getDebt(value, 'MXN') > 0
-									? 'text-danger'
-									: 'text-success'
+								value > 0 ? 'text-danger' : 'text-success'
 							}
 						>
-							{numberFormat(getDebt(value, 'MXN'))}
+							{numberFormat(value)}
 						</span>
 					) : (
-						numberFormat(getDebt(value, 'MXN'))
+						numberFormat(value)
 					),
 			},
 			{
@@ -146,23 +136,21 @@ export default function SlipReservationClient({ formik }) {
 			},
 			{
 				Header: 'Deuda (USD)',
-				id: 'debtUSD',
+				accessor: 'debt.debtUSD',
 				style: {
 					width: '8%',
 				},
-				Cell: ({ row }) =>
+				Cell: ({ row, value }) =>
 					row.original.status === 'CONFIRMED' ? (
 						<span
 							className={
-								getDebt(row.original.debt, 'USD') > 0
-									? 'text-danger'
-									: 'text-success'
+								value > 0 ? 'text-danger' : 'text-success'
 							}
 						>
-							{numberFormat(getDebt(row.original.debt, 'USD'))}
+							{numberFormat(value)}
 						</span>
 					) : (
-						numberFormat(getDebt(row.original.debt, 'USD'))
+						numberFormat(value)
 					),
 			},
 			{
@@ -250,7 +238,7 @@ export default function SlipReservationClient({ formik }) {
 			setLoadingItems(true);
 			fetchItemsForClientApi();
 			setRefetch(false);
-		} else {
+		} else if (!formik.values.id) {
 			setLoadingItems(false);
 		}
 	}, [refetch, formik.values.id]);

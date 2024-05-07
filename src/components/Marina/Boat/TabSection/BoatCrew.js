@@ -120,7 +120,7 @@ export default function BoatCrew({ formik }) {
 			setLoadingBoatCrew(true);
 			fetchBoatCrewByBoatApi();
 			setRefetch(false);
-		} else {
+		} else if (!formik.values.id) {
 			setLoadingBoatCrew(false);
 		}
 	}, [refetch, formik.values.id]);

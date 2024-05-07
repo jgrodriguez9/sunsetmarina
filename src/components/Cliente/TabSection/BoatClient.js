@@ -1,4 +1,4 @@
-import { Col, Row } from 'reactstrap';
+import { Col, Row, Badge } from 'reactstrap';
 import TabActionHeader from '../Common/TabActionHeader';
 import DialogMain from '../../Common/DialogMain';
 import { useEffect, useMemo, useState } from 'react';
@@ -66,10 +66,26 @@ export default function BoatClient({ formik }) {
 				},
 			},
 			{
+				Header: 'Estado',
+				accessor: 'status',
+				style: {
+					width: '10%',
+				},
+				Cell: ({ value }) => {
+					if (value === 'AVAILABLE') {
+						return <Badge color="secondary">Disponible</Badge>;
+					} else if (value === 'RESERVED') {
+						return <Badge color="success">Reservado</Badge>;
+					} else {
+						return <Badge color="danger">Cancelado</Badge>;
+					}
+				},
+			},
+			{
 				Header: 'Fecha expiración seguro',
 				accessor: 'insuranceExpirationDate',
 				style: {
-					width: '30%',
+					width: '20%',
 				},
 				Cell: ({ value }) =>
 					moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY'),
@@ -126,7 +142,7 @@ export default function BoatClient({ formik }) {
 			setLoadingBoats(true);
 			fetchBoatForClientApi();
 			setRefetch(false);
-		} else {
+		} else if (!formik.values.id) {
 			setLoadingBoats(false);
 		}
 	}, [refetch, formik.values.id]);
@@ -170,11 +186,16 @@ export default function BoatClient({ formik }) {
 					{loadingBoats ? (
 						<TableLoader
 							columns={[
-								{ name: 'Nombre', width: '20%' },
-								{ name: 'Número de registro', width: '20%' },
+								{ name: 'Nombre', width: '30%' },
+								{ name: 'Número de registro', width: '30%' },
+								{ name: 'Estado', width: '10%' },
 								{
 									name: 'Fecha expiración seguro',
 									width: '20%',
+								},
+								{
+									name: 'Acciones',
+									width: '10%',
 								},
 							]}
 						/>

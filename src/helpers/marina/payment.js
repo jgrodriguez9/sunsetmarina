@@ -8,7 +8,8 @@ const getPaymentByClient = (id, query) =>
 const getPayment = (id) => get(`${url.payment}/${id}`);
 const getPaymentListPaginado = (query) => get(`${url.payment}${query}`);
 const savePayment = (data) => post(url.payment, data);
-const cancelPayment = (id, data) => put(`${url.payment}/${id}`, data);
+const cancelPayment = (id, data) =>
+	put(`${url.payment}/cancelPayment/${id}`, data);
 
 export {
 	getPaymentList,

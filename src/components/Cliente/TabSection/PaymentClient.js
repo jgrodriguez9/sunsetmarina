@@ -111,7 +111,6 @@ export default function PaymentClient({ formik }) {
 	};
 
 	const handleCancelPayment = useCallback((row) => {
-		console.log(row.original);
 		setIdPayment(row.original.id);
 		setPaymentToCancel({
 			payment: {
@@ -227,27 +226,40 @@ export default function PaymentClient({ formik }) {
 					return (
 						<div className="d-flex">
 							<Button
-								color="primary"
+								color={
+									row.original.status === 'CANCELLED'
+										? 'secondary'
+										: 'primary'
+								}
 								size="sm"
 								outline
 								type="button"
+								disabled={row.original.status === 'CANCELLED'}
 								className={'me-2 fs-4 px-2 py-0'}
 								onClick={
 									row.original.status === 'APPROVED'
 										? () => generatePayment(row)
 										: () => {}
 								}
-								disabled={row.original.status !== 'APPROVED'}
 							>
 								<i className="bx bx-download" />
 							</Button>
 							<Button
-								color="danger"
+								color={
+									row.original.status === 'CANCELLED'
+										? 'secondary'
+										: 'danger'
+								}
 								size="sm"
 								outline
+								disabled={row.original.status === 'CANCELLED'}
 								className={'fs-4 px-2 py-0'}
 								type="button"
-								onClick={() => handleCancelPayment(row)}
+								onClick={
+									row.original.status === 'CANCELLED'
+										? () => {}
+										: () => handleCancelPayment(row)
+								}
 							>
 								<i className="mdi mdi-cash-remove" />
 							</Button>

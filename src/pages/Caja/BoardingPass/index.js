@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { Col, Container, Row } from 'reactstrap';
+import { Button, Col, Container, Row } from 'reactstrap';
 import Breadcrumbs from '../../../components/Common/Breadcrumbs';
 import CardBasic from '../../../components/Common/CardBasic';
 import CardMain from '../../../components/Common/CardMain';
@@ -17,13 +17,16 @@ import {
 	deleteBoardingPass,
 	getBoardingPassListPaginado,
 } from '../../../helpers/caja/boardingPass';
-import CellActions from '../../../components/Tables/CellActions';
 import DeleteDialog from '../../../components/Common/DeleteDialog';
 import { numberFormat } from '../../../utils/numberFormat';
 import moment from 'moment';
+import DialogMain from '../../../components/Common/DialogMain';
+import TicketBoardingPass from '../../../components/Tickets/TicketBoardingPass';
 
 function BoardingPass() {
 	const dispatch = useDispatch();
+	const [ticket, setTicket] = useState(null);
+	const [ticketDialog, setTicketDialog] = useState(false);
 	const [loading, setLoading] = useState(true);
 	const [items, setItems] = useState([]);
 	const [totalPaginas, setTotalPaginas] = useState(0);
@@ -96,6 +99,11 @@ function BoardingPass() {
 		fetchList();
 	}, [JSON.stringify(query)]);
 
+	const generateTicket = useCallback((row) => {
+		setTicket(row.original);
+		setTicketDialog(true);
+	}, []);
+
 	const columns = useMemo(
 		() => [
 			{
@@ -141,23 +149,57 @@ function BoardingPass() {
 			{
 				id: 'acciones',
 				Header: 'Acciones',
-				Cell: ({ row }) => (
-					<>
-						<CellActions
-							del={{
-								allow: true,
-								action: handleShowDialogDelete,
-							}}
-							row={row}
-						/>
-					</>
-				),
+				Cell: ({ row }) => {
+					return (
+						<div className="d-flex">
+							<Button
+								color={
+									row.original.deleted
+										? 'secondary'
+										: 'primary'
+								}
+								size="sm"
+								outline
+								type="button"
+								disabled={row.original.deleted}
+								className={'me-1 fs-5 py-0'}
+								onClick={
+									!row.original.deleted
+										? () => generateTicket(row)
+										: () => {}
+								}
+							>
+								<i className="bx bx-download" />
+							</Button>
+							<Button
+								color={
+									row.original.deleted
+										? 'secondary'
+										: 'danger'
+								}
+								size="sm"
+								outline
+								disabled={row.original.deleted}
+								className={'fs-5 py-0'}
+								type="button"
+								onClick={
+									row.original.deleted
+										? () => {}
+										: () => handleShowDialogDelete(row)
+								}
+							>
+								<i className="far fa-trash-alt" />
+							</Button>
+						</div>
+					);
+				},
 				style: {
 					width: '5%',
+					textAlign: 'center',
 				},
 			},
 		],
-		[]
+		[generateTicket]
 	);
 
 	const handleShowDialogDelete = (row) => {
@@ -307,6 +349,13 @@ function BoardingPass() {
 				show={showDeleteDialog}
 				setShow={setShowDeleteDialog}
 				isDeleting={isDeleting}
+			/>
+			<DialogMain
+				open={ticketDialog}
+				setOpen={setTicketDialog}
+				title={'Ticket'}
+				size="md"
+				children={<TicketBoardingPass ticket={ticket} />}
 			/>
 		</>
 	);
