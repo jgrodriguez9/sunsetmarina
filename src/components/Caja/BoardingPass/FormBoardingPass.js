@@ -199,14 +199,13 @@ export default function FormBoardingPass({ cajero = false }) {
 					const [key, value] = entry;
 					if (key === 'departureDate') {
 						data[key] = moment(values.departureDate).format(
-							'YYYY-MM-DDTHH:mm'
+							'YYYY-MM-DDTHH:mm:ssZ'
 						);
 					} else {
 						data[key] = value;
 					}
 				});
 				let response = await saveBoardingPass(data);
-				console.log(response);
 				if (response) {
 					setTicket(response);
 					setTicketDialog(true);
