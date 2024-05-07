@@ -5,6 +5,7 @@ import { Button, Col, Form, Input, Label, Row } from 'reactstrap';
 import * as Yup from 'yup';
 import {
 	ERROR_SERVER,
+	FIELD_GREATER_THAN_CERO,
 	FIELD_INTEGER,
 	FIELD_NUMERIC,
 	FIELD_REQUIRED,
@@ -17,7 +18,7 @@ import {
 	getBoardingPassPrice,
 	saveBoardingPass,
 } from '../../../helpers/caja/boardingPass';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useEffect } from 'react';
 import { getClientList } from '../../../helpers/marina/client';
 import { getSlipList } from '../../../helpers/marina/slip';
@@ -39,6 +40,7 @@ import moment from 'moment';
 import SimpleDate from '../../DatePicker/SimpleDate';
 import getObjectValid from '../../../utils/getObjectValid';
 import jsFormatNumber from '../../../utils/jsFormatNumber';
+import TicketBoardingPass from '../../Tickets/TicketBoardingPass';
 
 export default function FormBoardingPass({ cajero = false }) {
 	const dispatch = useDispatch();
@@ -56,6 +58,8 @@ export default function FormBoardingPass({ cajero = false }) {
 	//reservaciones paginado
 	const [reservationSelected, setReservationSelected] = useState(null);
 	const [openModal, setOpenModal] = useState(false);
+	const [ticketDialog, setTicketDialog] = useState(false);
+	const [ticket, setTicket] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [totalPaginas, setTotalPaginas] = useState(0);
 	const [totalRegistros, setTotalRegistros] = useState(10);
@@ -73,6 +77,9 @@ export default function FormBoardingPass({ cajero = false }) {
 	const [isCalculatingPrice, setIsCalculatingPrice] = useState(false);
 	//brazaletes
 	const [brazaletes, setBrazaletes] = useState(null);
+
+	//cuantos brazaletes debes seleccionar
+	const [count, setCount] = useState(1);
 
 	//request para filtros
 	useEffect(() => {
@@ -124,7 +131,30 @@ export default function FormBoardingPass({ cajero = false }) {
 		fetchSlipsApi();
 	}, []);
 
+	const isInRange = useCallback((value) => {
+		try {
+			const startTime = moment('09:00', 'HH:mm'); // Example: 9:00 AM
+			const endTime = moment('17:00', 'HH:mm'); // Example: 5:00 PM
+			const currentTime = moment(value);
+
+			const currentHourMinute = currentTime.format('HH:mm');
+			const startHourMinute = startTime.format('HH:mm');
+			const endHourMinute = endTime.format('HH:mm');
+
+			const isBetween = moment(currentHourMinute, 'HH:mm').isBetween(
+				moment(startHourMinute, 'HH:mm'),
+				moment(endHourMinute, 'HH:mm'),
+				undefined,
+				'[]'
+			);
+			return isBetween;
+		} catch (error) {
+			return false;
+		}
+	}, []);
+
 	const formik = useFormik({
+		enableReinitialize: true,
 		initialValues: {
 			amount: 0,
 			currency: 'USD',
@@ -142,19 +172,24 @@ export default function FormBoardingPass({ cajero = false }) {
 			amount: Yup.number().required(FIELD_REQUIRED),
 			currency: Yup.string().required(FIELD_REQUIRED),
 			pax: Yup.number()
+				.min(1, FIELD_GREATER_THAN_CERO)
 				.integer(FIELD_INTEGER)
 				.typeError(FIELD_NUMERIC)
 				.required(FIELD_REQUIRED),
 			reservation: Yup.object().shape({
 				id: Yup.number().required(FIELD_REQUIRED),
 			}),
-			bracelets: Yup.array()
-				.of(
-					Yup.object().shape({
-						id: Yup.number().required(FIELD_REQUIRED),
-					})
-				)
-				.min(1, 'Al menos debe escoger 1 brazalete'),
+			bracelets: Yup.array().when('departureDate', {
+				is: (value) => isInRange(value),
+				then: Yup.array()
+					.of(
+						Yup.object().shape({
+							id: Yup.number().required(FIELD_REQUIRED),
+						})
+					)
+					.length(count, `Brazaletes a seleccionar: ${count}`),
+				otherwise: Yup.array(),
+			}),
 			departureDate: Yup.string().required(FIELD_REQUIRED),
 		}),
 		onSubmit: async (values) => {
@@ -173,12 +208,8 @@ export default function FormBoardingPass({ cajero = false }) {
 				let response = await saveBoardingPass(data);
 				console.log(response);
 				if (response) {
-					dispatch(
-						addMessage({
-							type: 'success',
-							message: SAVE_SUCCESS,
-						})
-					);
+					setTicket(response);
+					setTicketDialog(true);
 					if (cajero) {
 						formik.resetForm({
 							amount: 0,
@@ -361,9 +392,9 @@ export default function FormBoardingPass({ cajero = false }) {
 			const reservationId = formik.values.reservation.id;
 			const q = `?pax=${pax}`;
 			const response = await getBoardingPassPrice(reservationId, q);
-			formik.setFieldValue('amount', response.priceUSD);
-			formik.setFieldValue('price', response.price);
-			setPriceMXN(response.price);
+			formik.setFieldValue('amount', response.amountUSD);
+			formik.setFieldValue('price', response.amountMXN);
+			setPriceMXN(response.amountMXN);
 			formik.setFieldValue('currencyExchange', response.currencyExchange);
 			setIsCalculatingPrice(false);
 		} catch (error) {
@@ -533,6 +564,7 @@ export default function FormBoardingPass({ cajero = false }) {
 											'pax',
 											parseInt(e.target.value) ?? 0
 										);
+										setCount(parseInt(e.target.value) ?? 0);
 										clearTimeout(timer.current);
 										timer.current = setTimeout(() => {
 											calcularPrice(e.target.value);
@@ -688,7 +720,9 @@ export default function FormBoardingPass({ cajero = false }) {
 									</Label>
 									<SelectAsync
 										fnFilter={getBracaletListPaginado}
-										query={'?page=1&max=10'}
+										query={
+											'?page=1&max=10&status=AVAILABLE'
+										}
 										keyCompare={'code'}
 										keyProperty={'code'}
 										label={['color', 'code']}
@@ -774,6 +808,13 @@ export default function FormBoardingPass({ cajero = false }) {
 				title={'Seleccionar'}
 				size="lg"
 				children={contentReservacionesList}
+			/>
+			<DialogMain
+				open={ticketDialog}
+				setOpen={setTicketDialog}
+				title={'Ticket'}
+				size="md"
+				children={<TicketBoardingPass ticket={ticket} />}
 			/>
 		</>
 	);

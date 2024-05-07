@@ -34,7 +34,8 @@ function TicketPayment({ ticket }) {
 		},
 		image: {
 			marginVertical: 15,
-			marginHorizontal: 100,
+			marginHorizontal: 150,
+			width: '200px',
 		},
 	});
 	const stylesTable = StyleSheet.create({
@@ -93,6 +94,19 @@ function TicketPayment({ ticket }) {
 						}}
 					>
 						FORMA DE PAGO: {getFormaPago(ticket.paymentForm)}
+					</Text>
+					<Text
+						style={{
+							fontSize: 9,
+							margin: 'auto',
+							marginTop: 3,
+							textTransform: 'uppercase',
+						}}
+					>
+						Salida:{' '}
+						{moment(ticket.dateCreated, 'YYYY-MM-DDTHH:mm').format(
+							'DD-MM-YYYY HH:mm'
+						)}
 					</Text>
 				</View>
 
