@@ -154,7 +154,6 @@ export default function FormBoardingPass({ cajero = false }) {
 	}, []);
 
 	const formik = useFormik({
-		enableReinitialize: true,
 		initialValues: {
 			amount: 0,
 			currency: 'USD',
@@ -403,6 +402,8 @@ export default function FormBoardingPass({ cajero = false }) {
 			formik.setFieldValue('price', 0);
 		}
 	};
+
+	console.log(formik.values.reservation.id);
 
 	useEffect(() => {
 		if (!client && !boat && !slip) {
