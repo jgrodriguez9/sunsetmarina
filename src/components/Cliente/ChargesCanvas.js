@@ -164,7 +164,7 @@ const ChargesCanvas = ({
 	useEffect(() => {
 		async function getTotalToPay() {
 			try {
-				if (month !== null && year !== null && charge.length > 0) {
+				if (month !== null && year !== null) {
 					setIsCalculating(true);
 					const data = {
 						endDate: moment(`${year.value}-${month.value}`)
@@ -172,6 +172,7 @@ const ChargesCanvas = ({
 							.format('YYYY-MM-DD'),
 						finished: finalizarReserva,
 						charges: charge.map((it) => ({ id: it.id })),
+						reservationId: reservation.id,
 					};
 					const response = await getTotalChargeUpdated(data);
 					setIsCalculating(false);
