@@ -77,6 +77,9 @@ function TicketPayment({ ticket }) {
 			<Page size="A4" style={styles.body}>
 				<Image style={styles.image} src={logo} />
 				<View style={[styles.containerFlexCenter, styles.flexCenter]}>
+					<Text style={{ fontSize: 14, margin: 'auto' }}>
+						{ticket?.reservation?.boat?.name ?? ''}
+					</Text>
 					<Text
 						style={{ fontSize: 12, margin: 'auto', marginTop: 10 }}
 					>
@@ -101,9 +104,10 @@ function TicketPayment({ ticket }) {
 						}}
 					>
 						Salida:{' '}
-						{moment(ticket.dateCreated, 'YYYY-MM-DDTHH:mm').format(
-							'DD-MM-YYYY HH:mm'
-						)}
+						{moment(
+							ticket.departureDate,
+							'YYYY-MM-DDTHH:mm'
+						).format('DD-MM-YYYY HH:mm')}
 					</Text>
 				</View>
 
@@ -149,8 +153,46 @@ function TicketPayment({ ticket }) {
 						<View style={stylesTable.row1}>
 							<Text>{`Brazaletes: ${ticket.pax}`}</Text>
 						</View>
+						<View style={stylesTable.row2}></View>
+					</View>
+					<View style={stylesTable.row} wrap={false}>
+						<View style={stylesTable.row1}>
+							<Text>{`Precio x Pax (USD)`}</Text>
+						</View>
+						<View style={stylesTable.row2}>
+							<Text>{formatNumber(ticket.priceUSD)}</Text>
+						</View>
+					</View>
+					<View style={stylesTable.row} wrap={false}>
+						<View style={stylesTable.row1}>
+							<Text>{`Total (USD)`}</Text>
+						</View>
+						<View style={stylesTable.row2}>
+							<Text>{formatNumber(ticket.amountUSD)}</Text>
+						</View>
+					</View>
+					<View style={stylesTable.row} wrap={false}>
+						<View style={stylesTable.row1}>
+							<Text>{`Precio x Pax (MXN)`}</Text>
+						</View>
+						<View style={stylesTable.row2}>
+							<Text>{formatNumber(ticket.price)}</Text>
+						</View>
+					</View>
+					<View style={stylesTable.row} wrap={false}>
+						<View style={stylesTable.row1}>
+							<Text>{`Total (MXN)`}</Text>
+						</View>
 						<View style={stylesTable.row2}>
 							<Text>{formatNumber(ticket.amount)}</Text>
+						</View>
+					</View>
+					<View style={stylesTable.row} wrap={false}>
+						<View style={stylesTable.row1}>
+							<Text>{`Tipo de cambio`}</Text>
+						</View>
+						<View style={stylesTable.row2}>
+							<Text>{formatNumber(ticket.currencyExchange)}</Text>
 						</View>
 					</View>
 

@@ -54,7 +54,6 @@ export default function FormBoardingPass({ cajero = false }) {
 	const [boatOpt, setBoatOpt] = useState([]);
 	const [slip, setSlip] = useState(null);
 	const [slipOpt, setSlipOpt] = useState([]);
-	const [priceMXN, setPriceMXN] = useState(0);
 	//reservaciones paginado
 	const [reservationSelected, setReservationSelected] = useState(null);
 	const [openModal, setOpenModal] = useState(false);
@@ -210,22 +209,24 @@ export default function FormBoardingPass({ cajero = false }) {
 				if (response) {
 					setTicket(response);
 					setTicketDialog(true);
-					if (cajero) {
-						formik.resetForm({
-							amount: 0,
-							pax: 0,
-							reservation: {
-								id: '',
-							},
-							bracelets: [],
-							departureDate: moment().format('YYYY-MM-DD'),
-						});
-						setBoat(null);
-						setClient(null);
-						setSlip(null);
-					} else {
-						// navigate('/boardingpass');
-					}
+					formik.resetForm({
+						amount: 0,
+						amountUSD: 0,
+						currency: 'USD',
+						currencyExchange: 0,
+						pax: 0,
+						reservation: {
+							id: '',
+						},
+						bracelets: [],
+						paymentForm: 'CASH',
+						price: 0,
+						priceUSD: 0,
+						departureDate: moment().format('YYYY-MM-DDTHH:mm'),
+					});
+					setBoat(null);
+					setClient(null);
+					setSlip(null);
 				} else {
 					dispatch(
 						addMessage({
@@ -667,7 +668,7 @@ export default function FormBoardingPass({ cajero = false }) {
 								<Label htmlFor="amount" className="mb-0">
 									Precio x Pax (USD)
 								</Label>
-								<div className="form-control bg-light text-success fw-bold">
+								<div className="form-control bg-light">
 									{numberFormat(formik.values?.priceUSD ?? 0)}{' '}
 								</div>
 								{isCalculatingPrice && (
@@ -718,7 +719,7 @@ export default function FormBoardingPass({ cajero = false }) {
 								<Label htmlFor="priceMXN" className="mb-0">
 									Precio x Pax (MXN)
 								</Label>
-								<div className="form-control bg-light text-success fw-bold">
+								<div className="form-control bg-light">
 									{numberFormat(formik.values.price ?? 0)}{' '}
 								</div>
 								{isCalculatingPrice && (

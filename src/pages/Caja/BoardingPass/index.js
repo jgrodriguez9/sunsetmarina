@@ -103,21 +103,21 @@ function BoardingPass() {
 				Header: 'Código',
 				accessor: 'code',
 				style: {
-					width: '15%',
+					width: '10%',
 				},
 			},
 			{
 				Header: 'Pax',
 				accessor: 'pax',
 				style: {
-					width: '10%',
+					width: '5%',
 				},
 			},
 			{
 				Header: 'Brazaletes',
 				accessor: 'bracelets',
 				style: {
-					width: '50%',
+					width: '20%',
 				},
 				Cell: ({ value }) => (
 					<div className="d-flex flex-wrap">
@@ -130,21 +130,63 @@ function BoardingPass() {
 				),
 			},
 			{
-				Header: 'Total',
-				accessor: 'amount',
+				Header: 'Precio x Pax (USD)',
+				accessor: 'priceUSD',
 				style: {
 					width: '10%',
 				},
 				Cell: ({ value }) => numberFormat(value),
 			},
 			{
-				Header: 'Fecha',
-				accessor: 'dateCreated',
+				Header: 'Total (USD)',
+				accessor: 'amountUSD',
+				style: {
+					width: '9%',
+				},
+				Cell: ({ value }) => (
+					<span className="text-primary fw-bold">
+						{numberFormat(value)}
+					</span>
+				),
+			},
+			{
+				Header: 'Tipo cambio',
+				accessor: 'currencyExchange',
 				style: {
 					width: '10%',
 				},
+				Cell: ({ value }) => numberFormat(value),
+			},
+			{
+				Header: 'Precio x Pax (MXN)',
+				accessor: 'price',
+				style: {
+					width: '10%',
+				},
+				Cell: ({ value }) => numberFormat(value),
+			},
+			{
+				Header: 'Total (MXN)',
+				accessor: 'amount',
+				style: {
+					width: '9%',
+				},
+				Cell: ({ value }) => (
+					<span className="text-success fw-bold">
+						{numberFormat(value)}
+					</span>
+				),
+			},
+			{
+				Header: 'Fecha salida',
+				accessor: 'departureDate',
+				style: {
+					width: '12%',
+				},
 				Cell: ({ value }) =>
-					moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY'),
+					moment(value, 'YYYY-MM-DDTHH:mm').format(
+						'DD-MM-YYYY HH:mm'
+					),
 			},
 			{
 				id: 'acciones',
@@ -284,11 +326,15 @@ function BoardingPass() {
 			<Col xs="12" xl="12">
 				<TableLoader
 					columns={[
-						{ name: 'Código', width: '15%' },
-						{ name: 'Pax', width: '10%' },
-						{ name: 'Brazaletes', width: '50%' },
-						{ name: 'Total', width: '10%' },
-						{ name: 'Fecha', width: '10%' },
+						{ name: 'Código', width: '10%' },
+						{ name: 'Pax', width: '5%' },
+						{ name: 'Brazaletes', width: '20%' },
+						{ name: 'Precio x Pax (USD)', width: '10%' },
+						{ name: 'Total (USD)', width: '9%' },
+						{ name: 'Tipo cambio', width: '10%' },
+						{ name: 'Precio x Pax (MXN)', width: '10%' },
+						{ name: 'Total (MXN)', width: '9%' },
+						{ name: 'Fecha salida', width: '12%' },
 						{ name: 'Acciones', width: '5%' },
 					]}
 				/>
