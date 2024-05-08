@@ -120,6 +120,7 @@ const ChargesCanvas = ({
 				systemId: 777084,
 				systemPayment: 'RESERVATION',
 			},
+			reservationId: reservation.id,
 			charges: chargesToPay,
 		};
 
