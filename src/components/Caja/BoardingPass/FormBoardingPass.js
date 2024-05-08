@@ -156,6 +156,7 @@ export default function FormBoardingPass({ cajero = false }) {
 	const formik = useFormik({
 		initialValues: {
 			amount: 0,
+			amountUSD: 0,
 			currency: 'USD',
 			currencyExchange: 0,
 			pax: 0,
@@ -165,6 +166,7 @@ export default function FormBoardingPass({ cajero = false }) {
 			bracelets: [],
 			paymentForm: 'CASH',
 			price: 0,
+			priceUSD: 0,
 			departureDate: moment().format('YYYY-MM-DDTHH:mm'),
 		},
 		validationSchema: Yup.object({
@@ -389,21 +391,21 @@ export default function FormBoardingPass({ cajero = false }) {
 			const reservationId = formik.values.reservation.id;
 			const q = `?pax=${pax}`;
 			const response = await getBoardingPassPrice(reservationId, q);
-			formik.setFieldValue('amount', response.amountUSD);
-			formik.setFieldValue('price', response.amountMXN);
-			setPriceMXN(response.amountMXN);
+			formik.setFieldValue('amount', response.amountMXN);
+			formik.setFieldValue('amountUSD', response.amountUSD);
+			formik.setFieldValue('price', response.price);
+			formik.setFieldValue('priceUSD', response.priceUSD);
 			formik.setFieldValue('currencyExchange', response.currencyExchange);
 			setIsCalculatingPrice(false);
 		} catch (error) {
 			setIsCalculatingPrice(false);
 			formik.setFieldValue('amount', 0);
-			setPriceMXN(0);
-			formik.setFieldValue('currencyExchange', 0);
+			formik.setFieldValue('amountUSD', 0);
 			formik.setFieldValue('price', 0);
+			formik.setFieldValue('priceUSD', 0);
+			formik.setFieldValue('currencyExchange', 0);
 		}
 	};
-
-	console.log(formik.values.reservation.id);
 
 	useEffect(() => {
 		if (!client && !boat && !slip) {
@@ -633,7 +635,7 @@ export default function FormBoardingPass({ cajero = false }) {
 									</div>
 								)}
 							</Col>
-							<Col xs="12" md="3">
+							<Col xs="12" md="2">
 								<Label htmlFor="paymentForm" className="mb-0">
 									Moneda
 								</Label>
@@ -661,12 +663,28 @@ export default function FormBoardingPass({ cajero = false }) {
 									</div>
 								)}
 							</Col>
-							<Col xs="12" md="3">
+							<Col xs="12" md="2">
+								<Label htmlFor="amount" className="mb-0">
+									Precio x Pax (USD)
+								</Label>
+								<div className="form-control bg-light text-success fw-bold">
+									{numberFormat(formik.values?.priceUSD ?? 0)}{' '}
+								</div>
+								{isCalculatingPrice && (
+									<SimpleLoad
+										text={'Cargando precio'}
+										extraClass="text-secondary"
+									/>
+								)}
+							</Col>
+							<Col xs="12" md="2">
 								<Label htmlFor="amount" className="mb-0">
 									Total (USD)
 								</Label>
 								<div className="form-control bg-light text-success fw-bold">
-									{numberFormat(formik.values?.amount ?? 0)}{' '}
+									{numberFormat(
+										formik.values?.amountUSD ?? 0
+									)}{' '}
 								</div>
 								{isCalculatingPrice && (
 									<SimpleLoad
@@ -680,7 +698,7 @@ export default function FormBoardingPass({ cajero = false }) {
 									</div>
 								)}
 							</Col>
-							<Col xs="12" md="3">
+							<Col xs="12" md="2">
 								<Label htmlFor="priceMXN" className="mb-0">
 									Tipo Cambio
 								</Label>
@@ -696,12 +714,26 @@ export default function FormBoardingPass({ cajero = false }) {
 									/>
 								)}
 							</Col>
-							<Col xs="12" md="3">
+							<Col xs="12" md="2">
+								<Label htmlFor="priceMXN" className="mb-0">
+									Precio x Pax (MXN)
+								</Label>
+								<div className="form-control bg-light text-success fw-bold">
+									{numberFormat(formik.values.price ?? 0)}{' '}
+								</div>
+								{isCalculatingPrice && (
+									<SimpleLoad
+										text={'Cargando precio'}
+										extraClass="text-secondary"
+									/>
+								)}
+							</Col>
+							<Col xs="12" md="2">
 								<Label htmlFor="priceMXN" className="mb-0">
 									Total (MXN)
 								</Label>
 								<div className="form-control bg-light text-success fw-bold">
-									{numberFormat(priceMXN ?? 0)}{' '}
+									{numberFormat(formik.values.amount ?? 0)}{' '}
 								</div>
 								{isCalculatingPrice && (
 									<SimpleLoad
@@ -711,46 +743,51 @@ export default function FormBoardingPass({ cajero = false }) {
 								)}
 							</Col>
 						</Row>
-						<Row>
-							<Col>
-								<Col xs="12" md="12">
-									<Label htmlFor="amount" className="mb-0">
-										Brazaletes
-									</Label>
-									<SelectAsync
-										fnFilter={getBracaletListPaginado}
-										query={
-											'?page=1&max=10&status=AVAILABLE'
-										}
-										keyCompare={'code'}
-										keyProperty={'code'}
-										label={['color', 'code']}
-										isClearable
-										value={brazaletes}
-										onChange={(value) => {
-											if (
-												value.length <=
-												formik.values.pax
-											) {
-												setBrazaletes(value);
-												formik.setFieldValue(
-													'bracelets',
-													value.map((it) => ({
-														id: it.value,
-													}))
-												);
+						{isInRange(formik.values.departureDate) && (
+							<Row>
+								<Col>
+									<Col xs="12" md="12">
+										<Label
+											htmlFor="amount"
+											className="mb-0"
+										>
+											Brazaletes
+										</Label>
+										<SelectAsync
+											fnFilter={getBracaletListPaginado}
+											query={
+												'?page=1&max=10&status=AVAILABLE'
 											}
-										}}
-										isMulti={true}
-									/>
-									{formik.errors.bracelets && (
-										<div className="invalid-tooltip d-block">
-											{formik.errors.bracelets}
-										</div>
-									)}
+											keyCompare={'code'}
+											keyProperty={'code'}
+											label={['color', 'code']}
+											isClearable
+											value={brazaletes}
+											onChange={(value) => {
+												if (
+													value.length <=
+													formik.values.pax
+												) {
+													setBrazaletes(value);
+													formik.setFieldValue(
+														'bracelets',
+														value.map((it) => ({
+															id: it.value,
+														}))
+													);
+												}
+											}}
+											isMulti={true}
+										/>
+										{formik.errors.bracelets && (
+											<div className="invalid-tooltip d-block">
+												{formik.errors.bracelets}
+											</div>
+										)}
+									</Col>
 								</Col>
-							</Col>
-						</Row>
+							</Row>
+						)}
 					</div>
 				)}
 
