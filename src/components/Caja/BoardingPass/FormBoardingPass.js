@@ -103,10 +103,12 @@ export default function FormBoardingPass({ cajero = false }) {
 			try {
 				const response = await getBoatList();
 				setBoatOpt(
-					response.map((boat) => ({
-						label: boat.name,
-						value: boat.id,
-					}))
+					response
+						.filter((it) => it.status === 'RESERVED')
+						.map((boat) => ({
+							label: boat.name,
+							value: boat.id,
+						}))
 				);
 			} catch (error) {
 				setBoatOpt([]);
