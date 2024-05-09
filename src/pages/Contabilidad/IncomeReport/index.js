@@ -16,6 +16,7 @@ import { numberFormat } from '../../../utils/numberFormat';
 import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import moment from 'moment';
+import { getFormaPago } from '../../../utils/getFormaPago';
 
 function IncomeReport() {
 	const dispatch = useDispatch();
@@ -104,6 +105,7 @@ function IncomeReport() {
 				style: {
 					width: '10%',
 				},
+				Cell: ({ value }) => getFormaPago(value),
 			},
 			{
 				Header: 'Año de pago',
