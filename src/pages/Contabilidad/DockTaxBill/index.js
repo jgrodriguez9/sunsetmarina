@@ -213,7 +213,6 @@ function DockTaxBill() {
 		// sheet.addImage(image, 'A1:C4');
 
 		// en items tengo toda la info
-		console.log(items);
 		const columns = [
 			{
 				key: 'date',
@@ -402,6 +401,21 @@ function DockTaxBill() {
 			});
 	};
 
+	const tFooter = (
+		<tfoot>
+			<tr>
+				<th colSpan={5}>Total</th>
+				<th>{totals?.totalPax ?? 0}</th>
+				<th>{numberFormat(totals?.totalMXN ?? 0)}</th>
+				<th>{numberFormat(totals?.totalUSD ?? 0)}</th>
+				<th>{numberFormat(totals?.totalAmount ?? 0)}</th>
+				<th>{numberFormat(totals?.totalIVABase ?? 0)}</th>
+				<th>{numberFormat(totals?.totalTax ?? 0)}</th>
+				<th>{numberFormat(totals?.totalIVA2 ?? 0)}</th>
+			</tr>
+		</tfoot>
+	);
+
 	const handleFilter = (
 		<Row>
 			<Col>
@@ -455,7 +469,7 @@ function DockTaxBill() {
 				</Button>
 			</Col>
 			<Col xs="12" xl="12">
-				<SimpleTable columns={columns} data={items} />
+				<SimpleTable columns={columns} data={items} footer={tFooter} />
 			</Col>
 		</Row>
 	);

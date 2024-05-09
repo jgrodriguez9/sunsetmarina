@@ -326,6 +326,17 @@ function IncomeReport() {
 			});
 	};
 
+	const tFooter = (
+		<tfoot>
+			<tr>
+				<th colSpan={8}>Total</th>
+				<th>{numberFormat(totals?.totalBase ?? 0)}</th>
+				<th>{numberFormat(totals?.totalIVA ?? 0)}</th>
+				<th>{numberFormat(totals?.totalUSD ?? 0)}</th>
+			</tr>
+		</tfoot>
+	);
+
 	const handleFilter = (
 		<Row>
 			<Col>
@@ -379,7 +390,7 @@ function IncomeReport() {
 				</Button>
 			</Col>
 			<Col xs="12" xl="12">
-				<SimpleTable columns={columns} data={items} />
+				<SimpleTable columns={columns} data={items} footer={tFooter} />
 			</Col>
 		</Row>
 	);
