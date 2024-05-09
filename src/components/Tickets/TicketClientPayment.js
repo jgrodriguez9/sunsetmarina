@@ -180,7 +180,10 @@ const TicketClientPayment = ({ idPayment, show, toggle = null }) => {
 								>
 									<RowControl
 										title="EMBARCACION"
-										text={''}
+										text={
+											payment?.charges[0]?.reservation
+												?.boat?.name ?? ''
+										}
 										titleStyle={{
 											borderLeft: '1px solid #004a8f',
 											borderRight: '1px solid #004a8f',

@@ -16,7 +16,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import { getUserLogued, getUserLoguedInfo } from './helpers/auth';
+import { getUserLoguedInfo } from './helpers/auth';
 import { setUser } from './redux/userSlice';
 import NotFoundPage from './pages/Utility/NotFoundPage';
 import { ToastContainer, toast } from 'react-toastify';
