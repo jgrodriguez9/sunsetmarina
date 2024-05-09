@@ -28,6 +28,7 @@ import { numberFormat } from '../../../utils/numberFormat';
 import ContentLoader from '../../Loader/ContentLoader';
 import getObjectValid from '../../../utils/getObjectValid';
 import { statusSlipReservation } from '../../../data/statusSlipReservation';
+import { paymentFrequencyOpt } from '../../../constants/constants';
 
 export default function FormSlipReservationClient({
 	item,
@@ -96,6 +97,7 @@ export default function FormSlipReservationClient({
 			arrivalDate: item?.arrivalDate ?? '',
 			departureDate: item?.departureDate ?? '',
 			status: item?.status ?? 'CONFIRMED',
+			paymentFrequency: item?.paymentFrequency ?? '',
 		},
 		validationSchema: Yup.object({
 			boat: Yup.object({
@@ -104,6 +106,7 @@ export default function FormSlipReservationClient({
 			slip: Yup.object({
 				id: Yup.number().required(FIELD_REQUIRED),
 			}),
+			paymentFrequency: Yup.string().required(FIELD_REQUIRED),
 			price: Yup.number()
 				.typeError(FIELD_NUMERIC)
 				.required(FIELD_REQUIRED),
@@ -488,6 +491,46 @@ export default function FormSlipReservationClient({
 						value={formik.values.observations}
 						rows={5}
 					/>
+				</Col>
+				<Col xs="12" md="4">
+					<div className="mb-3">
+						<Label htmlFor="paymentFrequency" className="mb-0">
+							Frecuencia de pago
+						</Label>
+						{formik.values.id ? (
+							<div className="form-control bg-light">
+								{formik.values.paymentFrequency}
+							</div>
+						) : (
+							<Select
+								value={
+									formik.values.paymentFrequency
+										? {
+												value: formik.values
+													.paymentFrequency,
+												label: formik.values
+													.paymentFrequency,
+										  }
+										: null
+								}
+								onChange={(value) => {
+									formik.setFieldValue(
+										'paymentFrequency',
+										value?.value ?? ''
+									);
+								}}
+								options={paymentFrequencyOpt}
+								classNamePrefix="select2-selection"
+								placeholder={SELECT_OPTION}
+							/>
+						)}
+
+						{formik.errors.paymentFrequency && (
+							<div className="invalid-tooltip d-block">
+								{formik.errors.paymentFrequency}
+							</div>
+						)}
+					</div>
 				</Col>
 			</Row>
 			<hr />
