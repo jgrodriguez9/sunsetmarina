@@ -95,6 +95,9 @@
 		"Contactos",
 		"Contador",
 		"Contraseña",
+		"Contratada",
+		"Contrato",
+		"Contratos",
 		"correctamente",
 		"CORREO",
 		"corte",
@@ -127,6 +130,7 @@
 		"Documento",
 		"Documentos",
 		"documenttype",
+		"Dueño",
 		"Duración",
 		"Editar",
 		"Efectivo",
@@ -290,6 +294,7 @@
 		"Uelle",
 		"Usuario",
 		"Usuarios",
-		"validaciones"
+		"validaciones",
+		"Venc"
 	]
 }

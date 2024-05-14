@@ -482,7 +482,7 @@ function DockTaxBill() {
 					breadcrumbItem={'Cobro de impuesto de muelle'}
 				/>
 
-				<Row className="pb-1">
+				<Row className="pb-2">
 					<Col lg="12">
 						<CardBasic title="Filtros" children={handleFilter} />
 					</Col>

@@ -1,16 +1,20 @@
-import { Col, Container, Row } from 'reactstrap';
+import { Button, Col, Container, Row } from 'reactstrap';
 import Breadcrumbs from '../../../components/Common/Breadcrumbs';
 import CardBasic from '../../../components/Common/CardBasic';
 import FormFilter from '../../../components/Common/FormFilter';
-import { useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import CardMain from '../../../components/Common/CardMain';
-import { reportDocktaxBill } from '../../../helpers/reports/accountStatus';
+import { reportCollection } from '../../../helpers/reports/accountStatus';
 import { ERROR_SERVER } from '../../../constants/messages';
 import extractMeaningfulMessage from '../../../utils/extractMeaningfulMessage';
 import { useDispatch } from 'react-redux';
 import { addMessage } from '../../../redux/messageSlice';
-import SimpleTable from '../../../components/Tables/SimpleTable';
 import TableLoader from '../../../components/Loader/TablaLoader';
+import ReportContratos from '../../../components/Reportes/ReportContratos';
+import * as ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
+import moment from 'moment';
+import jsFormatNumber from '../../../utils/jsFormatNumber';
 
 function BillReport() {
 	const dispatch = useDispatch();
@@ -53,8 +57,8 @@ function BillReport() {
 			let q = Object.keys(obj)
 				.map((key) => `${key}=${obj[key]}`)
 				.join('&');
-			const response = await reportDocktaxBill(`?${q}`);
-			setItems(response.items);
+			const response = await reportCollection(`?${q}`);
+			setItems(response);
 			setLoading(false);
 		} catch (error) {
 			let message = ERROR_SERVER;
@@ -70,116 +74,179 @@ function BillReport() {
 		}
 	};
 
-	const columns = useMemo(
-		() => [
+	const getDeuda = useCallback((charges, payments, currency) => {
+		if (currency === 'MXN') {
+			const deudaMXN = charges.amount - payments.amount;
+			return jsFormatNumber(deudaMXN);
+		} else {
+			const deudaUSD = charges.amountUSD - payments.amountUSD;
+			return jsFormatNumber(deudaUSD);
+		}
+	}, []);
+
+	const downloadToCSV = async () => {
+		const workbook = new ExcelJS.Workbook();
+		workbook.creator = 'Sunset Admiral';
+		workbook.created = new Date();
+		workbook.modified = new Date();
+		workbook.lastPrinted = new Date();
+		workbook.properties.date1904 = true;
+		workbook.calcProperties.fullCalcOnLoad = true;
+
+		const sheet = workbook.addWorksheet('Estado de contratos', {
+			headerFooter: {
+				firstHeader: 'Hello Exceljs',
+				firstFooter: 'Hello World',
+			},
+		});
+		sheet.views = [{ state: 'frozen', xSplit: 0, ySplit: 1 }];
+
+		// en items tengo toda la info
+		const columns = [
 			{
-				Header: 'Fecha',
-				accessor: 'reservation.slip',
+				key: 'slip',
+				header: 'Slip',
+				width: 14,
+			},
+			{
+				key: 'boat',
+				header: 'Embarcación',
+				width: 35,
+			},
+			{
+				key: 'customer',
+				header: 'Dueño',
+				width: 35,
+			},
+			{
+				key: 'boatLength',
+				header: 'Real Pies',
+				width: 14,
+			},
+			{
+				key: 'paymentFrequency',
+				header: 'Forma pago',
+				width: 14,
+			},
+			{
+				key: 'arrivalDate',
+				header: 'Llegada',
+				width: 14,
+			},
+			{
+				key: 'departureDate',
+				header: 'Salida',
+				width: 14,
+			},
+			{
+				key: 'finalContractDate',
+				header: 'Venc. Contrato',
+				width: 14,
+			},
+			{
+				key: 'monthContract',
+				header: 'Renta Contratada',
+				width: 14,
 				style: {
-					width: '10%',
+					alignment: { horizontal: 'right' },
 				},
 			},
 			{
-				Header: 'Horario',
-				accessor: 'time',
+				key: 'monthRental',
+				header: 'Renta Mensual',
+				width: 14,
 				style: {
-					width: '10%',
+					alignment: { horizontal: 'right' },
 				},
 			},
 			{
-				Header: 'Nombre embarcación',
-				accessor: 'embarcacion',
+				key: 'deudaMXN',
+				header: 'Deuda (MXN)',
+				width: 14,
 				style: {
-					width: '15%',
+					alignment: { horizontal: 'right' },
 				},
 			},
 			{
-				Header: 'Propietario',
-				accessor: 'customer',
+				key: 'deudaUSD',
+				header: 'Deuda (MXN)',
+				width: 14,
 				style: {
-					width: '15%',
+					alignment: { horizontal: 'right' },
 				},
 			},
-			{
-				Header: 'Tipo cambio',
-				accessor: 'currencyExchange',
-				style: {
-					width: '5%',
-				},
-			},
-			{
-				Header: 'Pax',
-				accessor: 'pax',
-				style: {
-					width: '5%',
-				},
-			},
-			{
-				Header: 'Efectivo MXN',
-				accessor: 'mxn',
-				style: {
-					width: '5%',
-				},
-			},
-			{
-				Header: 'Efectivo USD',
-				accessor: 'usd',
-				style: {
-					width: '5%',
-				},
-			},
-			{
-				Header: 'TC',
-				accessor: 'tc',
-				style: {
-					width: '5%',
-				},
-			},
-			{
-				Header: 'Total',
-				accessor: 'total',
-				style: {
-					width: '5%',
-				},
-			},
-			{
-				Header: 'IVA',
-				accessor: 'iva',
-				style: {
-					width: '5%',
-				},
-			},
-			{
-				Header: 'Factura',
-				accessor: 'invoice',
-				style: {
-					width: '5%',
-				},
-			},
-			{
-				Header: 'Impuesto muelle',
-				accessor: 'pier',
-				style: {
-					width: '5%',
-				},
-			},
-			{
-				Header: 'T.C.',
-				accessor: 'tcc',
-				style: {
-					width: '5%',
-				},
-			},
-			{
-				Header: 'IVA',
-				accessor: 'iva2',
-				style: {
-					width: '5%',
-				},
-			},
-		],
-		[]
-	);
+		];
+		sheet.columns = columns;
+		let posI = 0;
+		items.forEach((val, i, _) => {
+			if (i === 0) {
+				posI += 2;
+			} else {
+				posI += 1;
+			}
+			sheet.insertRow(posI, [val.boatType]);
+			sheet.getCell(`A${posI}`).font = { bold: true };
+			val.concepts
+				.map((concept) => ({
+					slip: concept.slip,
+					boat: concept.boat,
+					customer: concept.customer,
+					boatLength: concept.boatLength,
+					paymentFrequency: concept.paymentFrequency,
+					arrivalDate: moment(
+						concept.arrivalDate,
+						'YYYY-MM-DD'
+					).format('DD/MM/YYYY'),
+					departureDate: moment(
+						concept.departureDate,
+						'YYYY-MM-DD'
+					).format('DD/MM/YYYY'),
+					finalContractDate: concept.finalContractDate,
+					monthContract: jsFormatNumber(concept.monthContract),
+					monthRental: jsFormatNumber(concept.monthRental),
+					deudaMXN: getDeuda(
+						concept.charges,
+						concept.payments,
+						'MXN'
+					),
+					deudaUSD: getDeuda(
+						concept.charges,
+						concept.payments,
+						'USD'
+					),
+				}))
+				.forEach((val2, idx, _) => {
+					if (idx > 0) {
+						posI += idx;
+					} else {
+						posI += 1;
+					}
+					sheet.insertRow(posI, val2);
+				});
+		});
+
+		sheet.getRow(1).font = { bold: true };
+		sheet.getRow(1).border = {
+			top: { style: 'medium', color: { argb: '021e4c' } },
+			bottom: { style: 'medium', color: { argb: '021e4c' } },
+		};
+
+		workbook.xlsx
+			.writeBuffer()
+			.then((response) => {
+				var blob = new Blob([response], {
+					type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+				});
+				saveAs(
+					blob,
+					`resporteContratos${moment().format('DDMMYYYYHHmmss')}`
+				);
+			})
+			.catch((error) => {
+				console.log('Error');
+				console.log(error);
+			});
+	};
 
 	const handleFilter = (
 		<Row>
@@ -197,21 +264,18 @@ function BillReport() {
 			<Col xs="12" xl="12">
 				<TableLoader
 					columns={[
-						{ name: 'No. Slip', width: '10%' },
-						{ name: 'Horario', width: '10%' },
-						{ name: 'Nombre embarcación', width: '15%' },
-						{ name: 'Propietario', width: '15%' },
-						{ name: 'Tipo cambio', width: '5%' },
-						{ name: 'Pax', width: '5%' },
-						{ name: 'Efectivo MXN', width: '5%' },
-						{ name: 'Efectivo USD', width: '5%' },
-						{ name: 'TC', width: '5%' },
-						{ name: 'Total', width: '5%' },
-						{ name: 'IVA', width: '5%' },
-						{ name: 'Factura', width: '5%' },
-						{ name: 'Impuesto muelle', width: '5%' },
-						{ name: 'T.C.', width: '5%' },
-						{ name: 'IVA', width: '5%' },
+						{ name: 'Slip', width: '10%' },
+						{ name: 'Embarcación', width: '150%' },
+						{ name: 'Dueño', width: '15%' },
+						{ name: 'Real Pies', width: '10%' },
+						{ name: 'Forma pago', width: '10%' },
+						{ name: 'Llegada', width: '10%' },
+						{ name: 'Salida', width: '10%' },
+						{ name: 'Venc. Contrato', width: '10%' },
+						{ name: 'Renta Contratada', width: '10%' },
+						{ name: 'Renta Mensual', width: '10%' },
+						{ name: 'Deuda (MXN)', width: '10%' },
+						{ name: 'Deuda (USD)', width: '10%' },
 					]}
 				/>
 			</Col>
@@ -224,8 +288,20 @@ function BillReport() {
 		</Row>
 	) : (
 		<Row>
+			<Col xs="12" md="2">
+				<Button
+					color="info"
+					size="sm"
+					type="button"
+					onClick={downloadToCSV}
+					className="mb-2"
+				>
+					<i className="far fa-file-pdf me-2" />
+					Descargar
+				</Button>
+			</Col>
 			<Col xs="12" xl="12">
-				<SimpleTable columns={columns} data={items} />
+				<ReportContratos items={items} />
 			</Col>
 		</Row>
 	);
@@ -243,7 +319,7 @@ function BillReport() {
 				<Row className="pb-5">
 					<Col lg="12">
 						<CardMain
-							title="Reporte cobranza impuesto de muelle"
+							title="Reporte de contratos"
 							children={carHandleEstadoCuenta}
 						/>
 					</Col>

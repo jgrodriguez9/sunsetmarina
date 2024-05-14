@@ -61,7 +61,6 @@ function IncomeReport() {
 				.map((key) => `${key}=${obj[key]}`)
 				.join('&');
 			const response = await reportCobranza(`?${q}`);
-			console.log(response);
 			setItems(response.items);
 			setTotals({
 				totalBase: response.totalBase.toFixed(2),
@@ -400,7 +399,7 @@ function IncomeReport() {
 			<Container fluid>
 				<Breadcrumbs title={'Ingreso'} breadcrumbItem={'Ingreso'} />
 
-				<Row className="pb-5">
+				<Row className="pb-2">
 					<Col lg="12">
 						<CardBasic title="Filtros" children={handleFilter} />
 					</Col>
