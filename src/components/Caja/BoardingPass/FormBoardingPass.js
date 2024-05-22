@@ -9,7 +9,6 @@ import {
 	FIELD_INTEGER,
 	FIELD_NUMERIC,
 	FIELD_REQUIRED,
-	SAVE_SUCCESS,
 } from '../../../constants/messages';
 import { addMessage } from '../../../redux/messageSlice';
 import extractMeaningfulMessage from '../../../utils/extractMeaningfulMessage';

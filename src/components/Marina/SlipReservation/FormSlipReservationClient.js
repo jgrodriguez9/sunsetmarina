@@ -46,6 +46,11 @@ export default function FormSlipReservationClient({
 			? moment(item?.departureDate, 'YYYY-MM-DD').toDate()
 			: null
 	);
+	const [finalContractDate, setFinalContractDate] = useState(
+		item?.finalContractDate
+			? moment(item?.finalContractDate, 'YYYY-MM-DD').toDate()
+			: null
+	);
 	const [showControlPrice, setShowControlPrice] = useState(false);
 	const [checkValidationSlip, setCheckValidationSlip] = useState({
 		loading: false,
@@ -71,6 +76,8 @@ export default function FormSlipReservationClient({
 	const fetchSlips = async () => {
 		try {
 			const response = await getSlipList();
+			console.log(response);
+			console.log(typeof response);
 			setSlipOpt(
 				response
 					.filter((it) => it.status === 'AVAILABLE')
@@ -98,6 +105,7 @@ export default function FormSlipReservationClient({
 			departureDate: item?.departureDate ?? '',
 			status: item?.status ?? 'CONFIRMED',
 			paymentFrequency: item?.paymentFrequency ?? '',
+			finalContractDate: item?.finalContractDate ?? '',
 		},
 		validationSchema: Yup.object({
 			boat: Yup.object({
@@ -119,6 +127,8 @@ export default function FormSlipReservationClient({
 				if (key === 'arrivalDate') {
 					data[key] = moment(values.arrivalDate).format('YYYY-MM-DD');
 				} else if (key === 'departureDate') {
+					data[key] = moment(values.arrivalDate).format('YYYY-MM-DD');
+				} else if (key === 'finalContractDate') {
 					data[key] = moment(values.arrivalDate).format('YYYY-MM-DD');
 				} else {
 					data[key] = value;
@@ -394,7 +404,7 @@ export default function FormSlipReservationClient({
 				<Col xs="12" md="4">
 					<div className="mb-3">
 						<Label htmlFor="price" className="mb-0">
-							Fecha inicio
+							Fecha llegada
 						</Label>
 						{formik.values.id ? (
 							<div className="form-control bg-light">
@@ -425,7 +435,7 @@ export default function FormSlipReservationClient({
 				<Col xs="12" md="4">
 					<div className="mb-3">
 						<Label htmlFor="price" className="mb-0">
-							Fecha terminación
+							Fecha salida
 						</Label>
 						<SimpleDate
 							date={departureDate}
@@ -446,34 +456,35 @@ export default function FormSlipReservationClient({
 					</div>
 				</Col>
 				<Col xs="12" md="4">
-					<Label className="mb-0 d-block">Estado</Label>
-					{formik.values.status === 'CONFIRMED' ? (
-						<div className="form-control bg-light">Confirmada</div>
-					) : (
-						<Select
-							value={
-								formik.values.status
-									? {
-											value: formik.values.status,
-											label: statusSlipReservation.find(
-												(it) =>
-													it.value ===
-													formik.values.status
-											).label,
-									  }
-									: null
-							}
-							onChange={(value) => {
-								formik.setFieldValue(
-									'status',
-									value?.value ?? ''
-								);
-							}}
-							options={statusSlipReservation}
-							classNamePrefix="select2-selection"
-							placeholder={SELECT_OPTION}
-						/>
-					)}
+					<div className="mb-3">
+						<Label htmlFor="price" className="mb-0">
+							Fecha final contrato
+						</Label>
+						{formik.values.id ? (
+							<div className="form-control bg-light">
+								{moment(finalContractDate).format('DD-MM-YYYY')}
+							</div>
+						) : (
+							<SimpleDate
+								date={finalContractDate}
+								setDate={(value) => {
+									setFinalContractDate(value[0]);
+									if (value.length > 0) {
+										formik.setFieldValue(
+											`finalContractDate`,
+											value[0]
+										);
+									} else {
+										formik.setFieldValue(
+											`finalContractDate`,
+											null
+										);
+									}
+								}}
+								placeholder="dd-MM-YYYY"
+							/>
+						)}
+					</div>
 				</Col>
 			</Row>
 			<Row>
@@ -493,44 +504,84 @@ export default function FormSlipReservationClient({
 					/>
 				</Col>
 				<Col xs="12" md="4">
-					<div className="mb-3">
-						<Label htmlFor="paymentFrequency" className="mb-0">
-							Frecuencia de pago
-						</Label>
-						{formik.values.id ? (
-							<div className="form-control bg-light">
-								{formik.values.paymentFrequency}
-							</div>
-						) : (
-							<Select
-								value={
-									formik.values.paymentFrequency
-										? {
-												value: formik.values
-													.paymentFrequency,
-												label: formik.values
-													.paymentFrequency,
-										  }
-										: null
-								}
-								onChange={(value) => {
-									formik.setFieldValue(
-										'paymentFrequency',
-										value?.value ?? ''
-									);
-								}}
-								options={paymentFrequencyOpt}
-								classNamePrefix="select2-selection"
-								placeholder={SELECT_OPTION}
-							/>
-						)}
+					<Row>
+						<Col xs="12" md="12">
+							<Label className="mb-0 d-block">Estado</Label>
+							{formik.values.status === 'CONFIRMED' ? (
+								<div className="form-control bg-light">
+									Confirmada
+								</div>
+							) : (
+								<Select
+									value={
+										formik.values.status
+											? {
+													value: formik.values.status,
+													label: statusSlipReservation.find(
+														(it) =>
+															it.value ===
+															formik.values.status
+													).label,
+											  }
+											: null
+									}
+									onChange={(value) => {
+										formik.setFieldValue(
+											'status',
+											value?.value ?? ''
+										);
+									}}
+									options={statusSlipReservation}
+									classNamePrefix="select2-selection"
+									placeholder={SELECT_OPTION}
+								/>
+							)}
+						</Col>
 
-						{formik.errors.paymentFrequency && (
-							<div className="invalid-tooltip d-block">
-								{formik.errors.paymentFrequency}
+						<Col xs="12" md="12">
+							<div className="mb-3">
+								<Label
+									htmlFor="paymentFrequency"
+									className="mb-0"
+								>
+									Frecuencia de pago
+								</Label>
+								{formik.values.id ? (
+									<div className="form-control bg-light">
+										{formik.values.paymentFrequency}
+									</div>
+								) : (
+									<Select
+										value={
+											formik.values.paymentFrequency
+												? {
+														value: formik.values
+															.paymentFrequency,
+														label: formik.values
+															.paymentFrequency,
+												  }
+												: null
+										}
+										onChange={(value) => {
+											formik.setFieldValue(
+												'paymentFrequency',
+												value?.value ?? ''
+											);
+										}}
+										options={paymentFrequencyOpt}
+										classNamePrefix="select2-selection"
+										placeholder={SELECT_OPTION}
+									/>
+								)}
+
+								{formik.errors.paymentFrequency && (
+									<div className="invalid-tooltip d-block">
+										{formik.errors.paymentFrequency}
+									</div>
+								)}
 							</div>
-						)}
-					</div>
+						</Col>
+					</Row>
 				</Col>
 			</Row>
 			<hr />

@@ -225,7 +225,7 @@ function Reservation() {
 			},
 			{
 				Header: 'Deuda',
-				accessor: 'debt',
+				accessor: 'debt.debt',
 				style: {
 					width: '7%',
 				},

@@ -1,7 +1,7 @@
 import { Badge, Col, Row } from 'reactstrap';
 import TabActionHeader from '../Common/TabActionHeader';
 import DialogMain from '../../Common/DialogMain';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import SimpleTable from '../../Tables/SimpleTable';
 import {
 	CANCEL_RESERVATION_SUCCESS,
