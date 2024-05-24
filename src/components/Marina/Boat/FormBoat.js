@@ -123,7 +123,6 @@ export default function FormBoat({ item, btnTextSubmit = 'Aceptar' }) {
 		},
 		validationSchema: Yup.object({
 			name: Yup.string().required(FIELD_REQUIRED),
-			registrationNumber: Yup.string().required(FIELD_REQUIRED),
 			customer: Yup.object({
 				id: Yup.number().required(FIELD_REQUIRED),
 			}),
@@ -133,23 +132,18 @@ export default function FormBoat({ item, btnTextSubmit = 'Aceptar' }) {
 			length: Yup.number()
 				.typeError(FIELD_NUMERIC)
 				.required(FIELD_REQUIRED),
-			beam: Yup.number()
-				.typeError(FIELD_NUMERIC)
-				.required(FIELD_REQUIRED),
-			draught: Yup.number()
-				.typeError(FIELD_NUMERIC)
-				.required(FIELD_REQUIRED),
-			markEngine: Yup.string().required(FIELD_REQUIRED),
-			insuranceExpirationDate: Yup.string().required(FIELD_REQUIRED),
 		}),
 		onSubmit: async (values) => {
 			//validaciones antes de enviarlo
 			if (values.id) {
 				//update
 				try {
-					values.insuranceExpirationDate = moment(
-						values.insuranceExpirationDate
-					).format('YYYY-MM-DD');
+					const date = values.insuranceExpirationDate
+						? moment(values.insuranceExpirationDate).format(
+								'YYYY-MM-DD'
+						  )
+						: null;
+					values.insuranceExpirationDate = date;
 					let response = await updateBoat(values.id, values);
 					if (response) {
 						dispatch(
@@ -180,9 +174,12 @@ export default function FormBoat({ item, btnTextSubmit = 'Aceptar' }) {
 			} else {
 				//save
 				try {
-					values.insuranceExpirationDate = moment(
-						values.insuranceExpirationDate
-					).format('YYYY-MM-DD');
+					const date = values.insuranceExpirationDate
+						? moment(values.insuranceExpirationDate).format(
+								'YYYY-MM-DD'
+						  )
+						: null;
+					values.insuranceExpirationDate = date;
 					let response = await saveBoat(values);
 					if (response) {
 						dispatch(

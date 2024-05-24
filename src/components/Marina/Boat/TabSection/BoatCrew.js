@@ -155,8 +155,8 @@ export default function BoatCrew({ formik }) {
 		<>
 			<TabActionHeader
 				add={{
-					allow: true,
-					handleAction: addNewBoatModal,
+					allow: formik.values.id ? true : false,
+					handleAction: formik.values.id ? addNewBoatModal : () => {},
 				}}
 			/>
 			<Row className="mt-2">
