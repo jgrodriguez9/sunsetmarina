@@ -271,7 +271,6 @@ const TicketClientPayment = ({ idPayment, show, toggle = null }) => {
 									<RowControl
 										text="TC"
 										textStyle={{
-											borderRight: '1px solid #004a8f',
 											width: '100%',
 										}}
 									/>
@@ -282,7 +281,7 @@ const TicketClientPayment = ({ idPayment, show, toggle = null }) => {
 										padding: 0,
 									}}
 								>
-									<RowControl text="GRAN TOTAL" />
+									<RowControl text="" />
 								</Col>
 							</Row>
 							<Row>

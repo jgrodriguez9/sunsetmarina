@@ -31,6 +31,7 @@ import ContentLoader from '../../Loader/ContentLoader';
 import { getBoatByClient } from '../../../helpers/marina/boat';
 import getObjectValid from '../../../utils/getObjectValid';
 import translateUtils from '../../../utils/translateUtils';
+import { paymentFrequencyOpt } from '../../../constants/constants';
 
 export default function FormReserva({ item, btnTextSubmit = 'Aceptar' }) {
 	const navigate = useNavigate();
@@ -47,6 +48,11 @@ export default function FormReserva({ item, btnTextSubmit = 'Aceptar' }) {
 	const [departureDate, setDepartureDate] = useState(
 		item?.departureDate
 			? moment(item?.departureDate, 'YYYY-MM-DD').toDate()
+			: null
+	);
+	const [finalContractDate, setFinalContractDate] = useState(
+		item?.finalContractDate
+			? moment(item?.finalContractDate, 'YYYY-MM-DD').toDate()
 			: null
 	);
 	const [checkValidationSlip, setCheckValidationSlip] = useState({
@@ -106,7 +112,9 @@ export default function FormReserva({ item, btnTextSubmit = 'Aceptar' }) {
 			slip: item?.slip ?? {
 				id: '',
 			},
-			status: item?.status ?? 'PENDING',
+			status: item?.status ?? 'CONFIRMED',
+			paymentFrequency: item?.paymentFrequency ?? '',
+			finalContractDate: item?.finalContractDate ?? '',
 		},
 		validationSchema: Yup.object({
 			arrivalDate: Yup.string().required(FIELD_REQUIRED),
@@ -303,8 +311,7 @@ export default function FormReserva({ item, btnTextSubmit = 'Aceptar' }) {
 						<Label htmlFor="client" className="mb-0">
 							Cliente
 						</Label>
-						{formik.values.status === 'CONFIRMED' ||
-						formik.values.status === 'PENDING' ? (
+						{formik.values.id ? (
 							<div className="form-control bg-light">
 								{formik.values.customer.name}{' '}
 								{formik.values.customer.lastName}
@@ -356,7 +363,7 @@ export default function FormReserva({ item, btnTextSubmit = 'Aceptar' }) {
 						<Label htmlFor="client" className="mb-0">
 							Embarcación
 						</Label>
-						{formik.values.status === 'CONFIRMED' ? (
+						{formik.values.id ? (
 							<div className="form-control bg-light">
 								{formik.values.boat.name}
 							</div>
@@ -398,7 +405,7 @@ export default function FormReserva({ item, btnTextSubmit = 'Aceptar' }) {
 						<Label htmlFor="slip" className="mb-0">
 							Slip
 						</Label>
-						{formik.values.status === 'CONFIRMED' ? (
+						{formik.values.id ? (
 							<div className="form-control bg-light">
 								{formik.values.slip.code}
 							</div>
@@ -476,9 +483,9 @@ export default function FormReserva({ item, btnTextSubmit = 'Aceptar' }) {
 				<Col xs="12" md="3">
 					<div className="mb-3">
 						<Label htmlFor="price" className="mb-0">
-							Fecha inicio
+							Fecha llegada
 						</Label>
-						{formik.values.status === 'CONFIRMED' ? (
+						{formik.values.id ? (
 							<div className="form-control bg-light">
 								{moment(arrivalDate).format('DD-MM-YYYY')}
 							</div>
@@ -507,7 +514,7 @@ export default function FormReserva({ item, btnTextSubmit = 'Aceptar' }) {
 				<Col xs="12" md="3">
 					<div className="mb-3">
 						<Label htmlFor="price" className="mb-0">
-							Fecha terminación
+							Fecha salida
 						</Label>
 						<SimpleDate
 							date={departureDate}
@@ -528,37 +535,35 @@ export default function FormReserva({ item, btnTextSubmit = 'Aceptar' }) {
 					</div>
 				</Col>
 				<Col xs="12" md="3">
-					<Label className="mb-0 d-block">Estado</Label>
-					{formik.values.status === 'CONFIRMED' ||
-					formik.values.status === 'CANCELLED' ? (
-						<div className="form-control bg-light">
-							{translateUtils(formik.values.status)}
-						</div>
-					) : (
-						<Select
-							value={
-								formik.values.status
-									? {
-											value: formik.values.status,
-											label: statusSlipReservation.find(
-												(it) =>
-													it.value ===
-													formik.values.status
-											).label,
-									  }
-									: null
-							}
-							onChange={(value) => {
-								formik.setFieldValue(
-									'status',
-									value?.value ?? ''
-								);
-							}}
-							options={statusSlipReservation}
-							classNamePrefix="select2-selection"
-							placeholder={SELECT_OPTION}
-						/>
-					)}
+					<div className="mb-3">
+						<Label htmlFor="price" className="mb-0">
+							Fecha final contrato
+						</Label>
+						{formik.values.id ? (
+							<div className="form-control bg-light">
+								{moment(finalContractDate).format('DD-MM-YYYY')}
+							</div>
+						) : (
+							<SimpleDate
+								date={finalContractDate}
+								setDate={(value) => {
+									setFinalContractDate(value[0]);
+									if (value.length > 0) {
+										formik.setFieldValue(
+											`finalContractDate`,
+											value[0]
+										);
+									} else {
+										formik.setFieldValue(
+											`finalContractDate`,
+											null
+										);
+									}
+								}}
+								placeholder="dd-MM-YYYY"
+							/>
+						)}
+					</div>
 				</Col>
 			</Row>
 			<Row>
@@ -576,6 +581,92 @@ export default function FormReserva({ item, btnTextSubmit = 'Aceptar' }) {
 						value={formik.values.observations}
 						rows={5}
 					/>
+				</Col>
+				<Col xs="12" md="4">
+					<Row>
+						<Col xs="12" md="9">
+							<div className="mb-3">
+								<Label className="mb-0 d-block">Estado</Label>
+								{formik.values.status === 'CONFIRMED' ||
+								formik.values.status === 'CANCELLED' ? (
+									<div className="form-control bg-light">
+										{translateUtils(formik.values.status)}
+									</div>
+								) : (
+									<Select
+										value={
+											formik.values.status
+												? {
+														value: formik.values
+															.status,
+														label:
+															statusSlipReservation.find(
+																(it) =>
+																	it.value ===
+																	formik
+																		.values
+																		.status
+															)?.label ?? '',
+												  }
+												: null
+										}
+										onChange={(value) => {
+											formik.setFieldValue(
+												'status',
+												value?.value ?? ''
+											);
+										}}
+										options={statusSlipReservation}
+										classNamePrefix="select2-selection"
+										placeholder={SELECT_OPTION}
+									/>
+								)}
+							</div>
+						</Col>
+						<Col xs="12" md="9">
+							<div className="mb-3">
+								<Label
+									htmlFor="paymentFrequency"
+									className="mb-0"
+								>
+									Frecuencia de pago
+								</Label>
+								{formik.values.id ? (
+									<div className="form-control bg-light">
+										{formik.values.paymentFrequency}
+									</div>
+								) : (
+									<Select
+										value={
+											formik.values.paymentFrequency
+												? {
+														value: formik.values
+															.paymentFrequency,
+														label: formik.values
+															.paymentFrequency,
+												  }
+												: null
+										}
+										onChange={(value) => {
+											formik.setFieldValue(
+												'paymentFrequency',
+												value?.value ?? ''
+											);
+										}}
+										options={paymentFrequencyOpt}
+										classNamePrefix="select2-selection"
+										placeholder={SELECT_OPTION}
+									/>
+								)}
+
+								{formik.errors.paymentFrequency && (
+									<div className="invalid-tooltip d-block">
+										{formik.errors.paymentFrequency}
+									</div>
+								)}
+							</div>
+						</Col>
+					</Row>
 				</Col>
 			</Row>
 			<hr />

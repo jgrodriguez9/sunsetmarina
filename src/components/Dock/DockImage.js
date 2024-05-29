@@ -232,10 +232,7 @@ export default function DockImage() {
 										<ListGroupItem className="d-flex justify-content-between">
 											<h5 className="m-0">Fecha fin</h5>
 											<span>
-												{moment(
-													slipInfo?.departureDate,
-													'YYYY-MM-DD'
-												).format('DD-MM-YYYY')}
+												{slipInfo?.departureDate}
 											</span>
 										</ListGroupItem>
 									)}
@@ -266,7 +263,9 @@ export default function DockImage() {
 										</ListGroupItem>
 									)}
 									<ListGroupItem className="d-flex justify-content-between">
-										<h5 className="m-0">Dimensiones</h5>
+										<h5 className="m-0">
+											Pies de embarcación
+										</h5>
 										<span>{slipInfo?.dimensiones}</span>
 									</ListGroupItem>
 								</ListGroup>
@@ -330,27 +329,53 @@ export default function DockImage() {
 					: null,
 			arrivalDate:
 				slip.status !== 'AVAILABLE' && slip?.reservations.length > 0
-					? `${slip?.reservations[0]?.arrivalDate} ${slip?.reservations[0].arrivalDate}`
+					? `${
+							slip?.reservations[slip?.reservations.length - 1]
+								?.arrivalDate
+					  } ${
+							slip?.reservations[slip?.reservations.length - 1]
+								.arrivalDate
+					  }`
 					: null,
 			departureDate:
 				slip.status !== 'AVAILABLE' && slip?.reservations.length > 0
-					? `${slip?.reservations[0]?.departureDate} ${slip?.reservations[0].departureDate}`
+					? slip?.reservations[slip?.reservations.length - 1]
+							?.departureDate
+						? moment(
+								slip?.reservations[
+									slip?.reservations.length - 1
+								]?.departureDate,
+								'YYYY-MM-DD'
+						  ).format('DD-MM-YYYY')
+						: 'Vigente'
 					: null,
 			debt:
 				slip.status !== 'AVAILABLE' && slip?.reservations.length > 0
-					? `${slip?.reservations[0]?.debt} ${slip?.reservations[0].debt}`
+					? `${
+							slip?.reservations[slip?.reservations.length - 1]
+								?.debt
+					  } ${slip?.reservations[0].debt}`
 					: null,
 			embarcacion:
 				slip.status !== 'AVAILABLE'
-					? slip?.reservations[0].boat?.name ?? null
+					? slip?.reservations[slip?.reservations.length - 1].boat
+							?.name ?? null
 					: null,
-			dimensiones: `${slip.width}x${slip.height}`,
+			dimensiones:
+				slip?.reservations.length > 0
+					? slip?.reservations[slip?.reservations.length - 1].boat
+							.length
+					: null,
 			estado: slip.status,
 			fechaOperacion: slip.lastUpdated,
 		});
 		if (slip.status !== 'AVAILABLE' && slip?.reservations.length > 0) {
-			setBoatId(slip?.reservations[0].boat.id);
-			setCustometId(slip?.reservations[0].customer.id);
+			setBoatId(
+				slip?.reservations[slip?.reservations.length - 1].boat.id
+			);
+			setCustometId(
+				slip?.reservations[slip?.reservations.length - 1].customer.id
+			);
 		}
 
 		setShowDialog(true);

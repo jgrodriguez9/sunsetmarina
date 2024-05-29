@@ -1,7 +1,7 @@
 import { useFormik } from 'formik';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Button, Col, Form, Input, Label, Row } from 'reactstrap';
+import { Button, Col, Form, Input, Label, Row, Alert } from 'reactstrap';
 import * as Yup from 'yup';
 import {
 	ERROR_SERVER,
@@ -9,12 +9,14 @@ import {
 	FIELD_INTEGER,
 	FIELD_NUMERIC,
 	FIELD_REQUIRED,
+	NOT_CASH_REGISTER_ASSIGN,
 } from '../../../constants/messages';
 import { addMessage } from '../../../redux/messageSlice';
 import extractMeaningfulMessage from '../../../utils/extractMeaningfulMessage';
 import ButtonsDisabled from '../../Common/ButtonsDisabled';
 import {
 	getBoardingPassPrice,
+	hasCashRegisterAssign,
 	saveBoardingPass,
 } from '../../../helpers/caja/boardingPass';
 import { useCallback, useState } from 'react';
@@ -70,6 +72,11 @@ export default function FormBoardingPass({ cajero = false }) {
 		slipId: null,
 	});
 	const [itemsReservaciones, setItemsReservaciones] = useState([]);
+	//states para checar caja
+	const [checkCaja, setCheckCaja] = useState({
+		loading: true,
+		hasCaja: false,
+	});
 
 	//prices
 	const [isCalculatingPrice, setIsCalculatingPrice] = useState(false);
@@ -415,7 +422,40 @@ export default function FormBoardingPass({ cajero = false }) {
 		}
 	}, [client, boat, slip]);
 
-	return (
+	//check if has caja asignada
+	useEffect(() => {
+		const checkCajaApi = async () => {
+			try {
+				const resp = await hasCashRegisterAssign();
+				setCheckCaja({
+					loading: false,
+					hasCaja: true,
+				});
+				console.log(resp);
+			} catch (error) {
+				console.log('error');
+				dispatch(
+					addMessage({
+						type: 'warning',
+						message: NOT_CASH_REGISTER_ASSIGN,
+					})
+				);
+				setCheckCaja({
+					loading: false,
+					hasCaja: false,
+				});
+			}
+		};
+		checkCajaApi();
+	}, [dispatch]);
+
+	if (checkCaja.loading) {
+		return <SimpleLoad text="Checando asignación de caja" />;
+	}
+
+	return !checkCaja.hasCaja ? (
+		<Alert color="warning">{NOT_CASH_REGISTER_ASSIGN}</Alert>
+	) : (
 		<>
 			<Form
 				className="needs-validation"
@@ -830,7 +870,7 @@ export default function FormBoardingPass({ cajero = false }) {
 								className="me-2"
 								disabled
 							>
-								Guardar
+								Generar ticket
 							</Button>
 						)}
 

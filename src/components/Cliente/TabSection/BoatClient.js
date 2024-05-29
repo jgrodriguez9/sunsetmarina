@@ -35,6 +35,7 @@ export default function BoatClient({ formik }) {
 		const boat = row.original;
 		setItem((prev) => ({
 			...prev,
+			...boat,
 			id: boat.id,
 			name: boat.name,
 			registrationNumber: boat.registrationNumber,
@@ -88,7 +89,9 @@ export default function BoatClient({ formik }) {
 					width: '20%',
 				},
 				Cell: ({ value }) =>
-					moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY'),
+					value
+						? moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY')
+						: '',
 			},
 			{
 				id: 'acciones',

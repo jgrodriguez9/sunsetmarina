@@ -76,8 +76,6 @@ export default function FormSlipReservationClient({
 	const fetchSlips = async () => {
 		try {
 			const response = await getSlipList();
-			console.log(response);
-			console.log(typeof response);
 			setSlipOpt(
 				response
 					.filter((it) => it.status === 'AVAILABLE')
@@ -506,36 +504,42 @@ export default function FormSlipReservationClient({
 				<Col xs="12" md="4">
 					<Row>
 						<Col xs="12" md="12">
-							<Label className="mb-0 d-block">Estado</Label>
-							{formik.values.status === 'CONFIRMED' ? (
-								<div className="form-control bg-light">
-									Confirmada
-								</div>
-							) : (
-								<Select
-									value={
-										formik.values.status
-											? {
-													value: formik.values.status,
-													label: statusSlipReservation.find(
-														(it) =>
-															it.value ===
-															formik.values.status
-													).label,
-											  }
-											: null
-									}
-									onChange={(value) => {
-										formik.setFieldValue(
-											'status',
-											value?.value ?? ''
-										);
-									}}
-									options={statusSlipReservation}
-									classNamePrefix="select2-selection"
-									placeholder={SELECT_OPTION}
-								/>
-							)}
+							<div className="mb-3">
+								<Label className="mb-0 d-block">Estado</Label>
+								{formik.values.status === 'CONFIRMED' ? (
+									<div className="form-control bg-light">
+										Confirmada
+									</div>
+								) : (
+									<Select
+										value={
+											formik.values.status
+												? {
+														value: formik.values
+															.status,
+														label:
+															statusSlipReservation.find(
+																(it) =>
+																	it.value ===
+																	formik
+																		.values
+																		.status
+															)?.label ?? '',
+												  }
+												: null
+										}
+										onChange={(value) => {
+											formik.setFieldValue(
+												'status',
+												value?.value ?? ''
+											);
+										}}
+										options={statusSlipReservation}
+										classNamePrefix="select2-selection"
+										placeholder={SELECT_OPTION}
+									/>
+								)}
+							</div>
 						</Col>
 
 						<Col xs="12" md="12">

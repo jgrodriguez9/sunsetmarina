@@ -134,7 +134,9 @@ function Boat() {
 					width: '20%',
 				},
 				Cell: ({ row, value }) =>
-					moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY'),
+					value
+						? moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY')
+						: '',
 			},
 			{
 				id: 'acciones',

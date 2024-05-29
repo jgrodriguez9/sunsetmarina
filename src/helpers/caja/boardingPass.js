@@ -7,10 +7,13 @@ const saveBoardingPass = (data) => post(url.boardingPass, data);
 const deleteBoardingPass = (id) => del(`${url.boardingPass}/${id}`);
 const getBoardingPassPrice = (id, query) =>
 	get(`${url.boardingPass}/getPriceByPax/${id}${query}`);
+const hasCashRegisterAssign = () =>
+	get(`${url.boardingPass}/canCreateBoardingPass`);
 
 export {
 	getBoardingPassListPaginado,
 	saveBoardingPass,
 	deleteBoardingPass,
 	getBoardingPassPrice,
+	hasCashRegisterAssign,
 };

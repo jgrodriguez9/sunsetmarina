@@ -45,6 +45,7 @@ export default function SlipReservationClient({ formik }) {
 		const slip = row.original;
 		setItem((prev) => ({
 			...prev,
+			...slip,
 			id: slip.id,
 			price: slip.price,
 			observations: slip.observations,

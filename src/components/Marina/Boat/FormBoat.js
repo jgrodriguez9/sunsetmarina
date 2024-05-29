@@ -115,9 +115,17 @@ export default function FormBoat({ item, btnTextSubmit = 'Aceptar' }) {
 			length: item?.length ?? '',
 			beam: item?.beam ?? '',
 			draught: item?.draught ?? '',
+			tonnage: item?.tonnage ?? '',
 			markEngine: item?.markEngine ?? '',
 			nauticalTouristic: item?.nauticalTouristic ?? false,
+			insuranceCompany: item?.insuranceCompany ?? '',
+			insuranceNumber: item?.insuranceNumber ?? '',
+			insurancePhone: item?.insurancePhone ?? '',
 			insuranceExpirationDate: item?.insuranceExpirationDate ?? '',
+			mark: item?.mark ?? '',
+			model: item?.model ?? '',
+			flag: item?.flag ?? '',
+			hullMaterial: item?.hullMaterial ?? '',
 			customer: item?.customer ?? { id: '' },
 			boatType: item?.boatType ?? { id: '' },
 		},
@@ -132,6 +140,7 @@ export default function FormBoat({ item, btnTextSubmit = 'Aceptar' }) {
 			length: Yup.number()
 				.typeError(FIELD_NUMERIC)
 				.required(FIELD_REQUIRED),
+			tonnage: Yup.number().typeError(FIELD_NUMERIC),
 		}),
 		onSubmit: async (values) => {
 			//validaciones antes de enviarlo
@@ -302,6 +311,76 @@ export default function FormBoat({ item, btnTextSubmit = 'Aceptar' }) {
 					)}
 				</Col>
 				<Col xs="12" md="3">
+					<Label htmlFor="insuranceCompany" className="mb-0">
+						Compañía de seguro
+					</Label>
+					<Input
+						id="insuranceCompany"
+						name="insuranceCompany"
+						className={`form-control ${
+							formik.errors.insuranceCompany ? 'is-invalid' : ''
+						}`}
+						onChange={formik.handleChange}
+						value={formik.values.insuranceCompany}
+					/>
+				</Col>
+				<Col xs="12" md="3">
+					<Label htmlFor="insuranceNumber" className="mb-0">
+						Número de poliza
+					</Label>
+					<Input
+						id="insuranceNumber"
+						name="insuranceNumber"
+						className={`form-control ${
+							formik.errors.insuranceNumber ? 'is-invalid' : ''
+						}`}
+						onChange={formik.handleChange}
+						value={formik.values.insuranceNumber}
+					/>
+				</Col>
+				<Col xs="12" md="3">
+					<Label htmlFor="insurancePhone" className="mb-0">
+						Teléfono compañía seguro
+					</Label>
+					<Input
+						id="insurancePhone"
+						name="insurancePhone"
+						className={`form-control ${
+							formik.errors.insurancePhone ? 'is-invalid' : ''
+						}`}
+						onChange={formik.handleChange}
+						value={formik.values.insurancePhone}
+					/>
+				</Col>
+				<Col xs="12" md="3">
+					<Label htmlFor="insuranceExpirationDate" className="mb-0">
+						Fecha expiración seguro
+					</Label>
+					<SimpleDate
+						date={fecha}
+						setDate={(value) => {
+							setFecha(value[0]);
+							if (value.length > 0) {
+								formik.setFieldValue(
+									`insuranceExpirationDate`,
+									value[0]
+								);
+							} else {
+								formik.setFieldValue(
+									`insuranceExpirationDate`,
+									null
+								);
+							}
+						}}
+						placeholder="dd-MM-YYYY"
+					/>
+					{formik.errors.insuranceExpirationDate && (
+						<div className="invalid-tooltip d-block">
+							{formik.errors.insuranceExpirationDate}
+						</div>
+					)}
+				</Col>
+				<Col xs="12" md="2">
 					<Label htmlFor="boatType" className="mb-0">
 						Tipo de barco
 					</Label>
@@ -328,35 +407,35 @@ export default function FormBoat({ item, btnTextSubmit = 'Aceptar' }) {
 						</div>
 					)}
 				</Col>
-				<Col xs="12" md="3">
-					<Label htmlFor="insuranceExpirationDate" className="mb-0">
-						Fecha expiración seguro
+				<Col xs="12" md="2">
+					<Label htmlFor="mark" className="mb-0">
+						Marca
 					</Label>
-					<SimpleDate
-						date={fecha}
-						setDate={(value) => {
-							setFecha(value[0]);
-							if (value.length > 0) {
-								formik.setFieldValue(
-									`insuranceExpirationDate`,
-									value[0]
-								);
-							} else {
-								formik.setFieldValue(
-									`insuranceExpirationDate`,
-									''
-								);
-							}
-						}}
-						placeholder="dd-MM-YYYY"
+					<Input
+						id="mark"
+						name="mark"
+						className={`form-control ${
+							formik.errors.mark ? 'is-invalid' : ''
+						}`}
+						onChange={formik.handleChange}
+						value={formik.values.mark}
 					/>
-					{formik.errors.insuranceExpirationDate && (
-						<div className="invalid-tooltip d-block">
-							{formik.errors.insuranceExpirationDate}
-						</div>
-					)}
 				</Col>
-				<Col xs="12" md="3">
+				<Col xs="12" md="2">
+					<Label htmlFor="model" className="mb-0">
+						Modelo
+					</Label>
+					<Input
+						id="model"
+						name="model"
+						className={`form-control ${
+							formik.errors.model ? 'is-invalid' : ''
+						}`}
+						onChange={formik.handleChange}
+						value={formik.values.model}
+					/>
+				</Col>
+				<Col xs="12" md="2">
 					<Label htmlFor="markEngine" className="mb-0">
 						Marca del motor
 					</Label>
@@ -374,6 +453,34 @@ export default function FormBoat({ item, btnTextSubmit = 'Aceptar' }) {
 							{formik.errors.markEngine}
 						</div>
 					)}
+				</Col>
+				<Col xs="12" md="2">
+					<Label htmlFor="flag" className="mb-0">
+						Bandera
+					</Label>
+					<Input
+						id="flag"
+						name="flag"
+						className={`form-control ${
+							formik.errors.flag ? 'is-invalid' : ''
+						}`}
+						onChange={formik.handleChange}
+						value={formik.values.flag}
+					/>
+				</Col>
+				<Col xs="12" md="2">
+					<Label htmlFor="hullMaterial" className="mb-0">
+						Material casco
+					</Label>
+					<Input
+						id="hullMaterial"
+						name="hullMaterial"
+						className={`form-control ${
+							formik.errors.hullMaterial ? 'is-invalid' : ''
+						}`}
+						onChange={formik.handleChange}
+						value={formik.values.hullMaterial}
+					/>
 				</Col>
 			</Row>
 			<Row>
@@ -431,6 +538,25 @@ export default function FormBoat({ item, btnTextSubmit = 'Aceptar' }) {
 					{formik.errors.draught && (
 						<div className="invalid-tooltip">
 							{formik.errors.draught}
+						</div>
+					)}
+				</Col>
+				<Col xs="12" md="2">
+					<Label htmlFor="tonnage" className="mb-0">
+						Tonelaje
+					</Label>
+					<Input
+						id="tonnage"
+						name="tonnage"
+						className={`form-control ${
+							formik.errors.tonnage ? 'is-invalid' : ''
+						}`}
+						onChange={formik.handleChange}
+						value={formik.values.tonnage}
+					/>
+					{formik.errors.tonnage && (
+						<div className="invalid-tooltip">
+							{formik.errors.tonnage}
 						</div>
 					)}
 				</Col>

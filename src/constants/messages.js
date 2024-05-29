@@ -17,3 +17,5 @@ export const APPROVE_CLOSE_CASH_SUCCESS =
 	'El cierre de caja se aprobó correctamente';
 export const UPDATE_PRICE_SUCCESS = 'Actualizado precio correctamente!';
 export const FIELD_GREATER_THAN_CERO = 'Campo debe ser mayor a cero';
+export const NOT_CASH_REGISTER_ASSIGN =
+	'Debes asignarte una caja antes para poder realizar esta acción';
