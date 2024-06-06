@@ -104,15 +104,9 @@ export default function FormBoatCrew({ item, btnTextSubmit = 'Aceptar' }) {
 		},
 		validationSchema: Yup.object({
 			name: Yup.string().required(FIELD_REQUIRED),
-			lastName: Yup.string().required(FIELD_REQUIRED),
-			identification: Yup.string().required(FIELD_REQUIRED),
 			boat: Yup.object({
 				id: Yup.number().required(FIELD_REQUIRED),
 			}),
-			country: Yup.string().required(FIELD_REQUIRED),
-			state: Yup.string().required(FIELD_REQUIRED),
-			city: Yup.string().required(FIELD_REQUIRED),
-			phone: Yup.string().required(FIELD_REQUIRED),
 		}),
 		onSubmit: async (values) => {
 			//validaciones antes de enviarlo

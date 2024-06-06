@@ -28,9 +28,11 @@ import { getBoatCrewByBoat } from '../../helpers/marina/boatCrew';
 import SimpleTable from '../Tables/SimpleTable';
 import TableLoader from '../Loader/TablaLoader';
 import { getContactByClient } from '../../helpers/marina/contact';
+import SimpleLoad from '../Loader/SimpleLoad';
 
 export default function DockImage() {
 	const dispatch = useDispatch();
+	const [loading, setLoading] = useState(true);
 	const [slips, setSlips] = useState([]);
 	const [showDialog, setShowDialog] = useState(false);
 	const [slipInfo, setSlipInfo] = useState(null);
@@ -262,12 +264,14 @@ export default function DockImage() {
 											<span>{slipInfo?.embarcacion}</span>
 										</ListGroupItem>
 									)}
-									<ListGroupItem className="d-flex justify-content-between">
-										<h5 className="m-0">
-											Pies de embarcación
-										</h5>
-										<span>{slipInfo?.dimensiones}</span>
-									</ListGroupItem>
+									{slipInfo?.dimensiones && (
+										<ListGroupItem className="d-flex justify-content-between">
+											<h5 className="m-0">
+												Pies de embarcación
+											</h5>
+											<span>{slipInfo?.dimensiones}</span>
+										</ListGroupItem>
+									)}
 								</ListGroup>
 							</Col>
 						</Row>
@@ -385,7 +389,9 @@ export default function DockImage() {
 		try {
 			const response = await getSlipList();
 			setSlips(response);
+			setLoading(false);
 		} catch (error) {
+			setLoading(false);
 			let message = ERROR_SERVER;
 			message = extractMeaningfulMessage(error, message);
 			dispatch(
@@ -400,6 +406,10 @@ export default function DockImage() {
 	useEffect(() => {
 		fecthSlipsAllApi();
 	}, []);
+
+	if (loading) {
+		return <SimpleLoad text="Cargando mapa" />;
+	}
 
 	return (
 		<>

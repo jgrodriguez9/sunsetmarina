@@ -264,7 +264,10 @@ function Reservation() {
 				Cell: ({ row }) => (
 					<>
 						<CellActions
-							edit={{ allow: true, action: editAction }}
+							edit={{
+								allow: row.original.status !== 'CANCELLED',
+								action: editAction,
+							}}
 							cancel={
 								row.original.status === 'CANCELLED'
 									? null

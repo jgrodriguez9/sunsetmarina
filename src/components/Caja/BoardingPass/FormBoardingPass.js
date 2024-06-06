@@ -426,14 +426,12 @@ export default function FormBoardingPass({ cajero = false }) {
 	useEffect(() => {
 		const checkCajaApi = async () => {
 			try {
-				const resp = await hasCashRegisterAssign();
+				await hasCashRegisterAssign();
 				setCheckCaja({
 					loading: false,
 					hasCaja: true,
 				});
-				console.log(resp);
 			} catch (error) {
-				console.log('error');
 				dispatch(
 					addMessage({
 						type: 'warning',

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
 	Button,
 	Col,
@@ -8,6 +8,7 @@ import {
 	OffcanvasBody,
 	OffcanvasHeader,
 	Row,
+	Alert,
 } from 'reactstrap';
 import {
 	getChargeByReservation,
@@ -20,7 +21,10 @@ import Select from 'react-select';
 import moment from 'moment';
 import 'moment/locale/es';
 import { savePayment } from '../../helpers/marina/payment';
-import { ERROR_SERVER } from '../../constants/messages';
+import {
+	ERROR_SERVER,
+	NOT_CASH_REGISTER_ASSIGN,
+} from '../../constants/messages';
 import extractMeaningfulMessage from '../../utils/extractMeaningfulMessage';
 import { addMessage } from '../../redux/messageSlice';
 import { useDispatch } from 'react-redux';
@@ -28,6 +32,8 @@ import SuccessPaymentDialog from '../Common/SuccessPaymentDialog';
 import { paymentFormOpt } from '../../constants/paymentForm';
 import TooltipDescription from '../Common/TooltipDescription';
 import { monthsOpt, yearsOpt } from '../../constants/dates';
+import { hasCashRegisterAssign } from '../../helpers/caja/boardingPass';
+import SimpleLoad from '../Loader/SimpleLoad';
 moment.locale('es');
 
 const objStyle = {
@@ -62,6 +68,11 @@ const ChargesCanvas = ({
 	const [isCalculating, setIsCalculating] = useState(false);
 	const [totalToPay, setTotalToPay] = useState(null);
 	const [ticket, setTicket] = useState({ idPayment: null });
+	//states para checar caja
+	const [checkCaja, setCheckCaja] = useState({
+		loading: true,
+		hasCaja: false,
+	});
 	useEffect(() => {
 		const fecthChargesByReservation = async () => {
 			try {
@@ -161,6 +172,31 @@ const ChargesCanvas = ({
 			setOpen(false);
 		}
 	}, [showSuccess, ticket.payment]);
+
+	//check if has caja asignada
+	useEffect(() => {
+		const checkCajaApi = async () => {
+			try {
+				await hasCashRegisterAssign();
+				setCheckCaja({
+					loading: false,
+					hasCaja: true,
+				});
+			} catch (error) {
+				dispatch(
+					addMessage({
+						type: 'warning',
+						message: NOT_CASH_REGISTER_ASSIGN,
+					})
+				);
+				setCheckCaja({
+					loading: false,
+					hasCaja: false,
+				});
+			}
+		};
+		if (open) checkCajaApi();
+	}, [dispatch, open]);
 
 	useEffect(() => {
 		async function getTotalToPay() {
@@ -447,32 +483,45 @@ const ChargesCanvas = ({
 												)}
 											</div>
 										</div>
-										<div className="text-center mt-3">
-											{isPaying ? (
-												<Button
-													color="primary"
-													className="fs-4"
-													disabled
-													block
-												>
-													<i className="bx bx-loader bx-spin font-size-16 align-middle" />{' '}
-													Pagar
-												</Button>
-											) : (
-												<Button
-													color="primary"
-													className="fs-4"
-													disabled={
-														totalToPay <= 0 ||
-														!paymentForm
-													}
-													block
-													onClick={onHandlePayment}
-												>
-													Pagar
-												</Button>
+										{checkCaja.loading && (
+											<SimpleLoad text="Checando asignación de caja" />
+										)}
+										{!checkCaja.hasCaja &&
+											!checkCaja.loading && (
+												<Alert color="warning">
+													{NOT_CASH_REGISTER_ASSIGN}
+												</Alert>
 											)}
-										</div>
+										{checkCaja.hasCaja && (
+											<div className="text-center mt-3">
+												{isPaying ? (
+													<Button
+														color="primary"
+														className="fs-4"
+														disabled
+														block
+													>
+														<i className="bx bx-loader bx-spin font-size-16 align-middle" />{' '}
+														Pagar
+													</Button>
+												) : (
+													<Button
+														color="primary"
+														className="fs-4"
+														disabled={
+															totalToPay <= 0 ||
+															!paymentForm
+														}
+														block
+														onClick={
+															onHandlePayment
+														}
+													>
+														Pagar
+													</Button>
+												)}
+											</div>
+										)}
 									</Col>
 								</Row>
 							</div>
