@@ -201,7 +201,7 @@ function Client() {
 						<CellActions
 							edit={{ allow: true, action: editAction }}
 							del={{
-								allow: false,
+								allow: true,
 								action: handleShowDialogDelete,
 							}}
 							row={row}
