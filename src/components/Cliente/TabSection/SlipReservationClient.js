@@ -194,7 +194,7 @@ export default function SlipReservationClient({ formik }) {
 									  }
 							}
 							charge={
-								row.original.status === 'PENDING'
+								row.original.status !== 'CONFIRMED'
 									? null
 									: {
 											allow: true,
