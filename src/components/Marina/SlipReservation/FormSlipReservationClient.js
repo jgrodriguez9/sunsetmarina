@@ -71,6 +71,7 @@ export default function FormSlipReservationClient({
 					.map((boat) => ({
 						label: `${boat.name} - ${boat.length} pies`,
 						value: boat.id,
+						justName: boat.name,
 					}))
 			);
 		} catch (error) {
@@ -84,10 +85,9 @@ export default function FormSlipReservationClient({
 				response
 					.filter((it) => it.status === 'AVAILABLE')
 					.map((slip) => ({
-						label: `${slip.code}  (${jsFormatNumber(
-							slip.price
-						)} diario)`,
+						label: slip.code,
 						value: slip.id,
+						justName: slip.code,
 					}))
 			);
 		} catch (error) {
@@ -308,7 +308,7 @@ export default function FormSlipReservationClient({
 									);
 									formik.setFieldValue(
 										'boat.name',
-										value?.label ?? ''
+										value?.justName ?? ''
 									);
 								}}
 								options={boatOpt}
@@ -350,7 +350,7 @@ export default function FormSlipReservationClient({
 									);
 									formik.setFieldValue(
 										'slip.code',
-										value?.label ?? ''
+										value?.justName ?? ''
 									);
 								}}
 								options={slipOpt}
