@@ -89,7 +89,9 @@ export default function SlipReservationClient({ formik }) {
 					width: '9%',
 				},
 				Cell: ({ value }) =>
-					moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY'),
+					value
+						? moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY')
+						: '',
 			},
 			{
 				Header: 'Fecha salida',
@@ -98,7 +100,9 @@ export default function SlipReservationClient({ formik }) {
 					width: '9%',
 				},
 				Cell: ({ value }) =>
-					moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY'),
+					value
+						? moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY')
+						: '',
 			},
 			{
 				Header: 'Precio (MXN)',

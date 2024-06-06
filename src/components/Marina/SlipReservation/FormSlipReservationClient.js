@@ -55,7 +55,7 @@ export default function FormSlipReservationClient({
 	const [showControlPrice, setShowControlPrice] = useState(false);
 	const [checkValidationSlip, setCheckValidationSlip] = useState({
 		loading: false,
-		isValid: false,
+		isValid: item.id ? true : false,
 		checked: false,
 	});
 
@@ -467,30 +467,24 @@ export default function FormSlipReservationClient({
 						<Label htmlFor="price" className="mb-0">
 							Fecha final contrato
 						</Label>
-						{formik.values.id ? (
-							<div className="form-control bg-light">
-								{moment(finalContractDate).format('DD-MM-YYYY')}
-							</div>
-						) : (
-							<SimpleDate
-								date={finalContractDate}
-								setDate={(value) => {
-									setFinalContractDate(value[0]);
-									if (value.length > 0) {
-										formik.setFieldValue(
-											`finalContractDate`,
-											value[0]
-										);
-									} else {
-										formik.setFieldValue(
-											`finalContractDate`,
-											null
-										);
-									}
-								}}
-								placeholder="dd-MM-YYYY"
-							/>
-						)}
+						<SimpleDate
+							date={finalContractDate}
+							setDate={(value) => {
+								setFinalContractDate(value[0]);
+								if (value.length > 0) {
+									formik.setFieldValue(
+										`finalContractDate`,
+										value[0]
+									);
+								} else {
+									formik.setFieldValue(
+										`finalContractDate`,
+										null
+									);
+								}
+							}}
+							placeholder="dd-MM-YYYY"
+						/>
 					</div>
 				</Col>
 			</Row>
@@ -559,33 +553,27 @@ export default function FormSlipReservationClient({
 								>
 									Frecuencia de pago
 								</Label>
-								{formik.values.id ? (
-									<div className="form-control bg-light">
-										{formik.values.paymentFrequency}
-									</div>
-								) : (
-									<Select
-										value={
-											formik.values.paymentFrequency
-												? {
-														value: formik.values
-															.paymentFrequency,
-														label: formik.values
-															.paymentFrequency,
-												  }
-												: null
-										}
-										onChange={(value) => {
-											formik.setFieldValue(
-												'paymentFrequency',
-												value?.value ?? ''
-											);
-										}}
-										options={paymentFrequencyOpt}
-										classNamePrefix="select2-selection"
-										placeholder={SELECT_OPTION}
-									/>
-								)}
+								<Select
+									value={
+										formik.values.paymentFrequency
+											? {
+													value: formik.values
+														.paymentFrequency,
+													label: formik.values
+														.paymentFrequency,
+											  }
+											: null
+									}
+									onChange={(value) => {
+										formik.setFieldValue(
+											'paymentFrequency',
+											value?.value ?? ''
+										);
+									}}
+									options={paymentFrequencyOpt}
+									classNamePrefix="select2-selection"
+									placeholder={SELECT_OPTION}
+								/>
 
 								{formik.errors.paymentFrequency && (
 									<div className="invalid-tooltip d-block">
