@@ -12,7 +12,14 @@ export default function PrincipalInfoClient({ formik, item, setFile }) {
 		item?.birthDate ? moment(item?.birthDate, 'YYYY-MM-DD').toDate() : null
 	);
 	const [clientsCategoryOpt, setClientsCategoryOpt] = useState([]);
-	const [languageDefault, setLanguageDefault] = useState(null);
+	const [languageDefault, setLanguageDefault] = useState(
+		formik.values.language
+			? {
+					value: formik.values.language,
+					label: formik.values.language,
+			  }
+			: null
+	);
 	const [selectedImage, setSelectedImage] = useState(null);
 
 	const fecthClientsCategoryAPi = async () => {
