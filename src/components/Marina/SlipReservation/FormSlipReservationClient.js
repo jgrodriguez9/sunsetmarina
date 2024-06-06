@@ -86,7 +86,7 @@ export default function FormSlipReservationClient({
 					.filter((it) => it.status === 'AVAILABLE')
 					.map((slip) => ({
 						label: `${slip.code} (${jsFormatNumber(
-							slip.length
+							slip.price
 						)} diario)`,
 						value: slip.id,
 						justName: slip.code,
