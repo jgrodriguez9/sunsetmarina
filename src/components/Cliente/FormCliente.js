@@ -95,6 +95,8 @@ export default function FormCliente({ item, btnTextSubmit = 'Aceptar' }) {
 					formData[key] = moment(values.birthDate).format(
 						'YYYY-MM-DD'
 					);
+				} else if (key === 'customerCategory') {
+					formData[key] = value.id;
 				} else {
 					formData[key] = value;
 				}
