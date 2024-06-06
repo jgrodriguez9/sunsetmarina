@@ -85,7 +85,9 @@ export default function FormSlipReservationClient({
 				response
 					.filter((it) => it.status === 'AVAILABLE')
 					.map((slip) => ({
-						label: slip.code,
+						label: `${slip.code} (${jsFormatNumber(
+							slip.length
+						)} diario)`,
 						value: slip.id,
 						justName: slip.code,
 					}))
@@ -297,7 +299,13 @@ export default function FormSlipReservationClient({
 									formik.values.boat?.id
 										? {
 												value: formik.values.boat.id,
-												label: formik.values.boat.name,
+												label:
+													boatOpt.find(
+														(it) =>
+															it.value ===
+															formik.values.boat
+																.id
+													)?.label ?? '',
 										  }
 										: null
 								}
@@ -339,7 +347,13 @@ export default function FormSlipReservationClient({
 									formik.values.slip?.id
 										? {
 												value: formik.values.slip.id,
-												label: formik.values.slip.code,
+												label:
+													slipOpt.find(
+														(it) =>
+															it.value ===
+															formik.values.slip
+																.id
+													)?.label ?? '',
 										  }
 										: null
 								}
