@@ -190,7 +190,7 @@ export default function ContactClient({ formik }) {
 				open={openModalAdd}
 				setOpen={setOpenModalAdd}
 				title={item?.id ? 'Actualizar contacto' : 'Agregar contacto'}
-				size="xl"
+				size="lg"
 				children={
 					<FormContactClient
 						item={item}
