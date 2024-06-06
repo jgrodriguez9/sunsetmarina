@@ -29,6 +29,7 @@ import ContentLoader from '../../Loader/ContentLoader';
 import getObjectValid from '../../../utils/getObjectValid';
 import { statusSlipReservation } from '../../../data/statusSlipReservation';
 import { paymentFrequencyOpt } from '../../../constants/constants';
+import jsFormatNumber from '../../../utils/jsFormatNumber';
 
 export default function FormSlipReservationClient({
 	item,
@@ -67,7 +68,10 @@ export default function FormSlipReservationClient({
 			setBoatOpt(
 				response.list
 					.filter((it) => it.status === 'AVAILABLE')
-					.map((boat) => ({ label: boat.name, value: boat.id }))
+					.map((boat) => ({
+						label: `${boat.name} - ${boat.length} pies`,
+						value: boat.id,
+					}))
 			);
 		} catch (error) {
 			setBoatOpt([]);
@@ -79,7 +83,12 @@ export default function FormSlipReservationClient({
 			setSlipOpt(
 				response
 					.filter((it) => it.status === 'AVAILABLE')
-					.map((slip) => ({ label: slip.code, value: slip.id }))
+					.map((slip) => ({
+						label: `${slip.code}  (${jsFormatNumber(
+							slip.price
+						)} diario)`,
+						value: slip.id,
+					}))
 			);
 		} catch (error) {
 			setSlipOpt([]);
