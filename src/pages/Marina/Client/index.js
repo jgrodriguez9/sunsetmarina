@@ -39,7 +39,7 @@ function Client() {
 		{
 			label: 'Código',
 			field: 'code',
-			width: 2,
+			width: 3,
 			control: 'input',
 			type: 'text',
 			value: '',
@@ -47,7 +47,7 @@ function Client() {
 		{
 			label: 'Nombre',
 			field: 'name',
-			width: 2,
+			width: 3,
 			control: 'input',
 			type: 'text',
 			value: '',
@@ -55,7 +55,7 @@ function Client() {
 		{
 			label: 'Apellido',
 			field: 'lastName',
-			width: 2,
+			width: 3,
 			control: 'input',
 			type: 'text',
 			value: '',
@@ -68,24 +68,9 @@ function Client() {
 			type: '',
 			value: '',
 			valueSelect: null,
-			options: [
-				{
-					label: Country.getCountryByCode('MX').name,
-					value: Country.getCountryByCode('MX').name,
-				},
-			],
-		},
-		{
-			label: 'Estado',
-			field: 'state',
-			width: 3,
-			control: 'select',
-			type: '',
-			value: '',
-			valueSelect: null,
-			options: State.getStatesOfCountry('MX').map((s) => ({
-				label: s.name,
-				value: s.name,
+			options: Country.getAllCountries().map((it) => ({
+				label: it.name,
+				value: it.isoCode,
 			})),
 		},
 	]);
