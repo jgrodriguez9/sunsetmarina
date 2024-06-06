@@ -107,7 +107,7 @@ export default function FormContactClient({
 	return (
 		<div className="needs-validation">
 			<Row>
-				<Col xs="12" md="4" className="mb-2">
+				<Col xs="12" md="6" className="mb-2">
 					<Label htmlFor="name" className="mb-0">
 						Nombre
 					</Label>
@@ -126,7 +126,7 @@ export default function FormContactClient({
 						</div>
 					)}
 				</Col>
-				<Col xs="12" md="4" className="mb-2">
+				<Col xs="12" md="6" className="mb-2">
 					<Label htmlFor="boatType" className="mb-0">
 						Parentesco
 					</Label>
@@ -152,7 +152,7 @@ export default function FormContactClient({
 				</Col>
 			</Row>
 			<Row>
-				<Col xs="12" md="4">
+				<Col xs="12" md="6">
 					<Label htmlFor="email" className="mb-0">
 						Correo electrónico
 					</Label>
@@ -171,7 +171,7 @@ export default function FormContactClient({
 						</div>
 					)}
 				</Col>
-				<Col xs="12" md="4">
+				<Col xs="12" md="6">
 					<Label htmlFor="phone" className="mb-0">
 						Teléfono
 					</Label>
