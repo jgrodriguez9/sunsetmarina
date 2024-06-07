@@ -204,7 +204,9 @@ function Reservation() {
 					width: '10%',
 				},
 				Cell: ({ row, value }) =>
-					moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY'),
+					value
+						? moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY')
+						: '',
 			},
 			{
 				Header: 'Fecha salida',
@@ -213,7 +215,9 @@ function Reservation() {
 					width: '10%',
 				},
 				Cell: ({ row, value }) =>
-					moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY'),
+					value
+						? moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY')
+						: '',
 			},
 			{
 				Header: 'Precio diario',

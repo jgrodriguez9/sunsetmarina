@@ -123,6 +123,7 @@ export default function FormSlipReservationClient({
 			slip: Yup.object({
 				id: Yup.number().required(FIELD_REQUIRED),
 			}),
+			arrivalDate: Yup.string().required(FIELD_REQUIRED),
 			paymentFrequency: Yup.string().required(FIELD_REQUIRED),
 			price: Yup.number()
 				.typeError(FIELD_NUMERIC)
@@ -450,6 +451,11 @@ export default function FormSlipReservationClient({
 								}}
 								placeholder="dd-MM-YYYY"
 							/>
+						)}
+						{formik.errors.arrivalDate && (
+							<div className="invalid-tooltip d-block">
+								{formik.errors.arrivalDate}
+							</div>
 						)}
 					</div>
 				</Col>

@@ -509,6 +509,11 @@ export default function FormReserva({ item, btnTextSubmit = 'Aceptar' }) {
 								placeholder="dd-MM-YYYY"
 							/>
 						)}
+						{formik.errors.arrivalDate && (
+							<div className="invalid-tooltip d-block">
+								{formik.errors.arrivalDate}
+							</div>
+						)}
 					</div>
 				</Col>
 				<Col xs="12" md="3">

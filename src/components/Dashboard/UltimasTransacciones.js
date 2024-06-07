@@ -39,7 +39,9 @@ export default function UltimasTransacciones() {
 					width: '15%',
 				},
 				Cell: ({ value }) =>
-					moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY'),
+					value
+						? moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY')
+						: '',
 			},
 			{
 				Header: 'Monto',

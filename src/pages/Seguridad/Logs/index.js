@@ -157,9 +157,11 @@ function Logs() {
 				Header: 'Fecha',
 				accessor: 'dateCreated',
 				Cell: ({ value }) =>
-					moment(value, 'YYYY-MM-DDTHH:mm:ss').format(
-						'DD/MM/YYYY HH:mm:ss'
-					),
+					value
+						? moment(value, 'YYYY-MM-DDTHH:mm:ss').format(
+								'DD/MM/YYYY HH:mm:ss'
+						  )
+						: '',
 				style: {
 					width: '10%',
 				},

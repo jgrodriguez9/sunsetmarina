@@ -88,7 +88,9 @@ function Brazaletes() {
 					width: '10%',
 				},
 				Cell: ({ value }) =>
-					moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY'),
+					value
+						? moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY')
+						: '',
 			},
 			{
 				Header: 'Color',

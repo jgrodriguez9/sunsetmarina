@@ -36,7 +36,11 @@ function Login() {
 		onSubmit: async (values) => {
 			try {
 				await postSignInSoportec(values);
-				const response = await postJwtLogin(values);
+				const dataToLogin = {
+					username: values.username.toLowerCase(),
+					password: values.password,
+				};
+				const response = await postJwtLogin(dataToLogin);
 				if (response.access_token) {
 					sessionStorage.setItem(
 						'sunsetadmiralauth',

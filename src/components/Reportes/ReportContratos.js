@@ -64,25 +64,36 @@ const ReportContratos = ({ items }) => {
 															}
 														</td>
 														<td>
-															{moment(
-																slip.arrivalDate,
-																'YYYY-MM-DD'
-															).format(
-																'DD/MM/YYYY'
-															)}
+															{slip.arrivalDate
+																? moment(
+																		slip.arrivalDate,
+																		'YYYY-MM-DD'
+																  ).format(
+																		'DD/MM/YYYY'
+																  )
+																: ''}
 														</td>
 														<td>
-															{moment(
-																slip.departureDate,
-																'YYYY-MM-DD'
-															).format(
-																'DD/MM/YYYY'
-															)}
+															{slip.departureDate !==
+															'VIGENTE'
+																? moment(
+																		slip.departureDate,
+																		'YYYY-MM-DD'
+																  ).format(
+																		'DD/MM/YYYY'
+																  )
+																: slip.departureDate}
 														</td>
 														<td>
-															{
-																slip.finalContractDate
-															}
+															{slip.finalContractDate !==
+															'INDEFINIDO'
+																? moment(
+																		slip.finalContractDate,
+																		'YYYY-MM-DD'
+																  ).format(
+																		'DD/MM/YYYY'
+																  )
+																: slip.finalContractDate}
 														</td>
 														<td>
 															{jsFormatNumber(

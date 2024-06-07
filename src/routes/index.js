@@ -287,6 +287,15 @@ const contabilidadRoutes = [
 	...authProtectedRoutes,
 	...publicRoutes,
 	...securityRoutes,
+	...catalogueRoutes.filter(
+		(it) =>
+			it.path === '/currencyexchange' ||
+			it.path === '/currencyexchange/edit/:id' ||
+			it.path === '/currencyexchange/create' ||
+			it.path === '/company' ||
+			it.path === '/company/edit/:id' ||
+			it.path === '/company/create'
+	),
 ];
 const operacionesRoutes = [
 	...marineRoutes,

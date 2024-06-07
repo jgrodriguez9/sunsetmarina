@@ -397,7 +397,10 @@ function IncomeReport() {
 	return (
 		<div className="page-content">
 			<Container fluid>
-				<Breadcrumbs title={'Ingreso'} breadcrumbItem={'Ingreso'} />
+				<Breadcrumbs
+					title={'Reporte de Ingresos'}
+					breadcrumbItem={'Reporte de Ingresos'}
+				/>
 
 				<Row className="pb-2">
 					<Col lg="12">

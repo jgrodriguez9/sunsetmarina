@@ -148,7 +148,7 @@ function AccountStatus() {
 					filters={filters}
 					setFilters={setFilters}
 					fireSearch={fireSearch}
-					validate={['customer', 'startDate', 'endDate']}
+					validate={['startDate', 'endDate']}
 				/>
 			</Col>
 		</Row>
@@ -265,6 +265,10 @@ function AccountStatus() {
 		],
 		[]
 	);
+	console.log(filters);
+	const showPdfGlobal = useMemo(() => {
+		return filters.find((it) => it.field === 'customer').value !== '';
+	}, [filters]);
 	const carHandleEstadoCuenta = loading ? (
 		<Row>
 			<Col xs="12" xl="12">
@@ -285,39 +289,41 @@ function AccountStatus() {
 		</Row>
 	) : (
 		<Row>
-			<Col xs="12" xl="12">
-				<PDFDownloadLink
-					document={<ReportAccountStatus pdfData={pdfData} />}
-					fileName={`${moment().format(
-						'DDMMYYYY'
-					)}_estado_cuenta_general.pdf`}
-				>
-					{({ blob, url, loading, error }) =>
-						loading ? (
-							<Button
-								color="secondary"
-								outline
-								disabled
-								type="button"
-								size="sm"
-							>
-								<i className="far fa-file-pdf" /> Cargando
-								documento
-							</Button>
-						) : (
-							<Button
-								color="info"
-								outline
-								className="mb-2"
-								size="sm"
-							>
-								<i className="far fa-file-pdf" /> Descargar
-								Reporte general
-							</Button>
-						)
-					}
-				</PDFDownloadLink>
-			</Col>
+			{showPdfGlobal && (
+				<Col xs="12" xl="12">
+					<PDFDownloadLink
+						document={<ReportAccountStatus pdfData={pdfData} />}
+						fileName={`${moment().format(
+							'DDMMYYYY'
+						)}_estado_cuenta_general.pdf`}
+					>
+						{({ blob, url, loading, error }) =>
+							loading ? (
+								<Button
+									color="secondary"
+									outline
+									disabled
+									type="button"
+									size="sm"
+								>
+									<i className="far fa-file-pdf" /> Cargando
+									documento
+								</Button>
+							) : (
+								<Button
+									color="info"
+									outline
+									className="mb-2"
+									size="sm"
+								>
+									<i className="far fa-file-pdf" /> Descargar
+									Reporte general
+								</Button>
+							)
+						}
+					</PDFDownloadLink>
+				</Col>
+			)}
 			<Col xs="12" xl="12">
 				<SimpleTable columns={columns} data={items} />
 			</Col>

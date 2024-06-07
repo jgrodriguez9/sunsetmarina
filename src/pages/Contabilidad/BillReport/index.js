@@ -197,11 +197,20 @@ function BillReport() {
 						concept.arrivalDate,
 						'YYYY-MM-DD'
 					).format('DD/MM/YYYY'),
-					departureDate: moment(
-						concept.departureDate,
-						'YYYY-MM-DD'
-					).format('DD/MM/YYYY'),
-					finalContractDate: concept.finalContractDate,
+					departureDate:
+						concept.departureDate !== 'VIGENTE'
+							? moment(
+									concept.departureDate,
+									'YYYY-MM-DD'
+							  ).format('DD/MM/YYYY')
+							: concept.departureDate,
+					finalContractDate:
+						concept.finalContractDate !== 'INDEFINIDO'
+							? moment(
+									concept.finalContractDate,
+									'YYYY-MM-DD'
+							  ).format('DD/MM/YYYY')
+							: concept.finalContractDate,
 					monthContract: jsFormatNumber(concept.monthContract),
 					monthRental: jsFormatNumber(concept.monthRental),
 					deudaMXN: getDeuda(
@@ -309,7 +318,10 @@ function BillReport() {
 	return (
 		<div className="page-content">
 			<Container fluid>
-				<Breadcrumbs title={'Cobranza'} breadcrumbItem={'Cobranza'} />
+				<Breadcrumbs
+					title={'Reporte de Cotratos'}
+					breadcrumbItem={'Reporte de Cotratos'}
+				/>
 
 				<Row className="pb-2">
 					<Col lg="12">

@@ -63,7 +63,11 @@ export const navigations = [
 		label: 'Catálogo',
 		classIcon: 'fas fa-th me-2',
 		route: '/#',
-		show: existsRole(roles, [ROLE_ADMINISTRACION, ROLE_COMPANIA]),
+		show: existsRole(roles, [
+			ROLE_ADMINISTRACION,
+			ROLE_COMPANIA,
+			ROLE_CONTABILIDAD,
+		]),
 		items: [
 			{
 				id: 'tipoDeEmbarcacion',
@@ -77,7 +81,10 @@ export const navigations = [
 				label: 'Compañía',
 				route: '/company',
 				classIcon: null,
-				show: existsRole(roles, [ROLE_ADMINISTRACION]),
+				show: existsRole(roles, [
+					ROLE_ADMINISTRACION,
+					ROLE_CONTABILIDAD,
+				]),
 			},
 			{
 				id: 'muelle',
@@ -119,7 +126,11 @@ export const navigations = [
 				label: 'Moneda',
 				route: '/currencyexchange',
 				classIcon: null,
-				show: existsRole(roles, [ROLE_ADMINISTRACION, ROLE_COMPANIA]),
+				show: existsRole(roles, [
+					ROLE_ADMINISTRACION,
+					ROLE_COMPANIA,
+					ROLE_CONTABILIDAD,
+				]),
 			},
 		],
 	},
