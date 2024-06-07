@@ -18,4 +18,4 @@ export const APPROVE_CLOSE_CASH_SUCCESS =
 export const UPDATE_PRICE_SUCCESS = 'Actualizado precio correctamente!';
 export const FIELD_GREATER_THAN_CERO = 'Campo debe ser mayor a cero';
 export const NOT_CASH_REGISTER_ASSIGN =
-	'Debes asignarte una caja antes para poder realizar esta acción';
+	'No tienes ningún turno abierto, ve a control de cajas e inicia un turno.';
