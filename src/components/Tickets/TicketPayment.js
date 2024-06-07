@@ -104,10 +104,10 @@ function TicketPayment({ ticket }) {
 						}}
 					>
 						Salida:{' '}
-						{moment(
-							ticket.departureDate,
-							'YYYY-MM-DDTHH:mm'
-						).format('DD-MM-YYYY HH:mm')}
+						{moment
+							.utc(ticket.departureDate)
+							.local()
+							.format('DD-MM-YYYY HH:mm')}
 					</Text>
 				</View>
 

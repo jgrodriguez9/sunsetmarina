@@ -265,7 +265,6 @@ function AccountStatus() {
 		],
 		[]
 	);
-	console.log(filters);
 	const showPdfGlobal = useMemo(() => {
 		return filters.find((it) => it.field === 'customer').value !== '';
 	}, [filters]);

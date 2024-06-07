@@ -184,9 +184,7 @@ function BoardingPass() {
 					width: '12%',
 				},
 				Cell: ({ value }) =>
-					moment(value, 'YYYY-MM-DDTHH:mm').format(
-						'DD-MM-YYYY HH:mm'
-					),
+					moment.utc(value).local().format('DD-MM-YYYY HH:mm'),
 			},
 			{
 				id: 'acciones',

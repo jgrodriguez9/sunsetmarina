@@ -245,10 +245,12 @@ function ReportAccountStatus({ pdfData }) {
 										>
 											<Text style={stylesTable.row1}>
 												<Text style={stylesTable.bold}>
-													{moment(
-														concept.dateCreated,
-														'YYYY-MM-DD'
-													).format('DD/MM/YYYY')}
+													{moment
+														.utc(
+															concept.dateCreated
+														)
+														.local()
+														.format('DD/MM/YYYY')}
 												</Text>
 											</Text>
 											<View style={stylesTable.row2}>

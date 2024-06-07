@@ -55,14 +55,14 @@ const CashMovement = () => {
 				Header: 'Concepto',
 				accessor: 'cashConcept.description',
 				style: {
-					width: '20%',
+					width: '15%',
 				},
 			},
 			{
 				Header: 'Tipo operación',
 				accessor: 'cashConcept.operation',
 				style: {
-					width: '15%',
+					width: '10%',
 				},
 				Cell: ({ value }) => (value === 'IN' ? 'Entrada' : 'Salida'),
 			},
@@ -87,10 +87,17 @@ const CashMovement = () => {
 					),
 			},
 			{
+				Header: 'Creado por',
+				accessor: 'createdBy',
+				style: {
+					width: '15%',
+				},
+			},
+			{
 				Header: 'Monto',
 				accessor: 'amount',
 				style: {
-					width: '15%',
+					width: '10%',
 				},
 				Cell: ({ value }) => numberFormat(value),
 			},
@@ -104,11 +111,12 @@ const CashMovement = () => {
 				<TableLoader
 					columns={[
 						{ name: 'Caja', width: '30%' },
-						{ name: 'Concepto', width: '20%' },
-						{ name: 'Tipo operación', width: '15%' },
+						{ name: 'Concepto', width: '15%' },
+						{ name: 'Tipo operación', width: '10%' },
 						{ name: 'Fecha', width: '10%' },
 						{ name: 'Hora', width: '10%' },
-						{ name: 'Monto', width: '15%' },
+						{ name: 'Creado por', width: '15%' },
+						{ name: 'Monto', width: '10%' },
 					]}
 				/>
 			</Col>

@@ -89,9 +89,7 @@ export default function SlipReservationClient({ formik }) {
 					width: '9%',
 				},
 				Cell: ({ value }) =>
-					value
-						? moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY')
-						: '',
+					value ? moment.utc(value).local().format('DD-MM-YYYY') : '',
 			},
 			{
 				Header: 'Fecha salida',
@@ -101,8 +99,8 @@ export default function SlipReservationClient({ formik }) {
 				},
 				Cell: ({ value }) =>
 					value
-						? moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY')
-						: '',
+						? moment.utc(value).local().format('DD-MM-YYYY')
+						: 'VIGENTE',
 			},
 			{
 				Header: 'Precio (MXN)',
@@ -339,7 +337,6 @@ export default function SlipReservationClient({ formik }) {
 					/>
 				}
 			/>
-
 			<ChargesCanvas
 				reservation={selectedReservation}
 				customerId={formik.values.id}

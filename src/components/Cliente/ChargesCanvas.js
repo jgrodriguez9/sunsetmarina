@@ -104,11 +104,11 @@ const ChargesCanvas = ({
 				setLoading(false);
 			}
 		};
-		if (reservation?.id) {
+		if (reservation?.id && open) {
 			setLoading(true);
 			fecthChargesByReservation();
 		}
-	}, [reservation?.id]);
+	}, [reservation?.id, open]);
 
 	const toggle = () => {
 		setOpen(!open);
@@ -166,9 +166,8 @@ const ChargesCanvas = ({
 			setChargesToPay(copyChargesToPay);
 		}
 	};
-
 	useEffect(() => {
-		if (!showSuccess && ticket.payment) {
+		if (!showSuccess) {
 			setOpen(false);
 		}
 	}, [showSuccess, ticket.payment]);

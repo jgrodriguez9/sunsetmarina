@@ -177,9 +177,7 @@ export default function PaymentClient({ formik }) {
 					width: '10%',
 				},
 				Cell: ({ value }) =>
-					value
-						? moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY')
-						: '',
+					value ? moment.utc(value).local().format('DD-MM-YYYY') : '',
 			},
 			{
 				Header: 'Monto',

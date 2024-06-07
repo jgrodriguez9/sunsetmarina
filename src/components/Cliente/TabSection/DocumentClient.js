@@ -113,7 +113,6 @@ export default function DocumentClient({ formik }) {
 	const fetchItemsForClientApi = async () => {
 		try {
 			const response = await getDocumentByClient(formik.values.id);
-			console.log(response);
 			setItems(response.list);
 			setLoadingItems(false);
 		} catch (error) {
