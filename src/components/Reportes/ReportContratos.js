@@ -69,7 +69,7 @@ const ReportContratos = ({ items }) => {
 																		slip.arrivalDate,
 																		'YYYY-MM-DD'
 																  ).format(
-																		'DD/MM/YYYY'
+																		'DD-MM-YYYY'
 																  )
 																: ''}
 														</td>
@@ -80,7 +80,7 @@ const ReportContratos = ({ items }) => {
 																		slip.departureDate,
 																		'YYYY-MM-DD'
 																  ).format(
-																		'DD/MM/YYYY'
+																		'DD-MM-YYYY'
 																  )
 																: slip.departureDate}
 														</td>
@@ -91,7 +91,7 @@ const ReportContratos = ({ items }) => {
 																		slip.finalContractDate,
 																		'YYYY-MM-DD'
 																  ).format(
-																		'DD/MM/YYYY'
+																		'DD-MM-YYYY'
 																  )
 																: slip.finalContractDate}
 														</td>

@@ -106,7 +106,7 @@ function NotificationDropdown() {
 																			item.reminderDate,
 																			'YYYY-MM-DD'
 																		).format(
-																			'DD/MM/YYYY'
+																			'DD-MM-YYYY'
 																		)}
 																	</p>
 																	<div className="vr" />

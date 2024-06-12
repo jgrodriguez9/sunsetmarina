@@ -89,7 +89,7 @@ function Notifications() {
 					width: '20%',
 				},
 				Cell: ({ value }) =>
-					moment(value, 'YYYY-MM-DD').format('DD-MM-YYYY'),
+					moment.utc(value).local().format('DD-MM-YYYY'),
 			},
 			{
 				id: 'acciones',

@@ -146,7 +146,7 @@ function CashRegisterControl() {
 					width: '8%',
 				},
 				Cell: ({ value }) =>
-					moment(value, 'YYYY-MM-DDTHH:mm:ss').format('DD-MM-YYYY'),
+					value ? moment.utc(value).local().format('DD-MM-YYYY') : '',
 			},
 			{
 				Header: 'Usuario apertura',
@@ -162,9 +162,12 @@ function CashRegisterControl() {
 					width: '6%',
 				},
 				Cell: ({ row }) =>
-					moment(row.original.openDate, 'YYYY-MM-DDTHH:mm:ss').format(
-						'HH:mm'
-					),
+					row.original.openDate
+						? moment
+								.utc(row.original.openDate)
+								.local()
+								.format('HH:mm')
+						: '',
 			},
 			{
 				Header: 'Usuario cierre',
@@ -181,9 +184,7 @@ function CashRegisterControl() {
 				},
 				Cell: ({ value }) =>
 					value
-						? moment(value, 'YYYY-MM-DDTHH:mm:ss').format(
-								'DD-MM-YYYY HH:mm'
-						  )
+						? moment.utc(value).local().format('DD-MM-YYYY HH:mm')
 						: '',
 			},
 			{

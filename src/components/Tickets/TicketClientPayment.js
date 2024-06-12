@@ -144,7 +144,7 @@ const TicketClientPayment = ({ idPayment, show, toggle = null }) => {
 										text={moment
 											.utc(payment?.dateCreated)
 											.local()
-											.format('DD/MM/YYYY')}
+											.format('DD-MM-YYYY')}
 									/>
 									<SpanControl text="Año del mes de pago" />
 									<SpanControl text={paymentsYears} />

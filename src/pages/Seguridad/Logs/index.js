@@ -121,7 +121,7 @@ function Logs() {
 				},
 			},
 			{
-				Header: 'Acción',
+				Header: 'Operación',
 				accessor: 'action',
 				Cell: ({ value }) => (
 					<Badge
@@ -143,14 +143,14 @@ function Logs() {
 				id: 'data-id',
 				Cell: ({ row, value }) => JSON.parse(row.original.data)?.id,
 				style: {
-					width: '7%',
+					width: '8%',
 				},
 			},
 			{
 				Header: 'Usuario',
 				accessor: 'user.name',
 				style: {
-					width: '12%',
+					width: '15%',
 				},
 			},
 			{
@@ -158,26 +158,20 @@ function Logs() {
 				accessor: 'dateCreated',
 				Cell: ({ value }) =>
 					value
-						? moment(value, 'YYYY-MM-DDTHH:mm:ss').format(
-								'DD/MM/YYYY HH:mm:ss'
-						  )
+						? moment
+								.utc(value)
+								.local()
+								.format('DD-MM-YYYY HH:mm:ss')
 						: '',
 				style: {
-					width: '10%',
+					width: '15%',
 				},
 			},
 			{
 				Header: 'Descripción técnica',
 				accessor: 'data',
 				style: {
-					width: '40%',
-				},
-			},
-			{
-				Header: 'IP',
-				accessor: 'ipAddress',
-				style: {
-					width: '8%',
+					width: '39%',
 				},
 			},
 		],
@@ -219,10 +213,12 @@ function Logs() {
 			<Col xs="12" xl="12">
 				<TableLoader
 					columns={[
-						{ name: 'Descripción', width: '60%' },
+						{ name: 'Modelo', width: '15%' },
+						{ name: 'Operación', width: '8%' },
+						{ name: 'Trace ID', width: '8%' },
 						{ name: 'Usuario', width: '15%' },
 						{ name: 'Fecha', width: '15%' },
-						{ name: 'IP', width: '10%' },
+						{ name: 'Descripción técnica', width: '395%' },
 					]}
 				/>
 			</Col>

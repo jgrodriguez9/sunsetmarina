@@ -73,7 +73,7 @@ const CashMovement = () => {
 					width: '10%',
 				},
 				Cell: ({ value }) =>
-					moment(value, 'YYYY-MM-DDTHH:mm').format('DD-MM-YYYY'),
+					value ? moment.utc(value).local().format('DD-MM-YYYY') : '',
 			},
 			{
 				Header: 'Hora',
@@ -82,13 +82,16 @@ const CashMovement = () => {
 					width: '10%',
 				},
 				Cell: ({ row }) =>
-					moment(row.original.dateCreated, 'YYYY-MM-DDTHH:mm').format(
-						'HH:mm'
-					),
+					row.original.dateCreated
+						? moment
+								.utc(row.original.dateCreated)
+								.local()
+								.format('HH:mm')
+						: '',
 			},
 			{
 				Header: 'Creado por',
-				accessor: 'createdBy',
+				accessor: 'createdBy.name',
 				style: {
 					width: '15%',
 				},

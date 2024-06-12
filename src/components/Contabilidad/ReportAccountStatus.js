@@ -250,7 +250,7 @@ function ReportAccountStatus({ pdfData }) {
 															concept.dateCreated
 														)
 														.local()
-														.format('DD/MM/YYYY')}
+														.format('DD-MM-YYYY')}
 												</Text>
 											</Text>
 											<View style={stylesTable.row2}>
