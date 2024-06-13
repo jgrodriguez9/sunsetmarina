@@ -66,12 +66,7 @@ const ChargesCanvas = ({
 	const [month, setMonth] = useState(null);
 	const [year, setYear] = useState(null);
 	const [isCalculating, setIsCalculating] = useState(false);
-	const [toPay, setToPay] = useState({
-		total: null,
-		totalCalc: null,
-	});
-	const [ediTotal, setEditTotal] = useState(false);
-	const [disabledButton, setDisabledButton] = useState(true);
+	const [totalToPay, setTotalToPay] = useState(null);
 	const [ticket, setTicket] = useState({ idPayment: null });
 	//states para checar caja
 	const [checkCaja, setCheckCaja] = useState({
@@ -112,7 +107,6 @@ const ChargesCanvas = ({
 		if (reservation?.id && open) {
 			setLoading(true);
 			fecthChargesByReservation();
-			setEditTotal(false);
 		}
 	}, [reservation?.id, open]);
 
@@ -127,7 +121,7 @@ const ChargesCanvas = ({
 				.endOf('month')
 				.format('YYYY-MM-DD'),
 			payment: {
-				amount: toPay.total,
+				amount: totalToPay,
 				concept: concept,
 				reference: reference,
 				paymentForm: paymentForm,
@@ -218,18 +212,10 @@ const ChargesCanvas = ({
 					};
 					const response = await getTotalChargeUpdated(data);
 					setIsCalculating(false);
-					setToPay({
-						total: response.totalAmountMXN,
-						totalCalc: response.totalAmountMXN,
-					});
-					setDisabledButton(false);
+					setTotalToPay(response.totalAmountMXN);
 				} else {
 					setIsCalculating(false);
-					setToPay({
-						total: null,
-						totalCalc: null,
-					});
-					setDisabledButton(true);
+					setTotalToPay(null);
 				}
 			} catch (error) {
 				let message = ERROR_SERVER;
@@ -241,25 +227,11 @@ const ChargesCanvas = ({
 					})
 				);
 				setIsCalculating(false);
-				setToPay({
-					total: null,
-					totalCalc: null,
-				});
-				setDisabledButton(true);
+				setTotalToPay(null);
 			}
 		}
 		getTotalToPay();
-	}, [month, year, charge, finalizarReserva, dispatch, reservation.id]);
-
-	const toggleEditTotal = () => {
-		setEditTotal(!ediTotal);
-		if (!ediTotal) {
-			setToPay((prev) => ({
-				...prev,
-				total: prev.totalCalc,
-			}));
-		}
-	};
+	}, [month, year, charge, finalizarReserva, dispatch]);
 	return (
 		<Offcanvas
 			isOpen={open}
@@ -493,77 +465,6 @@ const ChargesCanvas = ({
 										<div className="d-flex justify-content-between align-items-center mt-5">
 											<div>
 												<span>
-													<strong>Subtotal</strong>
-												</span>
-											</div>
-											<div>
-												{isCalculating ? (
-													<SpinLoader />
-												) : (
-													<h4 className="text-secondary m-0">
-														{toPay.totalCalc
-															? numberFormat(
-																	toPay.totalCalc
-															  )
-															: '-'}
-													</h4>
-												)}
-											</div>
-										</div>
-										<div className="d-flex justify-content-between align-items-center">
-											<div>
-												<span>
-													<strong>Interés</strong>
-												</span>
-											</div>
-											<div>
-												{isCalculating ? (
-													<SpinLoader />
-												) : (
-													<>
-														<h4 className="text-secondary m-0 text-end">
-															{toPay.totalCalc
-																? numberFormat(
-																		0
-																  )
-																: '-'}
-														</h4>
-														<div className="text-end">
-															<Input
-																id="enabled"
-																name="enabled"
-																type="checkbox"
-																className={`form-check-Input form-check-input`}
-																disabled={
-																	charge.length !==
-																	chargesToPay.length
-																}
-																checked={
-																	finalizarReserva
-																}
-																onChange={(e) =>
-																	onHandleChangeFinalizarReserva(
-																		e.target
-																			.checked
-																	)
-																}
-															/>
-															<Label
-																htmlFor={`enabled`}
-																className="mb-0 ms-1 text-secondary"
-															>
-																Condonar
-																intereses
-															</Label>
-														</div>
-													</>
-												)}
-											</div>
-										</div>
-										<hr />
-										<div className="d-flex justify-content-between align-items-center">
-											<div>
-												<span>
 													<strong>Total</strong>
 												</span>
 											</div>
@@ -571,59 +472,13 @@ const ChargesCanvas = ({
 												{isCalculating ? (
 													<SpinLoader />
 												) : (
-													<>
-														{ediTotal ? (
-															<div className="position-relative text-end">
-																<input
-																	className="border px-3 py-2 text-primary fw-semibold fs-4 w-50"
-																	value={
-																		toPay.total
-																	}
-																	type="number"
-																	onChange={(
-																		e
-																	) =>
-																		setToPay(
-																			(
-																				prev
-																			) => ({
-																				...prev,
-																				total: e
-																					.target
-																					.value,
-																			})
-																		)
-																	}
-																/>
-																<i
-																	className="mdi mdi-close-circle-outline text-danger position-absolute"
-																	style={{
-																		fontSize:
-																			'24px',
-																		top: '50%',
-																		transform:
-																			'translateY(-50%)',
-																	}}
-																	onClick={
-																		toggleEditTotal
-																	}
-																/>
-															</div>
-														) : (
-															<h3
-																className="text-primary m-0"
-																onClick={
-																	toggleEditTotal
-																}
-															>
-																{toPay.totalCalc
-																	? numberFormat(
-																			toPay.totalCalc
-																	  )
-																	: '-'}
-															</h3>
-														)}
-													</>
+													<h3 className="text-primary m-0">
+														{totalToPay
+															? numberFormat(
+																	totalToPay
+															  )
+															: '-'}
+													</h3>
 												)}
 											</div>
 										</div>
@@ -653,9 +508,8 @@ const ChargesCanvas = ({
 														color="primary"
 														className="fs-4"
 														disabled={
-															toPay.total <= 0 ||
-															!paymentForm ||
-															disabledButton
+															totalToPay <= 0 ||
+															!paymentForm
 														}
 														block
 														onClick={

@@ -6,7 +6,7 @@ import { redirect } from 'react-router-dom';
 const { dispatch } = store;
 //const API_URL =	'https://1c6c-2806-2f0-8560-d1eb-50be-9c5f-64a7-62d6.ngrok-free.app/sign';
 const API_URL = 'https://apiadmiral.sunset.com.mx/sign';
-//const API_URL = 'https://apiadmiral-prod.sunset.com.mx/sign';
+// const API_URL = 'https://apiadmiral-prod.sunset.com.mx/sign';
 
 const axiosApi = axios.create({
 	baseURL: API_URL,

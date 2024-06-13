@@ -257,7 +257,7 @@ export const navigations = [
 			},
 			{
 				id: 'ingresos',
-				label: 'Reporte cobranza reservaciones',
+				label: 'Reporte de ingresos',
 				route: '/incomereport',
 				classIcon: null,
 				show: existsRole(roles, [
