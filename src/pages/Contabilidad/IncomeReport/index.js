@@ -398,8 +398,8 @@ function IncomeReport() {
 		<div className="page-content">
 			<Container fluid>
 				<Breadcrumbs
-					title={'Reporte de Ingresos'}
-					breadcrumbItem={'Reporte de Ingresos'}
+					title={'Reporte cobranza reservaciones'}
+					breadcrumbItem={'Reporte cobranza reservaciones'}
 				/>
 
 				<Row className="pb-2">
@@ -410,7 +410,7 @@ function IncomeReport() {
 				<Row className="pb-5">
 					<Col lg="12">
 						<CardMain
-							title="Reporte de ingresos"
+							title="Reporte cobranza reservaciones"
 							children={carHandleEstadoCuenta}
 						/>
 					</Col>

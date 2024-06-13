@@ -7,10 +7,16 @@ const ReportContratos = ({ items }) => {
 	const getDeuda = useCallback((charges, payments, currency) => {
 		if (currency === 'MXN') {
 			const deudaMXN = charges.amount - payments.amount;
-			return jsFormatNumber(deudaMXN);
+			return {
+				total: deudaMXN,
+				totalFormat: jsFormatNumber(deudaMXN),
+			};
 		} else {
 			const deudaUSD = charges.amountUSD - payments.amountUSD;
-			return jsFormatNumber(deudaUSD);
+			return {
+				total: deudaUSD,
+				totalFormat: jsFormatNumber(deudaUSD),
+			};
 		}
 	}, []);
 	return (
@@ -105,19 +111,43 @@ const ReportContratos = ({ items }) => {
 																slip.monthRental
 															)}
 														</td>
-														<td>
-															{getDeuda(
-																slip.charges,
-																slip.payments,
-																'MXN'
-															)}
+														<td
+															className={
+																getDeuda(
+																	slip.charges,
+																	slip.payments,
+																	'MXN'
+																).total > 0
+																	? 'text-danger fw-semibold'
+																	: ''
+															}
+														>
+															{
+																getDeuda(
+																	slip.charges,
+																	slip.payments,
+																	'MXN'
+																).totalFormat
+															}
 														</td>
-														<td>
-															{getDeuda(
-																slip.charges,
-																slip.payments,
-																'USD'
-															)}
+														<td
+															className={
+																getDeuda(
+																	slip.charges,
+																	slip.payments,
+																	'USD'
+																).total > 0
+																	? 'text-danger fw-semibold'
+																	: ''
+															}
+														>
+															{
+																getDeuda(
+																	slip.charges,
+																	slip.payments,
+																	'USD'
+																).totalFormat
+															}
 														</td>
 													</tr>
 												)
