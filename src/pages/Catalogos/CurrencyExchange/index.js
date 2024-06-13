@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { Col, Container, Row } from 'reactstrap';
 import Breadcrumbs from '../../../components/Common/Breadcrumbs';
 import CardBasic from '../../../components/Common/CardBasic';
@@ -20,6 +19,8 @@ import EditableTable from '../../../components/Tables/EditableTable';
 import DialogMain from '../../../components/Common/DialogMain';
 import FormCurrencyExchange from '../../../components/Catalogo/Moneda/FormCurrencyExchange';
 import ContentLoader from '../../../components/Loader/ContentLoader';
+import jsFormatNumber from '../../../utils/jsFormatNumber';
+import { numberFormat } from '../../../utils/numberFormat';
 
 function CurrencyExchange() {
 	const dispatch = useDispatch();
@@ -107,6 +108,20 @@ function CurrencyExchange() {
 		);
 	};
 
+	const TableDifference = ({ getValue, row, column, table }) => {
+		return (
+			<span
+				className={
+					getValue() > 0
+						? 'text-danger fw-semibold'
+						: 'text-success fw-semibold'
+				}
+			>
+				{numberFormat(getValue())}
+			</span>
+		);
+	};
+
 	const columns = useMemo(
 		() => [
 			{
@@ -169,6 +184,7 @@ function CurrencyExchange() {
 				style: {
 					width: '10%',
 				},
+				cell: TableDifference,
 			},
 		],
 		[]

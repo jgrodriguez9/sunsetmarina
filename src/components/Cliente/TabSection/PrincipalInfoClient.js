@@ -180,7 +180,7 @@ export default function PrincipalInfoClient({ formik, item, setFile }) {
 				</Row>
 				<Row className="align-items-center mb-2">
 					<Label htmlFor="balance" className="mb-0 col-md-3 col-12">
-						Balance
+						Balance pase de abordar
 					</Label>
 					<div className="col-md-9 col-12">
 						<Input
