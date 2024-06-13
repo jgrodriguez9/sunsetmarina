@@ -178,6 +178,14 @@ function BoardingPass() {
 				),
 			},
 			{
+				Header: 'Saldo cliente',
+				accessor: 'customerBalance',
+				style: {
+					width: '9%',
+				},
+				Cell: ({ value }) => numberFormat(value),
+			},
+			{
 				Header: 'Fecha salida',
 				accessor: 'departureDate',
 				style: {
