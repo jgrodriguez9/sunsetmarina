@@ -178,7 +178,7 @@ function BoardingPass() {
 				),
 			},
 			{
-				Header: 'Saldo cliente',
+				Header: 'Abono cliente',
 				accessor: 'customerBalance',
 				style: {
 					width: '9%',
