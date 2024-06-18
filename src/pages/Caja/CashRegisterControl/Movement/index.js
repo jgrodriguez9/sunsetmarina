@@ -48,7 +48,7 @@ const CashMovement = () => {
 				Header: 'Caja',
 				accessor: 'cashRegister.description',
 				style: {
-					width: '30%',
+					width: '12%',
 				},
 			},
 			{
@@ -97,8 +97,24 @@ const CashMovement = () => {
 				},
 			},
 			{
-				Header: 'Monto',
+				Header: 'Monto (USD)',
+				accessor: 'amountUSD',
+				style: {
+					width: '9%',
+				},
+				Cell: ({ value }) => numberFormat(value),
+			},
+			{
+				Header: 'Monto (MXN)',
 				accessor: 'amount',
+				style: {
+					width: '9%',
+				},
+				Cell: ({ value }) => numberFormat(value),
+			},
+			{
+				Header: 'Tipo cambio',
+				accessor: 'currencyExchange',
 				style: {
 					width: '10%',
 				},
@@ -113,13 +129,15 @@ const CashMovement = () => {
 			<Col xs="12" xl="12">
 				<TableLoader
 					columns={[
-						{ name: 'Caja', width: '30%' },
+						{ name: 'Caja', width: '14%' },
 						{ name: 'Concepto', width: '15%' },
 						{ name: 'Tipo operación', width: '10%' },
 						{ name: 'Fecha', width: '10%' },
 						{ name: 'Hora', width: '10%' },
 						{ name: 'Creado por', width: '15%' },
-						{ name: 'Monto', width: '10%' },
+						{ name: 'Monto (USD)', width: '8%' },
+						{ name: 'Monto (MXN)', width: '8%' },
+						{ name: 'Tipo cambio', width: '10%' },
 					]}
 				/>
 			</Col>

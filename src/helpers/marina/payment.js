@@ -10,6 +10,8 @@ const getPaymentListPaginado = (query) => get(`${url.payment}${query}`);
 const savePayment = (data) => post(url.payment, data);
 const cancelPayment = (id, data) =>
 	put(`${url.payment}/cancelPayment/${id}`, data);
+const addSaldo = (data) =>
+	post(`${url.payment}/savePaymentBalanceBoardingPass`, data);
 
 export {
 	getPaymentList,
@@ -18,4 +20,5 @@ export {
 	savePayment,
 	getPaymentByClient,
 	cancelPayment,
+	addSaldo,
 };

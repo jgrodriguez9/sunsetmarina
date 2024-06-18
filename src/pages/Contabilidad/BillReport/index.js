@@ -2,7 +2,7 @@ import { Button, Col, Container, Row } from 'reactstrap';
 import Breadcrumbs from '../../../components/Common/Breadcrumbs';
 import CardBasic from '../../../components/Common/CardBasic';
 import FormFilter from '../../../components/Common/FormFilter';
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import CardMain from '../../../components/Common/CardMain';
 import { reportCollection } from '../../../helpers/reports/accountStatus';
 import { ERROR_SERVER } from '../../../constants/messages';
@@ -15,6 +15,7 @@ import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import moment from 'moment';
 import jsFormatNumber from '../../../utils/jsFormatNumber';
+import { getClientList } from '../../../helpers/marina/client';
 
 function BillReport() {
 	const dispatch = useDispatch();
@@ -39,7 +40,33 @@ function BillReport() {
 			value: '',
 			valueDate: '',
 		},
+		{
+			label: 'Cliente',
+			field: 'customer',
+			width: 4,
+			control: 'select',
+			type: '',
+			value: '',
+			valueSelect: null,
+			options: [],
+		},
 	]);
+
+	const fetchClientsApi = async () => {
+		try {
+			const response = await getClientList();
+			const copyFilters = [...filters];
+			copyFilters[2].options = response.map((c) => ({
+				label: `${c.name} ${c.lastName}`,
+				value: c.id,
+			}));
+			setFilters(copyFilters);
+		} catch (error) {}
+	};
+
+	useEffect(() => {
+		fetchClientsApi();
+	}, []);
 
 	const fireSearch = async (filts, isClean) => {
 		if (isClean) {

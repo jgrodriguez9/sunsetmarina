@@ -50,7 +50,7 @@ const CashSummary = () => {
 				Header: 'Concepto',
 				accessor: 'description',
 				style: {
-					width: '50%',
+					width: '30%',
 				},
 			},
 			{
@@ -62,8 +62,16 @@ const CashSummary = () => {
 				Cell: ({ value }) => (value === 'IN' ? 'Entrada' : 'Salida'),
 			},
 			{
-				Header: 'Monto',
+				Header: 'Monto (MXN)',
 				accessor: 'amount',
+				style: {
+					width: '20%',
+				},
+				Cell: ({ value }) => numberFormat(value),
+			},
+			{
+				Header: 'Monto (USD)',
+				accessor: 'amountUSD',
 				style: {
 					width: '20%',
 				},
@@ -79,12 +87,19 @@ const CashSummary = () => {
 			0
 		);
 	}, [itemsByPaymentType]);
+	const totalPaymentTypeUSD = useMemo(() => {
+		return itemsByPaymentType.reduce(
+			(acc, current) => acc + current.amountUSD,
+			0
+		);
+	}, [itemsByPaymentType]);
 
 	const tFooterPaymentType = (
 		<tfoot>
 			<tr>
 				<th colSpan={2}>Total</th>
 				<th>{numberFormat(totalPaymentType)}</th>
+				<th>{numberFormat(totalPaymentTypeUSD)}</th>
 			</tr>
 		</tfoot>
 	);
@@ -94,9 +109,10 @@ const CashSummary = () => {
 			<Col xs="12" xl="12">
 				<TableLoader
 					columns={[
-						{ name: 'Concepto', width: '50%' },
+						{ name: 'Concepto', width: '30%' },
 						{ name: 'Tipo operación', width: '30%' },
-						{ name: 'Monto', width: '20%' },
+						{ name: 'Monto (MXN)', width: '20%' },
+						{ name: 'Monto (USD)', width: '20%' },
 					]}
 				/>
 			</Col>
@@ -116,11 +132,18 @@ const CashSummary = () => {
 	const totalConcept = useMemo(() => {
 		return itemsByConcept.reduce((acc, current) => acc + current.amount, 0);
 	}, [itemsByConcept]);
+	const totalConceptUSD = useMemo(() => {
+		return itemsByConcept.reduce(
+			(acc, current) => acc + current.amountUSD,
+			0
+		);
+	}, [itemsByConcept]);
 	const tFooterConcept = (
 		<tfoot>
 			<tr>
 				<th colSpan={2}>Total</th>
 				<th>{numberFormat(totalConcept)}</th>
+				<th>{numberFormat(totalConceptUSD)}</th>
 			</tr>
 		</tfoot>
 	);
@@ -129,9 +152,10 @@ const CashSummary = () => {
 			<Col xs="12" xl="12">
 				<TableLoader
 					columns={[
-						{ name: 'Concepto', width: '50%' },
+						{ name: 'Concepto', width: '30%' },
 						{ name: 'Tipo operación', width: '30%' },
-						{ name: 'Monto', width: '20%' },
+						{ name: 'Monto (MXN)', width: '20%' },
+						{ name: 'Monto (USD)', width: '20%' },
 					]}
 				/>
 			</Col>

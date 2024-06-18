@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { Col, Container, Row, Button } from 'reactstrap';
 import { useDispatch } from 'react-redux';
 import Breadcrumbs from '../../../components/Common/Breadcrumbs';
@@ -17,6 +17,7 @@ import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import moment from 'moment';
 import { getFormaPago } from '../../../utils/getFormaPago';
+import { getClientList } from '../../../helpers/marina/client';
 
 function IncomeReport() {
 	const dispatch = useDispatch();
@@ -42,7 +43,32 @@ function IncomeReport() {
 			value: '',
 			valueDate: '',
 		},
+		{
+			label: 'Cliente',
+			field: 'customer',
+			width: 4,
+			control: 'select',
+			type: '',
+			value: '',
+			valueSelect: null,
+			options: [],
+		},
 	]);
+	const fetchClientsApi = async () => {
+		try {
+			const response = await getClientList();
+			const copyFilters = [...filters];
+			copyFilters[2].options = response.map((c) => ({
+				label: `${c.name} ${c.lastName}`,
+				value: c.id,
+			}));
+			setFilters(copyFilters);
+		} catch (error) {}
+	};
+
+	useEffect(() => {
+		fetchClientsApi();
+	}, []);
 
 	const fireSearch = async (filts, isClean) => {
 		if (isClean) {

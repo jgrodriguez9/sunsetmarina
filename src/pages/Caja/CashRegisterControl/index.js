@@ -136,7 +136,7 @@ function CashRegisterControl() {
 				Header: 'Caja',
 				accessor: 'cashRegister.description',
 				style: {
-					width: '9%',
+					width: '7%',
 				},
 			},
 			{
@@ -152,7 +152,7 @@ function CashRegisterControl() {
 				Header: 'Usuario apertura',
 				accessor: 'createdBy.name',
 				style: {
-					width: '14%',
+					width: '12%',
 				},
 			},
 			{
@@ -173,7 +173,7 @@ function CashRegisterControl() {
 				Header: 'Usuario cierre',
 				accessor: 'closedBy.name',
 				style: {
-					width: '14%',
+					width: '12%',
 				},
 			},
 			{
@@ -191,7 +191,7 @@ function CashRegisterControl() {
 				Header: 'Usuario aprobó',
 				accessor: 'approvedBy.name',
 				style: {
-					width: '14%',
+					width: '13%',
 				},
 			},
 			{
@@ -203,8 +203,16 @@ function CashRegisterControl() {
 				Cell: ({ value }) => numberFormat(value),
 			},
 			{
-				Header: 'Monto',
+				Header: 'Monto (MXN)',
 				accessor: 'amount',
+				style: {
+					width: '7%',
+				},
+				Cell: ({ value }) => numberFormat(value),
+			},
+			{
+				Header: 'Monto (USD)',
+				accessor: 'amountUSD',
 				style: {
 					width: '7%',
 				},
@@ -363,15 +371,16 @@ function CashRegisterControl() {
 			<Col xs="12" xl="12">
 				<TableLoader
 					columns={[
-						{ name: 'Caja', width: '9%' },
+						{ name: 'Caja', width: '7%' },
 						{ name: 'Fecha', width: '8%' },
-						{ name: 'Usuario de apertura', width: '14%' },
+						{ name: 'Usuario de apertura', width: '12%' },
 						{ name: 'Hora apertura', width: '6%' },
-						{ name: 'Usuario cierre', width: '14%' },
+						{ name: 'Usuario cierre', width: '13%' },
 						{ name: 'Fecha cierre', width: '12%' },
-						{ name: 'Usuario aprobó', width: '14%' },
+						{ name: 'Usuario aprobó', width: '12%' },
 						{ name: 'Monto inicial', width: '6%' },
-						{ name: 'Monto total', width: '7%' },
+						{ name: 'Monto (MXN)', width: '7%' },
+						{ name: 'Monto (USD)', width: '7%' },
 						{ name: 'Acciones', width: '10%' },
 					]}
 				/>

@@ -19,3 +19,4 @@ export const UPDATE_PRICE_SUCCESS = 'Actualizado precio correctamente!';
 export const FIELD_GREATER_THAN_CERO = 'Campo debe ser mayor a cero';
 export const NOT_CASH_REGISTER_ASSIGN =
 	'No tienes ningún turno abierto, ve a control de cajas e inicia un turno.';
+export const ADD_BALANCE = 'Monto agregado correctamente';

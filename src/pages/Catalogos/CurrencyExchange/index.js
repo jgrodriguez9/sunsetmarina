@@ -19,7 +19,6 @@ import EditableTable from '../../../components/Tables/EditableTable';
 import DialogMain from '../../../components/Common/DialogMain';
 import FormCurrencyExchange from '../../../components/Catalogo/Moneda/FormCurrencyExchange';
 import ContentLoader from '../../../components/Loader/ContentLoader';
-import jsFormatNumber from '../../../utils/jsFormatNumber';
 import { numberFormat } from '../../../utils/numberFormat';
 
 function CurrencyExchange() {
@@ -176,6 +175,7 @@ function CurrencyExchange() {
 				style: {
 					width: '10%',
 				},
+				cell: ({ getValue }) => numberFormat(getValue()),
 			},
 			{
 				id: 'difference',

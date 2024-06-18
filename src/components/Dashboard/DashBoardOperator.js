@@ -8,6 +8,7 @@ import moment from 'moment';
 import { paymentAnalytics, slipAnalytics } from '../../helpers/dashobard/stats';
 import { defaultOpt } from '../../constants/chartOptions';
 import jsFormatNumber from '../../utils/jsFormatNumber';
+import CustomerWithDebts from './CustomerWithDebts';
 
 const DashBoardOperator = () => {
 	const [indicator, setIndicator] = useState({
@@ -177,6 +178,11 @@ const DashBoardOperator = () => {
 						revenueFilter={revenueFilter}
 						setRevenueFilter={setRevenueFilter}
 					/>
+				</Col>
+			</Row>
+			<Row>
+				<Col>
+					<CustomerWithDebts />
 				</Col>
 			</Row>
 		</>

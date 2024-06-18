@@ -2,7 +2,7 @@ import { Button, Col, Container, Row } from 'reactstrap';
 import Breadcrumbs from '../../../components/Common/Breadcrumbs';
 import CardBasic from '../../../components/Common/CardBasic';
 import FormFilter from '../../../components/Common/FormFilter';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import CardMain from '../../../components/Common/CardMain';
 import { useDispatch } from 'react-redux';
 import { reportDocktaxBill } from '../../../helpers/reports/accountStatus';
@@ -15,6 +15,8 @@ import { numberFormat } from '../../../utils/numberFormat';
 import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import moment from 'moment';
+import { getClientList } from '../../../helpers/marina/client';
+import { getBoatList } from '../../../helpers/marina/boat';
 
 function DockTaxBill() {
 	const dispatch = useDispatch();
@@ -40,7 +42,54 @@ function DockTaxBill() {
 			value: '',
 			valueDate: '',
 		},
+		{
+			label: 'Cliente',
+			field: 'customer',
+			width: 3,
+			control: 'select',
+			type: '',
+			value: '',
+			valueSelect: null,
+			options: [],
+		},
+		{
+			label: 'Embarcación',
+			field: 'boat',
+			width: 3,
+			control: 'select',
+			type: '',
+			value: '',
+			valueSelect: null,
+			options: [],
+		},
 	]);
+	const fetchClientsApi = async () => {
+		try {
+			const response = await getClientList();
+			const copyFilters = [...filters];
+			copyFilters[2].options = response.map((c) => ({
+				label: `${c.name} ${c.lastName}`,
+				value: c.id,
+			}));
+			setFilters(copyFilters);
+		} catch (error) {}
+	};
+	const fetchBoats = async () => {
+		try {
+			const response = await getBoatList();
+			const copyFilters = [...filters];
+			copyFilters[3].options = response.map((boat) => ({
+				label: boat.name,
+				value: boat.id,
+			}));
+			setFilters(copyFilters);
+		} catch (error) {}
+	};
+
+	useEffect(() => {
+		fetchClientsApi();
+		fetchBoats();
+	}, []);
 	const fireSearch = async (filts, isClean) => {
 		if (isClean) {
 			setItems([]);
