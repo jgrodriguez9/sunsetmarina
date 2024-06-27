@@ -132,6 +132,7 @@ export default function DockImage() {
 			fetchItemsForClientApi();
 		}
 	}, [boatId, customActiveTab, customerId]);
+	console.log(slipInfo);
 	const children = (
 		<Row>
 			<Col xs="12" md="12">
@@ -357,8 +358,8 @@ export default function DockImage() {
 				slip.status !== 'AVAILABLE' && slip?.reservations.length > 0
 					? `${
 							slip?.reservations[slip?.reservations.length - 1]
-								?.debt
-					  } ${slip?.reservations[0].debt}`
+								?.debt?.debt
+					  }`
 					: null,
 			embarcacion:
 				slip.status !== 'AVAILABLE'

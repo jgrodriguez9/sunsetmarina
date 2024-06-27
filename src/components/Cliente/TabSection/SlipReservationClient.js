@@ -10,7 +10,7 @@ import {
 } from '../../../constants/messages';
 import extractMeaningfulMessage from '../../../utils/extractMeaningfulMessage';
 import { addMessage } from '../../../redux/messageSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import TableLoader from '../../Loader/TablaLoader';
 import moment from 'moment';
 import CellActions from '../../Tables/CellActions';
@@ -22,9 +22,12 @@ import FormSlipReservationClient from '../../Marina/SlipReservation/FormSlipRese
 import { numberFormat } from '../../../utils/numberFormat';
 import ChargesCanvas from '../ChargesCanvas';
 import ContentLoader from '../../Loader/ContentLoader';
+import { ROLE_ADMINISTRACION, ROLE_COMPANIA } from '../../../constants/roles';
+import FormCancelReservation from './FormCancelReservation';
 
 export default function SlipReservationClient({ formik }) {
 	const dispatch = useDispatch();
+	const user = useSelector((state) => state.user);
 	const [loadingItems, setLoadingItems] = useState(true);
 	const [openModalAdd, setOpenModalAdd] = useState(false);
 	const [items, setItems] = useState([]);
@@ -32,6 +35,8 @@ export default function SlipReservationClient({ formik }) {
 	const [selectedReservation, setSelectedReservation] = useState(null);
 	const [openCharges, setOpenCharges] = useState(false);
 	const [openModalCancel, setOpenModalCancel] = useState(false);
+	const [openModalCancelReservation, setOpenModalCancelReservation] =
+		useState(false);
 	const [isCancel, setIsCancel] = useState(false);
 	const [item, setItem] = useState({
 		customer: { id: formik.values.id },
@@ -160,7 +165,7 @@ export default function SlipReservationClient({ formik }) {
 				Header: 'Estado',
 				accessor: 'status',
 				style: {
-					width: '10%',
+					width: '7%',
 				},
 				Cell: ({ value }) => {
 					if (value === 'PENDING') {
@@ -199,20 +204,39 @@ export default function SlipReservationClient({ formik }) {
 											action: handleShowDialogCharge,
 									  }
 							}
+							cancelReservation={
+								row.original.status === 'CANCELLED'
+									? null
+									: {
+											allow:
+												user.roles.includes(
+													ROLE_ADMINISTRACION
+												) ||
+												user.roles.includes(
+													ROLE_COMPANIA
+												),
+											action: handleShowDialogCancelReservation,
+									  }
+							}
 							row={row}
 						/>
 					</>
 				),
 				style: {
-					width: '10%',
+					width: '13%',
 				},
 			},
 		],
-		[]
+		[user.roles]
 	);
 
 	const handleShowDialogCancel = (row) => {
 		setOpenModalCancel(true);
+		setSelectedReservation(row.original);
+	};
+
+	const handleShowDialogCancelReservation = (row) => {
+		setOpenModalCancelReservation(true);
 		setSelectedReservation(row.original);
 	};
 
@@ -289,6 +313,11 @@ export default function SlipReservationClient({ formik }) {
 		}
 	};
 
+	const handleCancelReservation = async (values) => {
+		console.log(selectedReservation);
+		console.log(values);
+	};
+
 	return (
 		<>
 			<TabActionHeader
@@ -360,6 +389,18 @@ export default function SlipReservationClient({ formik }) {
 									handleCancelar
 							  )
 						: null
+				}
+			/>
+
+			<DialogMain
+				open={openModalCancelReservation}
+				setOpen={setOpenModalCancelReservation}
+				title={'Cancelar reservación'}
+				size="md"
+				children={
+					<FormCancelReservation
+						handleCancelReservation={handleCancelReservation}
+					/>
 				}
 			/>
 		</>
