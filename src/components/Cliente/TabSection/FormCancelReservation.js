@@ -4,7 +4,7 @@ import { Button, Col, Form, Label, Row } from 'reactstrap';
 import { FIELD_REQUIRED } from '../../../constants/messages';
 import ButtonsDisabled from '../../Common/ButtonsDisabled';
 
-const FormCancelReservation = ({ handleCancelReservation }) => {
+const FormCancelReservation = ({ handleCancelReservation, isSubmitting }) => {
 	const formik = useFormik({
 		initialValues: {
 			reason: '',
@@ -43,7 +43,7 @@ const FormCancelReservation = ({ handleCancelReservation }) => {
 				</Col>
 			</Row>
 			<hr />
-			{formik.isSubmitting ? (
+			{isSubmitting ? (
 				<ButtonsDisabled
 					buttons={[
 						{

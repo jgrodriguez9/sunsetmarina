@@ -15,6 +15,7 @@ import TableLoader from '../../Loader/TablaLoader';
 import moment from 'moment';
 import CellActions from '../../Tables/CellActions';
 import {
+	cancelReservation,
 	getSlipReservationByClient,
 	updateReservation,
 } from '../../../helpers/marina/slipReservation';
@@ -41,6 +42,7 @@ export default function SlipReservationClient({ formik }) {
 	const [item, setItem] = useState({
 		customer: { id: formik.values.id },
 	});
+	const [isCancelingReservation, setIsCancelingReservation] = useState(false);
 	const addNewModal = () => {
 		setItem({ customer: { id: formik.values.id } });
 		setOpenModalAdd(true);
@@ -314,8 +316,39 @@ export default function SlipReservationClient({ formik }) {
 	};
 
 	const handleCancelReservation = async (values) => {
-		console.log(selectedReservation);
-		console.log(values);
+		setIsCancelingReservation(true);
+		try {
+			const query = `id=${selectedReservation.id}&reason=${values.reason}`;
+			const response = await cancelReservation(query);
+			if (response) {
+				setIsCancelingReservation(false);
+				setRefetch(true);
+				setOpenModalCancelReservation(false);
+				dispatch(
+					addMessage({
+						message: CANCEL_RESERVATION_SUCCESS,
+						type: 'success',
+					})
+				);
+			} else {
+				dispatch(
+					addMessage({
+						type: 'error',
+						message: ERROR_SERVER,
+					})
+				);
+			}
+		} catch (error) {
+			let message = ERROR_SERVER;
+			message = extractMeaningfulMessage(error, message);
+			dispatch(
+				addMessage({
+					message: message,
+					type: 'error',
+				})
+			);
+			setIsCancelingReservation(false);
+		}
 	};
 
 	return (
@@ -400,6 +433,7 @@ export default function SlipReservationClient({ formik }) {
 				children={
 					<FormCancelReservation
 						handleCancelReservation={handleCancelReservation}
+						isSubmitting={isCancelingReservation}
 					/>
 				}
 			/>

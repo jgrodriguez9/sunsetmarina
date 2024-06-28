@@ -6,6 +6,8 @@ import { Button, Col, Form, Input, Label, Row } from 'reactstrap';
 import * as Yup from 'yup';
 import {
 	ERROR_SERVER,
+	FIELD_INTEGER,
+	FIELD_NUMERIC,
 	FIELD_REQUIRED,
 	SAVE_SUCCESS,
 	UPDATE_SUCCESS,
@@ -49,11 +51,18 @@ export default function FormCompania({ item, btnTextSubmit = 'Aceptar' }) {
 			enabled: item?.enabled ?? true,
 			braceletInventoryLeft: item?.braceletInventoryLeft ?? 0,
 			boardingPassPrice: item?.boardingPassPrice ?? 5,
+			interestPercentage: item?.interestPercentage ?? 10,
 		},
 		validationSchema: Yup.object({
 			name: Yup.string().required(FIELD_REQUIRED),
 			boardingPassPrice: Yup.number().required(FIELD_REQUIRED),
 			braceletInventoryLeft: Yup.number(),
+			interestPercentage: Yup.number()
+				.integer(FIELD_INTEGER)
+				.typeError(FIELD_NUMERIC)
+				.required(FIELD_REQUIRED)
+				.max(100, 'Campo no puede ser mayor a 100')
+				.min(0, 'Campo no puede ser menor a 0'),
 		}),
 		onSubmit: async (values) => {
 			//validaciones antes de enviarlo
@@ -323,6 +332,25 @@ export default function FormCompania({ item, btnTextSubmit = 'Aceptar' }) {
 						onChange={formik.handleChange}
 						value={formik.values.address}
 					/>
+				</Col>
+				<Col xs="12" md="4">
+					<Label htmlFor="boardingPassPrice" className="mb-0">
+						Porcentaje de interés
+					</Label>
+					<Input
+						id="interestPercentage"
+						name="interestPercentage"
+						className={`form-control ${
+							formik.errors.interestPercentage ? 'is-invalid' : ''
+						}`}
+						onChange={formik.handleChange}
+						value={formik.values.interestPercentage}
+					/>
+					{formik.errors.interestPercentage && (
+						<div className="invalid-tooltip">
+							{formik.errors.interestPercentage}
+						</div>
+					)}
 				</Col>
 			</Row>
 			<hr />
