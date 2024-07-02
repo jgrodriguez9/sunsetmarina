@@ -132,7 +132,6 @@ export default function DockImage() {
 			fetchItemsForClientApi();
 		}
 	}, [boatId, customActiveTab, customerId]);
-	console.log(slipInfo);
 	const children = (
 		<Row>
 			<Col xs="12" md="12">

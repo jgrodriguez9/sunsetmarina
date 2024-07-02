@@ -21,7 +21,7 @@ export default function ChartAnalisisRenta({ title, salesIndicator }) {
 
 				<div className="text-center text-muted">
 					<Row>
-						<Col xs="4">
+						<Col xs="6">
 							<div className="mt-4">
 								<p className="mb-2 text-truncate">
 									<i className="mdi mdi-circle text-success me-1" />{' '}
@@ -32,7 +32,7 @@ export default function ChartAnalisisRenta({ title, salesIndicator }) {
 								</h5>
 							</div>
 						</Col>
-						<Col xs="4">
+						<Col xs="6">
 							<div className="mt-4">
 								<p className="mb-2 text-truncate">
 									<i className="mdi mdi-circle text-danger me-1" />{' '}
@@ -40,17 +40,6 @@ export default function ChartAnalisisRenta({ title, salesIndicator }) {
 								</p>
 								<h5 className="text-danger">
 									{salesIndicator?.series[1]}%
-								</h5>
-							</div>
-						</Col>
-						<Col xs="4">
-							<div className="mt-4">
-								<p className="mb-2 text-truncate">
-									<i className="mdi mdi-circle text-warning me-1" />{' '}
-									Bloqueados
-								</p>
-								<h5 className="text-warning">
-									{salesIndicator?.series[2]}%
 								</h5>
 							</div>
 						</Col>
