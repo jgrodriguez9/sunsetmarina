@@ -1,5 +1,6 @@
 //AUTH
 export const POST_LOGIN = '/login';
+export const POST_LOGOUT = '/logout';
 export const GET_USER_LOGUED = '/user';
 
 //Boad Type

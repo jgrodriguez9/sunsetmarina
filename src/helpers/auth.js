@@ -13,4 +13,12 @@ const getUserLoguedInfo = () => get(`${url.GET_USER_LOGUED}/info`);
 //loginf sign para soportec
 const postSignInSoportec = (data) => postSign(url.POST_LOGIN, data);
 
-export { postJwtLogin, getUserLogued, postSignInSoportec, getUserLoguedInfo };
+const postLogout = () => post(url.POST_LOGOUT);
+
+export {
+	postJwtLogin,
+	getUserLogued,
+	postSignInSoportec,
+	getUserLoguedInfo,
+	postLogout,
+};
