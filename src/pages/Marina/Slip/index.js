@@ -38,7 +38,7 @@ function Slip() {
 	const [filters, setFilters] = useState([
 		{
 			label: 'Número',
-			field: 'number',
+			field: 'code',
 			width: 3,
 			control: 'input',
 			type: 'text',
