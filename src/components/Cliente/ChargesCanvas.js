@@ -34,6 +34,7 @@ import TooltipDescription from '../Common/TooltipDescription';
 import { monthsOpt, yearsOpt } from '../../constants/dates';
 import { hasCashRegisterAssign } from '../../helpers/caja/boardingPass';
 import SimpleLoad from '../Loader/SimpleLoad';
+import jsFormatNumber from '../../utils/jsFormatNumber';
 moment.locale('es');
 
 const objStyle = {
@@ -274,6 +275,12 @@ const ChargesCanvas = ({
 												? `al{' '}
 												${moment(reservation?.departureDate, 'YYYY-MM-DD').format('DD-MM-YYYY')}`
 												: ' - No definido'}
+										</h5>
+										<h5 className="m-0 fw-normal">
+											Balance:{' '}
+											{jsFormatNumber(
+												reservation?.balance
+											)}
 										</h5>
 									</Col>
 								</Row>

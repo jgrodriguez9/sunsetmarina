@@ -354,7 +354,6 @@ export default function FormSlip({
 						className={`form-control`}
 						onChange={formik.handleChange}
 						value={formik.values.xPosition}
-						disabled
 					/>
 					{formik.errors.xPosition && (
 						<div className="invalid-tooltip d-block">
@@ -372,7 +371,6 @@ export default function FormSlip({
 						className={`form-control`}
 						onChange={formik.handleChange}
 						value={formik.values.yPosition}
-						disabled
 					/>
 					{formik.errors.yPosition && (
 						<div className="invalid-tooltip d-block">
@@ -390,7 +388,6 @@ export default function FormSlip({
 						className={`form-control`}
 						onChange={formik.handleChange}
 						value={formik.values.height}
-						disabled
 					/>
 					{formik.errors.height && (
 						<div className="invalid-tooltip d-block">
@@ -408,7 +405,6 @@ export default function FormSlip({
 						className={`form-control`}
 						onChange={formik.handleChange}
 						value={formik.values.width}
-						disabled
 					/>
 					{formik.errors.width && (
 						<div className="invalid-tooltip d-block">

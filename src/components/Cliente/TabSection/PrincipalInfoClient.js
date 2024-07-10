@@ -25,7 +25,7 @@ import { getCurrencyExchangeListPaginado } from '../../../helpers/catalogos/curr
 import { hasCashRegisterAssign } from '../../../helpers/caja/boardingPass';
 import SimpleLoad from '../../Loader/SimpleLoad';
 
-const getSaldo = (saldo, currency, currCurrency, currExchangeOpt) => {
+export const getSaldo = (saldo, currency, currCurrency, currExchangeOpt) => {
 	if (saldo === 0) return 0;
 	if (currCurrency === currency) return parseFloat(saldo);
 	else {

@@ -62,6 +62,7 @@ export default function SlipReservationClient({ formik }) {
 			arrivalDate: slip.arrivalDate,
 			departureDate: slip.departureDate,
 			status: slip.status,
+			balance: slip.balance,
 		}));
 		setOpenModalAdd(true);
 	};
@@ -79,7 +80,7 @@ export default function SlipReservationClient({ formik }) {
 				Header: 'Slip',
 				accessor: 'slip.code',
 				style: {
-					width: '6%',
+					width: '4%',
 				},
 			},
 			{
@@ -93,7 +94,7 @@ export default function SlipReservationClient({ formik }) {
 				Header: 'Fecha llegada',
 				accessor: 'arrivalDate',
 				style: {
-					width: '9%',
+					width: '8%',
 				},
 				Cell: ({ value }) =>
 					value ? moment.utc(value).local().format('DD-MM-YYYY') : '',
@@ -102,12 +103,20 @@ export default function SlipReservationClient({ formik }) {
 				Header: 'Fecha salida',
 				accessor: 'departureDate',
 				style: {
-					width: '9%',
+					width: '8%',
 				},
 				Cell: ({ value }) =>
 					value
 						? moment.utc(value).local().format('DD-MM-YYYY')
 						: 'VIGENTE',
+			},
+			{
+				Header: 'Balance',
+				accessor: 'balance',
+				style: {
+					width: '5%',
+				},
+				Cell: ({ value }) => numberFormat(value),
 			},
 			{
 				Header: 'Precio (MXN)',
