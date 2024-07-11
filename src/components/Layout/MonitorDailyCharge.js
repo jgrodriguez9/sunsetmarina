@@ -25,12 +25,9 @@ const MonitorDailyCharge = () => {
 	const [refetch, setRetch] = useState(true);
 
 	useEffect(() => {
-		let isMounted = true; // Note this flag denote mount status
-
 		const fetchData = async () => {
 			try {
 				const response = await monitorDailyChargeJob();
-				// 	console.log(response.error);
 				setShowButton(response.error);
 				let message = '';
 				if (response.error) {
@@ -67,8 +64,7 @@ const MonitorDailyCharge = () => {
 	const executeCharges = async () => {
 		setIsSubmitting(true);
 		try {
-			const response = await runManuallyDailyChargeJob();
-			console.log(response);
+			await runManuallyDailyChargeJob();
 			dispatch(
 				addMessage({
 					type: 'success',
@@ -89,8 +85,6 @@ const MonitorDailyCharge = () => {
 			);
 		}
 	};
-	console.log(`error`, error);
-	console.log(`showButton`, showButton);
 	return !loading ? (
 		<div className="dropdown d-lg-inline-block ms-1">
 			<div className="btn header-item d-flex">
