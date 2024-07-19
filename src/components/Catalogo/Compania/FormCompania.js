@@ -52,6 +52,7 @@ export default function FormCompania({ item, btnTextSubmit = 'Aceptar' }) {
 			braceletInventoryLeft: item?.braceletInventoryLeft ?? 0,
 			boardingPassPrice: item?.boardingPassPrice ?? 5,
 			interestPercentage: item?.interestPercentage ?? 10,
+			boardingPassExchange: item?.boardingPassExchange ?? 0,
 		},
 		validationSchema: Yup.object({
 			name: Yup.string().required(FIELD_REQUIRED),
@@ -62,6 +63,11 @@ export default function FormCompania({ item, btnTextSubmit = 'Aceptar' }) {
 				.typeError(FIELD_NUMERIC)
 				.required(FIELD_REQUIRED)
 				.max(100, 'Campo no puede ser mayor a 100')
+				.min(0, 'Campo no puede ser menor a 0'),
+			boardingPassExchange: Yup.number()
+				.integer(FIELD_INTEGER)
+				.typeError(FIELD_NUMERIC)
+				.required(FIELD_REQUIRED)
 				.min(0, 'Campo no puede ser menor a 0'),
 		}),
 		onSubmit: async (values) => {
@@ -333,7 +339,7 @@ export default function FormCompania({ item, btnTextSubmit = 'Aceptar' }) {
 						value={formik.values.address}
 					/>
 				</Col>
-				<Col xs="12" md="4">
+				<Col xs="12" md="2">
 					<Label htmlFor="boardingPassPrice" className="mb-0">
 						Porcentaje de interés
 					</Label>
@@ -349,6 +355,27 @@ export default function FormCompania({ item, btnTextSubmit = 'Aceptar' }) {
 					{formik.errors.interestPercentage && (
 						<div className="invalid-tooltip">
 							{formik.errors.interestPercentage}
+						</div>
+					)}
+				</Col>
+				<Col xs="12" md="2">
+					<Label htmlFor="boardingPassPrice" className="mb-0">
+						Tipo cambio (Brazaletes)
+					</Label>
+					<Input
+						id="boardingPassExchange"
+						name="boardingPassExchange"
+						className={`form-control ${
+							formik.errors.boardingPassExchange
+								? 'is-invalid'
+								: ''
+						}`}
+						onChange={formik.handleChange}
+						value={formik.values.boardingPassExchange}
+					/>
+					{formik.errors.boardingPassExchange && (
+						<div className="invalid-tooltip">
+							{formik.errors.boardingPassExchange}
 						</div>
 					)}
 				</Col>

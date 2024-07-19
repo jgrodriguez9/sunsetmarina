@@ -11,11 +11,11 @@ const token = sessionStorage.getItem('sunsetadmiralauth')
 	: '';
 //apply base url for axios
 //test:
-//const API_URL = 'https://apiadmiral.sunset.com.mx/api';
+const API_URL = 'https://apiadmiral.sunset.com.mx/api';
 //dirceto alain machine
 //const API_URL ='https://1c6c-2806-2f0-8560-d1eb-50be-9c5f-64a7-62d6.ngrok-free.app/api';
 //prod
-const API_URL = 'https://apiadmiral-prod.sunset.com.mx/api';
+// const API_URL = 'https://apiadmiral-prod.sunset.com.mx/api';
 
 const axiosApi = axios.create({
 	baseURL: API_URL,

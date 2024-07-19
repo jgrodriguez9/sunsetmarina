@@ -42,19 +42,17 @@ export const navigations = [
 				label: 'Bitácora',
 				route: '/logs',
 				classIcon: null,
-				show: existsRole(roles, [
-					ROLE_ADMINISTRACION,
-					ROLE_COMPANIA,
-					ROLE_OPERACIONES,
-					ROLE_CONTABILIDAD,
-				]),
+				show: existsRole(roles, [ROLE_ADMINISTRACION, ROLE_COMPANIA]),
 			},
 			{
 				id: 'users',
 				label: 'Usuarios',
 				route: '/users',
 				classIcon: null,
-				show: existsRole(roles, [ROLE_ADMINISTRACION]),
+				show: existsRole(roles, [
+					ROLE_ADMINISTRACION,
+					ROLE_CONTABILIDAD,
+				]),
 			},
 		],
 	},
@@ -67,6 +65,7 @@ export const navigations = [
 			ROLE_ADMINISTRACION,
 			ROLE_COMPANIA,
 			ROLE_CONTABILIDAD,
+			ROLE_OPERACIONES,
 		]),
 		items: [
 			{
@@ -74,7 +73,11 @@ export const navigations = [
 				label: 'Tipo de embarcación',
 				route: '/boadtype',
 				classIcon: null,
-				show: existsRole(roles, [ROLE_ADMINISTRACION, ROLE_COMPANIA]),
+				show: existsRole(roles, [
+					ROLE_ADMINISTRACION,
+					ROLE_COMPANIA,
+					ROLE_OPERACIONES,
+				]),
 			},
 			{
 				id: 'compania',
@@ -91,35 +94,55 @@ export const navigations = [
 				label: 'Muelle',
 				route: '/pier',
 				classIcon: null,
-				show: existsRole(roles, [ROLE_ADMINISTRACION, ROLE_COMPANIA]),
+				show: existsRole(roles, [
+					ROLE_ADMINISTRACION,
+					ROLE_COMPANIA,
+					ROLE_OPERACIONES,
+				]),
 			},
 			{
 				id: 'amarre',
 				label: 'Tipo de Slip',
 				route: '/sliptype',
 				classIcon: null,
-				show: existsRole(roles, [ROLE_ADMINISTRACION, ROLE_COMPANIA]),
+				show: existsRole(roles, [
+					ROLE_ADMINISTRACION,
+					ROLE_COMPANIA,
+					ROLE_OPERACIONES,
+				]),
 			},
 			{
 				id: 'tipoDeDocumento',
 				label: 'Tipo de documento',
 				route: '/documenttype',
 				classIcon: null,
-				show: existsRole(roles, [ROLE_ADMINISTRACION, ROLE_COMPANIA]),
+				show: existsRole(roles, [
+					ROLE_ADMINISTRACION,
+					ROLE_COMPANIA,
+					ROLE_OPERACIONES,
+				]),
 			},
 			{
 				id: 'categoriaCliente',
 				label: 'Categoría de cliente',
 				route: '/clientcategory',
 				classIcon: null,
-				show: existsRole(roles, [ROLE_ADMINISTRACION, ROLE_COMPANIA]),
+				show: existsRole(roles, [
+					ROLE_ADMINISTRACION,
+					ROLE_COMPANIA,
+					ROLE_OPERACIONES,
+				]),
 			},
 			{
 				id: 'conceptoCaja',
 				label: 'Concepto de caja',
 				route: '/cashconcept',
 				classIcon: null,
-				show: existsRole(roles, [ROLE_ADMINISTRACION, ROLE_COMPANIA]),
+				show: existsRole(roles, [
+					ROLE_ADMINISTRACION,
+					ROLE_COMPANIA,
+					ROLE_OPERACIONES,
+				]),
 			},
 			{
 				id: 'currencyExchange',

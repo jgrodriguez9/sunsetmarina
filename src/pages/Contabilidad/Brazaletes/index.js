@@ -39,6 +39,27 @@ function Brazaletes() {
 			type: 'text',
 			value: '',
 		},
+		{
+			label: 'Color',
+			field: 'color',
+			width: 3,
+			control: 'input',
+			type: 'text',
+			value: '',
+		},
+		{
+			label: 'Estado',
+			field: 'status',
+			width: 3,
+			control: 'select',
+			type: '',
+			value: '',
+			valueSelect: null,
+			options: [
+				{ label: 'Reservado', value: 'RESERVED' },
+				{ label: 'Disponible', value: 'AVAILABLE' },
+			],
+		},
 	]);
 
 	const fetchList = async () => {

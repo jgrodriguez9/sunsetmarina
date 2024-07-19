@@ -482,7 +482,7 @@ const TicketClientPayment = ({ idPayment, show, toggle = null }) => {
 										color="link"
 										type="button"
 										className={'text-danger'}
-										onClick={exportToPdf}
+										onClick={toggle}
 									>
 										Cerrar
 									</Button>

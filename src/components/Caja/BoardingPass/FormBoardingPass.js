@@ -45,7 +45,6 @@ import TicketBoardingPass from '../../Tickets/TicketBoardingPass';
 
 export default function FormBoardingPass({ cajero = false }) {
 	const dispatch = useDispatch();
-	let timer = useRef();
 	const [fecha, setFecha] = useState(moment().toDate());
 
 	//info para los filtros de la reserva
@@ -394,27 +393,7 @@ export default function FormBoardingPass({ cajero = false }) {
 			</div>
 		</>
 	);
-	const calcularPrice = async (pax) => {
-		setIsCalculatingPrice(true);
-		try {
-			const reservationId = formik.values.reservation.id;
-			const q = `?pax=${pax}`;
-			const response = await getBoardingPassPrice(reservationId, q);
-			formik.setFieldValue('amount', response.amountMXN);
-			formik.setFieldValue('amountUSD', response.amountUSD);
-			formik.setFieldValue('price', response.price);
-			formik.setFieldValue('priceUSD', response.priceUSD);
-			formik.setFieldValue('currencyExchange', response.currencyExchange);
-			setIsCalculatingPrice(false);
-		} catch (error) {
-			setIsCalculatingPrice(false);
-			formik.setFieldValue('amount', 0);
-			formik.setFieldValue('amountUSD', 0);
-			formik.setFieldValue('price', 0);
-			formik.setFieldValue('priceUSD', 0);
-			formik.setFieldValue('currencyExchange', 0);
-		}
-	};
+	const calcularPrice = async (pax) => {};
 
 	useEffect(() => {
 		if (!client && !boat && !slip) {
@@ -446,6 +425,37 @@ export default function FormBoardingPass({ cajero = false }) {
 		};
 		checkCajaApi();
 	}, [dispatch]);
+
+	useEffect(() => {
+		const getPrice = async () => {
+			setIsCalculatingPrice(true);
+			try {
+				const reservationId = formik.values.reservation.id;
+				const q = `?pax=${formik.values.pax}&currency=${formik.values.currency}`;
+				const response = await getBoardingPassPrice(reservationId, q);
+				formik.setFieldValue('amount', response.amountMXN);
+				formik.setFieldValue('amountUSD', response.amountUSD);
+				formik.setFieldValue('price', response.price);
+				formik.setFieldValue('priceUSD', response.priceUSD);
+				formik.setFieldValue(
+					'currencyExchange',
+					response.currencyExchange
+				);
+				setIsCalculatingPrice(false);
+			} catch (error) {
+				setIsCalculatingPrice(false);
+				formik.setFieldValue('amount', 0);
+				formik.setFieldValue('amountUSD', 0);
+				formik.setFieldValue('price', 0);
+				formik.setFieldValue('priceUSD', 0);
+				formik.setFieldValue('currencyExchange', 0);
+			}
+		};
+
+		if (formik.values.pax > 0 && formik.values.currency !== '') {
+			getPrice();
+		}
+	}, [formik.values.pax, formik.values.currency]);
 
 	if (checkCaja.loading) {
 		return <SimpleLoad text="Checando asignación de caja" />;
@@ -606,10 +616,6 @@ export default function FormBoardingPass({ cajero = false }) {
 											parseInt(e.target.value) ?? 0
 										);
 										setCount(parseInt(e.target.value) ?? 0);
-										clearTimeout(timer.current);
-										timer.current = setTimeout(() => {
-											calcularPrice(e.target.value);
-										}, 600);
 									}}
 									value={formik.values.pax}
 								/>
