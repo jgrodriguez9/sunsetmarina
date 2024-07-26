@@ -74,6 +74,9 @@ const ChargesCanvas = ({
 		loading: true,
 		hasCaja: false,
 	});
+	//condonar intereses
+	const [forgivenInterest, setForgivenInterest] = useState(false);
+	const [forgivenInterestReason, setForgivenInterestReason] = useState('');
 	useEffect(() => {
 		const fecthChargesByReservation = async () => {
 			try {
@@ -131,6 +134,8 @@ const ChargesCanvas = ({
 				},
 				systemId: 777084,
 				systemPayment: 'RESERVATION',
+				forgivenInterest: forgivenInterest,
+				forgivenInterestReason: forgivenInterestReason,
 			},
 			reservationId: reservation.id,
 			charges: chargesToPay,
@@ -210,6 +215,10 @@ const ChargesCanvas = ({
 						finished: finalizarReserva,
 						charges: charge.map((it) => ({ id: it.id })),
 						reservationId: reservation.id,
+						payment: {
+							forgivenInterest: forgivenInterest,
+							forgivenInterestReason: forgivenInterestReason,
+						},
 					};
 					const response = await getTotalChargeUpdated(data);
 					setIsCalculating(false);
@@ -232,7 +241,7 @@ const ChargesCanvas = ({
 			}
 		}
 		getTotalToPay();
-	}, [month, year, charge, finalizarReserva, dispatch]);
+	}, [month, year, charge, finalizarReserva, dispatch, forgivenInterest]);
 	return (
 		<Offcanvas
 			isOpen={open}
@@ -489,6 +498,69 @@ const ChargesCanvas = ({
 												)}
 											</div>
 										</div>
+										{totalToPay > 0 && (
+											<div
+												className="d-flex flex-column align-items-end"
+												style={{ gap: '2px' }}
+											>
+												<div>
+													<Input
+														id="forgivenInterest"
+														name="forgivenInterest"
+														type="checkbox"
+														className={`form-check-Input form-check-input`}
+														checked={
+															forgivenInterest
+														}
+														onChange={(e) => {
+															setForgivenInterest(
+																e.target.checked
+															);
+															if (
+																!e.target
+																	.checked
+															) {
+																setForgivenInterestReason(
+																	''
+																);
+															}
+														}}
+													/>
+													<Label
+														htmlFor={`forgivenInterest`}
+														className="mb-0 ms-1 me-2 text-secondary"
+													>
+														Condonar intereses
+													</Label>
+													<i
+														className="far fa-question-circle text-dark"
+														id="help-forgivenInterest"
+													/>
+													<TooltipDescription
+														text="Si marca esta casilla no se tomará en cuenta los intereses de la reservación"
+														id="help-forgivenInterest"
+													/>
+												</div>
+												{forgivenInterest && (
+													<div className="w-100">
+														<textarea
+															className="form-control"
+															rows={2}
+															placeholder="Razón por la que condona los interses"
+															value={
+																forgivenInterestReason
+															}
+															onChange={(e) =>
+																setForgivenInterestReason(
+																	e.target
+																		.value
+																)
+															}
+														/>
+													</div>
+												)}
+											</div>
+										)}
 										{checkCaja.loading && (
 											<SimpleLoad text="Checando asignación de caja" />
 										)}
@@ -516,7 +588,11 @@ const ChargesCanvas = ({
 														className="fs-4"
 														disabled={
 															totalToPay <= 0 ||
-															!paymentForm
+															!paymentForm ||
+															(forgivenInterest &&
+																!Boolean(
+																	forgivenInterestReason
+																))
 														}
 														block
 														onClick={
