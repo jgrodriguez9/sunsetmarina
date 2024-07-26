@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Badge, Col, Container, Row } from 'reactstrap';
 import Breadcrumbs from '../../../components/Common/Breadcrumbs';
 import CardBasic from '../../../components/Common/CardBasic';
@@ -187,8 +187,11 @@ function Reservation() {
 				style: {
 					width: '15%',
 				},
-				Cell: ({ row, value }) =>
-					`${value} ${row.original.customer.lastName}`,
+				Cell: ({ row, value }) => (
+					<Link to={`/client/edit/${row.original.customer?.id}`}>
+						{`${value} ${row.original.customer.lastName}`}
+					</Link>
+				),
 			},
 			{
 				Header: 'Embarcación',

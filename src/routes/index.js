@@ -294,7 +294,25 @@ const contabilidadRoutes = [
 			it.path === '/currencyexchange/create' ||
 			it.path === '/company' ||
 			it.path === '/company/edit/:id' ||
-			it.path === '/company/create'
+			it.path === '/company/create' ||
+			it.path === '/documenttype' ||
+			it.path === '/documenttype/create' ||
+			it.path === '/documenttype/edit/:id' ||
+			it.path === '/sliptype' ||
+			it.path === '/sliptype/create' ||
+			it.path === '/sliptype/edit/:id' ||
+			it.path === '/cashconcept' ||
+			it.path === '/cashconcept/create' ||
+			it.path === '/cashconcept/edit/:id' ||
+			it.path === '/clientcategory' ||
+			it.path === '/clientcategory/create' ||
+			it.path === '/clientcategory/edit/:id' ||
+			it.path === '/pier' ||
+			it.path === '/pier/create' ||
+			it.path === '/pier/edit/:id' ||
+			it.path === '/boadtype' ||
+			it.path === '/boadtype/create' ||
+			it.path === '/boadtype/edit/:id'
 	),
 ];
 const operacionesRoutes = [

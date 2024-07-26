@@ -2,11 +2,22 @@ import { useState } from 'react';
 import { useFormik } from 'formik';
 import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import { Alert, Button, Col, Form, Input, Label, Row } from 'reactstrap';
+import {
+	Alert,
+	Button,
+	Col,
+	Form,
+	Input,
+	InputGroup,
+	Label,
+	Row,
+} from 'reactstrap';
 import * as Yup from 'yup';
 import {
+	ADD_BALANCE,
 	ERROR_SERVER,
 	FIELD_REQUIRED,
+	NOT_CASH_REGISTER_ASSIGN,
 	SAVE_SUCCESS,
 	SELECT_OPTION,
 	UPDATE_SUCCESS,
@@ -32,6 +43,15 @@ import { getBoatByClient } from '../../../helpers/marina/boat';
 import getObjectValid from '../../../utils/getObjectValid';
 import translateUtils from '../../../utils/translateUtils';
 import { paymentFrequencyOpt } from '../../../constants/constants';
+import jsFormatNumber from '../../../utils/jsFormatNumber';
+import { isValidPositiveNumber } from '../../../utils/isValidPositiveNumber';
+import { paymentFormOpt } from '../../../constants/paymentForm';
+import { getSaldo } from '../../Cliente/TabSection/PrincipalInfoClient';
+import { currencyOpt } from '../../../constants/currencies';
+import { getCurrencyExchangeListPaginado } from '../../../helpers/catalogos/currencyExchange';
+import SimpleLoad from '../../Loader/SimpleLoad';
+import { hasCashRegisterAssign } from '../../../helpers/caja/boardingPass';
+import { addSaldoReservation } from '../../../helpers/marina/payment';
 
 export default function FormReserva({ item, btnTextSubmit = 'Aceptar' }) {
 	const navigate = useNavigate();
@@ -40,6 +60,17 @@ export default function FormReserva({ item, btnTextSubmit = 'Aceptar' }) {
 	const [boatOpt, setBoatOpt] = useState([]);
 	const [slipOpt, setSlipOpt] = useState([]);
 	const [showControlPrice, setShowControlPrice] = useState(false);
+	const [openModalBalance, setOpenModalBalance] = useState(false);
+	const [checkCaja, setCheckCaja] = useState({
+		loading: true,
+		hasCaja: false,
+	});
+	const [newBalance, setNewBalance] = useState(0);
+	const [paymentForm, setPaymentForm] = useState('CASH');
+	const [currency, setCurrency] = useState('USD');
+	const [referencia, setReferencia] = useState('');
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [currExchangeOpt, setCurrExchangeOpt] = useState([]);
 	const [arrivalDate, setArrivalDate] = useState(
 		item?.arrivalDate
 			? moment(item?.arrivalDate, 'YYYY-MM-DD').toDate()
@@ -95,6 +126,34 @@ export default function FormReserva({ item, btnTextSubmit = 'Aceptar' }) {
 			}
 		};
 		fetchSlips();
+
+		const fetchCurrencies = async () => {
+			const response = await getCurrencyExchangeListPaginado(
+				`?max=10&page=1`
+			);
+			setCurrExchangeOpt(
+				response.list.map((it) => ({
+					currency: it.currency,
+					rate: it.currencyExchange,
+				}))
+			);
+		};
+		fetchCurrencies();
+		const checkCajaApi = async () => {
+			try {
+				await hasCashRegisterAssign();
+				setCheckCaja({
+					loading: false,
+					hasCaja: true,
+				});
+			} catch (error) {
+				setCheckCaja({
+					loading: false,
+					hasCaja: false,
+				});
+			}
+		};
+		checkCajaApi();
 	}, []);
 
 	const formik = useFormik({
@@ -116,6 +175,7 @@ export default function FormReserva({ item, btnTextSubmit = 'Aceptar' }) {
 			status: item?.status ?? 'CONFIRMED',
 			paymentFrequency: item?.paymentFrequency ?? '',
 			finalContractDate: item?.finalContractDate ?? '',
+			balance: item.balance ?? 0,
 		},
 		validationSchema: Yup.object({
 			arrivalDate: Yup.string().required(FIELD_REQUIRED),
@@ -277,6 +337,178 @@ export default function FormReserva({ item, btnTextSubmit = 'Aceptar' }) {
 			instance.set('minDate', moment().format('DD-MM-YYYY'));
 		}
 	};
+	const handleClickNewSaldo = async () => {
+		setIsSubmitting(true);
+		try {
+			const data = {
+				amount: getSaldo(newBalance, currency, 'MXN', currExchangeOpt),
+				amountUSD: getSaldo(
+					newBalance,
+					currency,
+					'USD',
+					currExchangeOpt
+				),
+				concept: 'Abono a saldo de cliente reservaciones',
+				reference: referencia,
+				paymentForm: paymentForm,
+				customer: formik.values.customer,
+				systemPayment: 'BALANCE_RESERVATION',
+				systemID: formik.values.id,
+			};
+			await addSaldoReservation(data);
+			dispatch(
+				addMessage({
+					type: 'success',
+					message: ADD_BALANCE,
+				})
+			);
+			formik.setFieldValue(
+				'balance',
+				formik.values.balance +
+					getSaldo(newBalance, currency, 'MXN', currExchangeOpt)
+			);
+			setIsSubmitting(false);
+			setNewBalance(0);
+			setOpenModalBalance(false);
+		} catch (error) {
+			let message = ERROR_SERVER;
+			message = extractMeaningfulMessage(error, message);
+			dispatch(
+				addMessage({
+					type: 'error',
+					message: message,
+				})
+			);
+			setIsSubmitting(false);
+		}
+	};
+	const childrenAddSaldo = checkCaja.loading ? (
+		<SimpleLoad text="Checando asignación de caja" />
+	) : !checkCaja.hasCaja ? (
+		<Row>
+			<Col>
+				<Alert color="warning">{NOT_CASH_REGISTER_ASSIGN}</Alert>
+			</Col>
+		</Row>
+	) : (
+		<Row>
+			<Col xs={12} md="4" className="mb-2">
+				<Label htmlFor="bal" className="mb-0">
+					Monto
+				</Label>
+				<Input
+					id="bal"
+					name="bal"
+					type="number"
+					className={`form-control`}
+					onChange={(e) => setNewBalance(e.target.value)}
+					value={newBalance}
+				/>
+			</Col>
+			<Col xs="12" md="4">
+				<Label htmlFor="paymentForm" className="mb-0">
+					Moneda
+				</Label>
+				<Select
+					value={{
+						value: currency,
+						label: currencyOpt.find((it) => it.value === currency)
+							.label,
+					}}
+					onChange={(value) => {
+						setCurrency(value.value);
+					}}
+					options={currencyOpt}
+					classNamePrefix="select2-selection"
+				/>
+			</Col>
+			<Col xs="12" md="4">
+				<Label htmlFor="currExchange" className="mb-0">
+					Monto {currency === 'MXN' ? '(USD)' : '(MXN)'}
+				</Label>
+				<div className="form-control">
+					{jsFormatNumber(
+						getSaldo(
+							newBalance,
+							currency,
+							currency === 'MXN' ? 'USD' : 'MXN',
+							currExchangeOpt
+						)
+					)}
+				</div>
+			</Col>
+			<Col xs="12" md="6" className="mb-2">
+				<Label htmlFor="paymentForm" className="mb-0">
+					Forma de pago
+				</Label>
+				<Select
+					value={{
+						value: paymentForm,
+						label: paymentFormOpt.find(
+							(it) => it.value === paymentForm
+						).label,
+					}}
+					onChange={(value) => {
+						setPaymentForm(value.value);
+					}}
+					options={paymentFormOpt}
+					classNamePrefix="select2-selection"
+				/>
+			</Col>
+			<Col xs="12" md="6" className="mb-2">
+				<Label htmlFor="ref" className="mb-0">
+					Referencia
+				</Label>
+				<Input
+					id="ref"
+					name="ref"
+					className={`form-control`}
+					onChange={(e) => setReferencia(e.target.value)}
+					value={referencia}
+				/>
+			</Col>
+			<hr />
+			{isSubmitting ? (
+				<ButtonsDisabled
+					buttons={[
+						{
+							text: 'Aceptar',
+							color: 'primary',
+							className: '',
+							loader: true,
+						},
+						{
+							text: 'Cerrar',
+							color: 'light',
+							className: 'text-danger',
+							loader: false,
+						},
+					]}
+				/>
+			) : (
+				<div className="d-flex">
+					<button
+						type="button"
+						className="btn btn-primary"
+						onClick={handleClickNewSaldo}
+						disabled={!isValidPositiveNumber(newBalance)}
+					>
+						Aceptar
+					</button>
+					<button
+						type="button"
+						className="btn btn-light ms-2"
+						onClick={() => {
+							setNewBalance(0);
+							setOpenModalBalance(false);
+						}}
+					>
+						Cerrar
+					</button>
+				</div>
+			)}
+		</Row>
+	);
 
 	return (
 		<Form
@@ -662,6 +894,41 @@ export default function FormReserva({ item, btnTextSubmit = 'Aceptar' }) {
 					</Row>
 				</Col>
 			</Row>
+			{formik.values.id && (
+				<Row>
+					<Col xs="12" md="4">
+						<div className="mb-3">
+							<Label htmlFor="balance" className="mb-0">
+								Balance reservación
+							</Label>
+							<InputGroup>
+								<div className="form-control">
+									{jsFormatNumber(formik.values.balance)}
+								</div>
+								<Button
+									outline
+									color="primary"
+									type="button"
+									onClick={() =>
+										setOpenModalBalance(!openModalBalance)
+									}
+								>
+									{openModalBalance
+										? 'Cancelar'
+										: 'Agregar saldo'}
+								</Button>
+							</InputGroup>
+						</div>
+					</Col>
+				</Row>
+			)}
+			{openModalBalance && (
+				<>
+					<hr />
+					{childrenAddSaldo}
+				</>
+			)}
+			<hr />
 			<hr />
 			{formik.isSubmitting ? (
 				<ButtonsDisabled
