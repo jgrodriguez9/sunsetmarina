@@ -183,9 +183,33 @@ export default function PaymentClient({ formik }) {
 				Header: 'Monto',
 				accessor: 'amount',
 				style: {
-					width: '10%',
+					width: '8%',
 				},
 				Cell: ({ value }) => numberFormat(value),
+			},
+			{
+				Header: 'Moratorios',
+				accessor: 'forgivenInterest',
+				style: {
+					width: '15%',
+					textAlign: 'center',
+				},
+				Cell: ({ row, value }) => {
+					if (value) {
+						return (
+							<div className="d-flex flex-column align-items-center justify-content-center">
+								<strong>Condonado</strong>
+								<span className="text-center">
+									{row.original.forgivenInterestReason}
+								</span>
+							</div>
+						);
+					} else {
+						return (
+							<span className="text-center d-block">Pagado</span>
+						);
+					}
+				},
 			},
 			{
 				Header: 'Forma de pago',
