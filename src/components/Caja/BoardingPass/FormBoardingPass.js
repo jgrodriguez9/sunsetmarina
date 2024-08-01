@@ -183,6 +183,11 @@ export default function FormBoardingPass({ cajero = false }) {
 				.integer(FIELD_INTEGER)
 				.typeError(FIELD_NUMERIC)
 				.required(FIELD_REQUIRED),
+			priceUSD: Yup.number()
+				.min(1, FIELD_GREATER_THAN_CERO)
+				.integer(FIELD_INTEGER)
+				.typeError(FIELD_NUMERIC)
+				.required(FIELD_REQUIRED),
 			reservation: Yup.object().shape({
 				id: Yup.number().required(FIELD_REQUIRED),
 			}),
@@ -457,6 +462,19 @@ export default function FormBoardingPass({ cajero = false }) {
 		}
 	}, [formik.values.pax, formik.values.currency]);
 
+	const recalculatePrice = async (value) => {
+		setIsCalculatingPrice(true);
+		const reservationId = formik.values.reservation.id;
+		const q = `?pax=${formik.values.pax}&currency=${formik.values.currency}&tax=${value}`;
+		const response = await getBoardingPassPrice(reservationId, q);
+		formik.setFieldValue('amount', response.amountMXN);
+		formik.setFieldValue('amountUSD', response.amountUSD);
+		formik.setFieldValue('price', response.price);
+		formik.setFieldValue('priceUSD', response.priceUSD);
+		formik.setFieldValue('currencyExchange', response.currencyExchange);
+		setIsCalculatingPrice(false);
+	};
+
 	if (checkCaja.loading) {
 		return <SimpleLoad text="Checando asignación de caja" />;
 	}
@@ -713,9 +731,30 @@ export default function FormBoardingPass({ cajero = false }) {
 								<Label htmlFor="amount" className="mb-0">
 									Precio x Pax (USD)
 								</Label>
-								<div className="form-control bg-light">
-									{numberFormat(formik.values?.priceUSD ?? 0)}{' '}
-								</div>
+								<Input
+									id="pax"
+									name="pax"
+									className={`form-control ${
+										formik.errors.priceUSD
+											? 'is-invalid'
+											: ''
+									}`}
+									onChange={(e) => {
+										formik.setFieldValue(
+											'priceUSD',
+											parseInt(e.target.value) ?? 0
+										);
+										recalculatePrice(
+											parseInt(e.target.value)
+										);
+									}}
+									value={formik.values?.priceUSD}
+								/>
+								{formik.errors.priceUSD && (
+									<div className="invalid-tooltip">
+										{formik.errors.priceUSD}
+									</div>
+								)}
 								{isCalculatingPrice && (
 									<SimpleLoad
 										text={'Cargando precio'}
