@@ -33,7 +33,6 @@ export const navigations = [
 		show: existsRole(roles, [
 			ROLE_ADMINISTRACION,
 			ROLE_COMPANIA,
-			ROLE_OPERACIONES,
 			ROLE_CONTABILIDAD,
 		]),
 		items: [

@@ -1,7 +1,7 @@
 {
 	"name": "sunsetmarina",
 	"homepage": "https://admiral-prod.sunset.com.mx",
-	"version": "1.3.1",
+	"version": "1.3.2",
 	"private": true,
 	"dependencies": {
 		"@ckeditor/ckeditor5-build-classic": "^37.0.1",

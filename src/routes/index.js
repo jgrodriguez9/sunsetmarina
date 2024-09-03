@@ -342,6 +342,11 @@ const operacionesRoutes = [
 			it.path === '/boadtype/create' ||
 			it.path === '/boadtype/edit/:id'
 	),
+	{
+		path: '/cashregistercontrol',
+		exact: true,
+		component: <CashRegisterControl />,
+	},
 ];
 const cajeroRoutes = [
 	...authProtectedRoutes,
