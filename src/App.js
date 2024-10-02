@@ -37,15 +37,19 @@ function App() {
 	useMemo(() => {
 		if (user.name) {
 			if (user.roles.includes(ROLE_ADMINISTRACION)) {
-				setAuthRoutes([...adminRoutes]);
-			} else if (user.roles.includes(ROLE_COMPANIA)) {
-				setAuthRoutes([...companyRoutes]);
-			} else if (user.roles.includes(ROLE_CONTABILIDAD)) {
-				setAuthRoutes([...contabilidadRoutes]);
-			} else if (user.roles.includes(ROLE_OPERACIONES)) {
-				setAuthRoutes([...operacionesRoutes]);
-			} else if (user.roles.includes(ROLE_CAJA)) {
-				setAuthRoutes([...cajeroRoutes]);
+				setAuthRoutes((prev) => [...prev, ...adminRoutes]);
+			}
+			if (user.roles.includes(ROLE_COMPANIA)) {
+				setAuthRoutes((prev) => [...prev, ...companyRoutes]);
+			}
+			if (user.roles.includes(ROLE_CONTABILIDAD)) {
+				setAuthRoutes((prev) => [...prev, ...contabilidadRoutes]);
+			}
+			if (user.roles.includes(ROLE_OPERACIONES)) {
+				setAuthRoutes((prev) => [...prev, ...operacionesRoutes]);
+			}
+			if (user.roles.includes(ROLE_CAJA)) {
+				setAuthRoutes((prev) => [...prev, ...cajeroRoutes]);
 			}
 		}
 	}, [user.name, user.roles]);
@@ -100,7 +104,6 @@ function App() {
 			}
 		}
 	}, [message, dispatch]);
-
 	return (
 		<>
 			<BrowserRouter>

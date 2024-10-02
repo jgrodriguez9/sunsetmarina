@@ -213,7 +213,7 @@ export default function FormReserva({ item, btnTextSubmit = 'Aceptar' }) {
 								message: UPDATE_SUCCESS,
 							})
 						);
-						navigate('/slip');
+						navigate('/reservation');
 					} else {
 						dispatch(
 							addMessage({
@@ -637,35 +637,29 @@ export default function FormReserva({ item, btnTextSubmit = 'Aceptar' }) {
 						<Label htmlFor="slip" className="mb-0">
 							Slip
 						</Label>
-						{formik.values.id ? (
-							<div className="form-control bg-light">
-								{formik.values.slip.code}
-							</div>
-						) : (
-							<Select
-								value={
-									formik.values.slip?.id
-										? {
-												value: formik.values.slip.id,
-												label: formik.values.slip.code,
-										  }
-										: null
-								}
-								onChange={(value) => {
-									formik.setFieldValue(
-										'slip.id',
-										value?.value ?? ''
-									);
-									formik.setFieldValue(
-										'slip.code',
-										value?.label ?? ''
-									);
-								}}
-								options={slipOpt}
-								classNamePrefix="select2-selection"
-								placeholder={SELECT_OPTION}
-							/>
-						)}
+						<Select
+							value={
+								formik.values.slip?.id
+									? {
+											value: formik.values.slip.id,
+											label: formik.values.slip.code,
+									  }
+									: null
+							}
+							onChange={(value) => {
+								formik.setFieldValue(
+									'slip.id',
+									value?.value ?? ''
+								);
+								formik.setFieldValue(
+									'slip.code',
+									value?.label ?? ''
+								);
+							}}
+							options={slipOpt}
+							classNamePrefix="select2-selection"
+							placeholder={SELECT_OPTION}
+						/>
 
 						{formik.errors.slip?.id && (
 							<div className="invalid-tooltip d-block">

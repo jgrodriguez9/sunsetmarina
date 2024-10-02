@@ -2,7 +2,6 @@ import { useState } from 'react';
 import Footer from './Footer';
 import Header from './Header';
 import Navbar from './Navbar';
-import AutoLogout from '../Seguridad/AutoLogout';
 
 const AuthLayout = (props) => {
 	const [isMenuOpened, setIsMenuOpened] = useState(false);
@@ -13,7 +12,7 @@ const AuthLayout = (props) => {
 	return (
 		<>
 			<div id="layout-wrapper">
-				<AutoLogout />
+				{/* <AutoLogout /> */}
 				<Header openMenu={openMenu} isMenuOpened={isMenuOpened} />
 				<Navbar isMenuOpened={isMenuOpened} />
 				{/* <Sidebar /> */}

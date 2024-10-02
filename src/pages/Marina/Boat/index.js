@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Badge, Col, Container, Row } from 'reactstrap';
 import Breadcrumbs from '../../../components/Common/Breadcrumbs';
 import CardBasic from '../../../components/Common/CardBasic';
@@ -98,8 +98,11 @@ function Boat() {
 			{
 				Header: 'Cliente',
 				accessor: 'customer.name',
-				Cell: ({ row, value }) =>
-					`${row.original.customer.name} ${row.original.customer.lastName}`,
+				Cell: ({ row, value }) => (
+					<Link
+						to={`/client/edit/${row.original.customer.id}`}
+					>{`${row.original.customer.name} ${row.original.customer.lastName}`}</Link>
+				),
 				style: {
 					width: '25%',
 				},
