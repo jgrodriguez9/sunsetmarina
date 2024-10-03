@@ -312,7 +312,7 @@ export const navigations = [
 			},
 			{
 				id: 'daily',
-				label: 'Reporte diario',
+				label: 'Reporte general de ingresos',
 				route: '/dailyreport',
 				classIcon: null,
 				show: existsRole(roles, [

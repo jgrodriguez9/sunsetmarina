@@ -382,8 +382,8 @@ function DailyReport() {
 		<div className="page-content">
 			<Container fluid>
 				<Breadcrumbs
-					title={'Reporte diario'}
-					breadcrumbItem={'Reporte diario'}
+					title={'Reporte general de ingresos'}
+					breadcrumbItem={'Reporte general de ingresos'}
 				/>
 
 				<Row className="pb-2">
@@ -394,7 +394,7 @@ function DailyReport() {
 				<Row className="pb-5">
 					<Col lg="12">
 						<CardMain
-							title="Reporte diario"
+							title="Reporte general de ingresos"
 							children={carHandleEstadoCuenta}
 						/>
 					</Col>
