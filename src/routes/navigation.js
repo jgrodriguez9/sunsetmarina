@@ -300,9 +300,9 @@ export const navigations = [
 				]),
 			},
 			{
-				id: 'brazaletes',
-				label: 'Brazaletes',
-				route: '/bracelet',
+				id: 'daily',
+				label: 'Reporte general de ingresos',
+				route: '/dailyreport',
 				classIcon: null,
 				show: existsRole(roles, [
 					ROLE_ADMINISTRACION,
@@ -311,9 +311,9 @@ export const navigations = [
 				]),
 			},
 			{
-				id: 'daily',
-				label: 'Reporte general de ingresos',
-				route: '/dailyreport',
+				id: 'brazaletes',
+				label: 'Brazaletes',
+				route: '/bracelet',
 				classIcon: null,
 				show: existsRole(roles, [
 					ROLE_ADMINISTRACION,
