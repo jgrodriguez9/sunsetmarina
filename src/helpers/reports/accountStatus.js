@@ -8,10 +8,13 @@ const reportDocktaxBill = (query) =>
 const reportCobranza = (query) => get(`${url.account}/reportIncome${query}`);
 const reportCollection = (query) =>
 	get(`${url.account}/reportCollection${query}`);
+const reportDailySummary = (query) =>
+	get(`${url.account}/reportDailyResume${query}`);
 
 export {
 	getAccountStatusList,
 	reportDocktaxBill,
 	reportCobranza,
 	reportCollection,
+	reportDailySummary,
 };

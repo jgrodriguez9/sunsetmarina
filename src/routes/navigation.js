@@ -310,6 +310,17 @@ export const navigations = [
 					ROLE_CONTABILIDAD,
 				]),
 			},
+			{
+				id: 'daily',
+				label: 'Reporte diario',
+				route: '/dailyreport',
+				classIcon: null,
+				show: existsRole(roles, [
+					ROLE_ADMINISTRACION,
+					ROLE_COMPANIA,
+					ROLE_CONTABILIDAD,
+				]),
+			},
 		],
 	},
 	{

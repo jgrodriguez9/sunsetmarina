@@ -60,6 +60,7 @@ import CashMovement from '../pages/Caja/CashRegisterControl/Movement';
 import CurrencyExchange from '../pages/Catalogos/CurrencyExchange';
 import CreateCurrencyExchange from '../pages/Catalogos/CurrencyExchange/Create';
 import CashSummary from '../pages/Caja/CashRegisterControl/Summary';
+import DailyReport from '../pages/Contabilidad/DailyReport';
 
 const securityRoutes = [
 	//seguridad
@@ -190,6 +191,8 @@ const accountingRoutes = [
 		exact: true,
 		component: <CreateBrazaleteLote />,
 	},
+	//reporte de diario resume
+	{ path: '/dailyreport', exact: true, component: <DailyReport /> },
 ];
 const cashRoutes = [
 	//caja
