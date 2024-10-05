@@ -16,6 +16,9 @@ import {
 	getDocumentByClient,
 } from '../../../helpers/marina/document';
 import FormDocumentClient from '../../Marina/Document/FormDocumentClient';
+import { getBoatByClient } from '../../../helpers/marina/boat';
+import FormFilter from '../../Common/FormFilter';
+import CardBasic from '../../Common/CardBasic';
 
 export default function DocumentClient({ formik }) {
 	const dispatch = useDispatch();
@@ -29,6 +32,7 @@ export default function DocumentClient({ formik }) {
 	const [item, setItem] = useState({
 		customer: { id: formik.values.id },
 	});
+	const [query, setQuery] = useState({});
 	const addNewBoatModal = () => {
 		setItem({ customer: { id: formik.values.id } });
 		setOpenModalAdd(true);
@@ -44,6 +48,34 @@ export default function DocumentClient({ formik }) {
 		}));
 		setOpenModalAdd(true);
 	};
+
+	const [filters, setFilters] = useState([
+		{
+			label: 'Embarcación',
+			field: 'boatId',
+			width: 3,
+			control: 'select',
+			type: '',
+			value: '',
+			valueSelect: null,
+			options: [],
+		},
+	]);
+	const fetchBoatsByClientApi = async () => {
+		try {
+			const response = await getBoatByClient(formik.values.id);
+			const copyFilters = [...filters];
+			copyFilters[0].options = response.list.map((c) => ({
+				label: `${c.name}`,
+				value: c.id,
+			}));
+			setFilters(copyFilters);
+		} catch (error) {}
+	};
+
+	useEffect(() => {
+		fetchBoatsByClientApi();
+	}, []);
 
 	const columns = useMemo(
 		() => [
@@ -112,7 +144,13 @@ export default function DocumentClient({ formik }) {
 
 	const fetchItemsForClientApi = async () => {
 		try {
-			const response = await getDocumentByClient(formik.values.id);
+			let q = Object.keys(query)
+				.map((key) => `${key}=${query[key]}`)
+				.join('&');
+			const response = await getDocumentByClient(
+				formik.values.id,
+				`?${q}`
+			);
 			setItems(response.list);
 			setLoadingItems(false);
 		} catch (error) {
@@ -137,7 +175,7 @@ export default function DocumentClient({ formik }) {
 		} else if (!formik.values.id) {
 			setLoadingItems(false);
 		}
-	}, [refetch, formik.values.id]);
+	}, [refetch, formik.values.id, JSON.stringify(query)]);
 
 	const handleDelete = async () => {
 		setDeleting(true);
@@ -165,6 +203,31 @@ export default function DocumentClient({ formik }) {
 		}
 	};
 
+	const fireSearch = (filts) => {
+		const activeFilters = filts
+			.filter((fl) => fl.value)
+			.map((field) => ({ name: field.field, value: field.value }));
+		const obj = activeFilters.reduce((accumulator, value) => {
+			return { ...accumulator, [value.name]: value.value };
+		}, {});
+		setQuery((prev) => ({
+			...obj,
+		}));
+		setRefetch(true);
+	};
+
+	const handleFilter = (
+		<Row>
+			<Col>
+				<FormFilter
+					filters={filters}
+					setFilters={setFilters}
+					fireSearch={fireSearch}
+				/>
+			</Col>
+		</Row>
+	);
+
 	return (
 		<>
 			<TabActionHeader
@@ -174,6 +237,15 @@ export default function DocumentClient({ formik }) {
 				}}
 			/>
 			<Row className="mt-2">
+				<Col xs="12" lg="12">
+					<CardBasic
+						title="Filtros"
+						children={handleFilter}
+						initOpen={false}
+					/>
+				</Col>
+			</Row>
+			<Row>
 				<Col xs="12" md="12">
 					{loadingItems ? (
 						<TableLoader
@@ -198,6 +270,7 @@ export default function DocumentClient({ formik }) {
 				size="xl"
 				children={
 					<FormDocumentClient
+						clientId={formik.values.id}
 						item={item}
 						setOpenModalAdd={setOpenModalAdd}
 						setRefetch={setRefetch}
