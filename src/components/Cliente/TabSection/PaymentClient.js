@@ -22,6 +22,8 @@ import CardBasic from '../../Common/CardBasic';
 import DialogMain from '../../Common/DialogMain';
 import TicketClientPayment from '../../Tickets/TicketClientPayment';
 import DeleteDialog from '../../Common/DeleteDialog';
+import FormPayment from '../../Marina/Payment/FormPayment';
+import { getBoatByClient } from '../../../helpers/marina/boat';
 
 export default function PaymentClient({ formik }) {
 	const dispatch = useDispatch();
@@ -32,6 +34,9 @@ export default function PaymentClient({ formik }) {
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [idPayment, setIdPayment] = useState(null);
 	const [paymentToCancel, setPaymentToCancel] = useState(null);
+	const [paymentToEdit, setPaymentToEdit] = useState(null);
+	const [openDialogEdit, setOpenDialogEdit] = useState(false);
+	const [refetch, setRefetch] = useState(true);
 
 	//paginar
 	const [totalPaginas, setTotalPaginas] = useState(0);
@@ -42,6 +47,16 @@ export default function PaymentClient({ formik }) {
 	});
 
 	const [filters, setFilters] = useState([
+		{
+			label: 'Embarcación',
+			field: 'boatId',
+			width: 3,
+			control: 'select',
+			type: '',
+			value: '',
+			valueSelect: null,
+			options: [],
+		},
 		{
 			label: 'Código',
 			field: 'code',
@@ -77,6 +92,21 @@ export default function PaymentClient({ formik }) {
 			valueDate: '',
 		},
 	]);
+	const fetchBoatsByClientApi = async () => {
+		try {
+			const response = await getBoatByClient(formik.values.id);
+			const copyFilters = [...filters];
+			copyFilters[0].options = response.list.map((c) => ({
+				label: `${c.name}`,
+				value: c.id,
+			}));
+			setFilters(copyFilters);
+		} catch (error) {}
+	};
+
+	useEffect(() => {
+		fetchBoatsByClientApi();
+	}, []);
 
 	const generatePayment = useCallback((row) => {
 		setIdPayment(row.original.id);
@@ -116,7 +146,7 @@ export default function PaymentClient({ formik }) {
 			payment: {
 				amount: row.original.amount,
 				concept: row.original.concept,
-				reference: 'necoPina',
+				reference: 'Cancelando pago',
 				customer: {
 					id: row.original.customer.id,
 				},
@@ -154,14 +184,35 @@ export default function PaymentClient({ formik }) {
 		}
 	};
 
+	const handleEdit = (row) => {
+		const { original } = row;
+		setPaymentToEdit({
+			id: original.id,
+			concept: original.concept,
+			reference: original.reference,
+		});
+		setOpenDialogEdit(true);
+	};
+
 	const columns = useMemo(
 		() => [
 			{
 				Header: 'Código',
 				accessor: 'code',
 				style: {
+					width: '10%',
+				},
+			},
+			{
+				Header: 'Slip / Embarcación',
+				accessor: 'reservation',
+				style: {
 					width: '15%',
 				},
+				Cell: ({ row, value }) =>
+					`${value?.slip?.code ?? 'NA'} / ${
+						value?.boat?.name ?? 'NA'
+					}`,
 			},
 			{
 				Header: 'Concepto',
@@ -250,6 +301,17 @@ export default function PaymentClient({ formik }) {
 					return (
 						<div className="d-flex">
 							<Button
+								color={'info'}
+								size="sm"
+								outline
+								type="button"
+								disabled={row.original.status === 'CANCELLED'}
+								className={'me-2 fs-4 px-2 py-0'}
+								onClick={() => handleEdit(row)}
+							>
+								<i className="bx bx-pencil" />
+							</Button>
+							<Button
 								color={
 									row.original.status === 'CANCELLED'
 										? 'secondary'
@@ -300,13 +362,14 @@ export default function PaymentClient({ formik }) {
 	);
 
 	useEffect(() => {
-		if (formik.values.id) {
+		if (refetch && formik.values.id) {
 			setLoading(true);
 			fecthApiPaymentForClient();
+			setRefetch(false);
 		} else {
 			setLoading(false);
 		}
-	}, [JSON.stringify(query)]);
+	}, [refetch, JSON.stringify(query)]);
 
 	const handlePageClick = (page) => {
 		setQuery((prev) => ({
@@ -333,6 +396,7 @@ export default function PaymentClient({ formik }) {
 			page: 1,
 			...obj,
 		}));
+		setRefetch(true);
 	};
 
 	const handleFilter = (
@@ -363,9 +427,10 @@ export default function PaymentClient({ formik }) {
 					{loading ? (
 						<TableLoader
 							columns={[
-								{ name: 'Código', width: '15%' },
+								{ name: 'Código', width: '10%' },
+								{ name: 'Slip / Embarcación', width: '15%' },
 								{ name: 'Concepto', width: '20%' },
-								{ name: 'Fecha', width: '15%' },
+								{ name: 'Fecha', width: '10%' },
 								{ name: 'Monto', width: '10%' },
 								{ name: 'Forma de pago', width: '10%' },
 								{ name: 'Tipo de pago', width: '15%' },
@@ -402,6 +467,19 @@ export default function PaymentClient({ formik }) {
 				show={showDeleteDialog}
 				setShow={setShowDeleteDialog}
 				isDeleting={isDeleting}
+			/>
+			<DialogMain
+				open={openDialogEdit}
+				setOpen={setOpenDialogEdit}
+				title={'Actualizar pago'}
+				size="md"
+				children={
+					<FormPayment
+						item={paymentToEdit}
+						setOpenModalAdd={setOpenDialogEdit}
+						setRefetch={setRefetch}
+					/>
+				}
 			/>
 		</>
 	);

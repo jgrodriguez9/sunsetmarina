@@ -14,6 +14,7 @@ const addSaldo = (data) =>
 	post(`${url.payment}/savePaymentBalanceBoardingPass`, data);
 const addSaldoReservation = (data) =>
 	post(`${url.payment}/savePaymentBalanceReservation`, data);
+const updatePayment = (id, data) => put(`${url.payment}/${id}`, data);
 
 export {
 	getPaymentList,
@@ -24,4 +25,5 @@ export {
 	cancelPayment,
 	addSaldo,
 	addSaldoReservation,
+	updatePayment,
 };

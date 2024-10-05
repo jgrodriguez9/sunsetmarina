@@ -164,6 +164,7 @@ export default function FormSlipReservationClient({
 			paymentFrequency: item?.paymentFrequency ?? '',
 			finalContractDate: item?.finalContractDate ?? '',
 			balance: item?.balance ?? 0,
+			needInvoice: item?.needInvoice ?? false,
 		},
 		validationSchema: Yup.object({
 			boat: Yup.object({
@@ -825,6 +826,24 @@ export default function FormSlipReservationClient({
 								)}
 							</div>
 						</Col>
+					</Row>
+					<Row className="align-items-center">
+						<Label
+							htmlFor="needInvoice"
+							className="mb-0 col-md-5 col-12"
+						>
+							Requiere factura
+						</Label>
+						<div className="col-md-6 col-12">
+							<Input
+								id="needInvoice"
+								name="needInvoice"
+								type="checkbox"
+								className={`form-check-Input form-check-input`}
+								onChange={formik.handleChange}
+								checked={formik.values.needInvoice || false}
+							/>
+						</div>
 					</Row>
 				</Col>
 			</Row>

@@ -63,6 +63,7 @@ export default function SlipReservationClient({ formik }) {
 			departureDate: slip.departureDate,
 			status: slip.status,
 			balance: slip.balance,
+			needInvoice: slip.needInvoice ?? false,
 		}));
 		setOpenModalAdd(true);
 	};

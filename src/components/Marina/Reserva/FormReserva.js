@@ -176,6 +176,7 @@ export default function FormReserva({ item, btnTextSubmit = 'Aceptar' }) {
 			paymentFrequency: item?.paymentFrequency ?? '',
 			finalContractDate: item?.finalContractDate ?? '',
 			balance: item.balance ?? 0,
+			needInvoice: item?.needInvoice ?? false,
 		},
 		validationSchema: Yup.object({
 			arrivalDate: Yup.string().required(FIELD_REQUIRED),

@@ -53,7 +53,7 @@ const DailyReportTable = ({
 							</thead>
 							<tbody
 								style={{
-									maxHeight: '300px',
+									maxHeight: '400px',
 									overflowY: 'auto',
 								}}
 							>
@@ -104,6 +104,7 @@ const DailyReportTable = ({
 							</tbody>
 							<tfoot>
 								<tr>
+									<td></td>
 									<td></td>
 									<td></td>
 									<td></td>

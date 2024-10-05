@@ -11,7 +11,7 @@ export default function SimpleTable({ columns, data, footer = null }) {
 					<div className="table-responsive">
 						<table
 							{...getTableProps()}
-							className="table align-middle table-bordered table-hover responsiveTable"
+							className="table align-middle table-bordered table-hover responsiveTable font-size-12"
 						>
 							<thead className="table-light">
 								{headerGroups.map((headerGroup) => (

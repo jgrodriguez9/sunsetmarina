@@ -31,7 +31,7 @@ const TableGroupByClient = ({
 							</thead>
 							<tbody
 								style={{
-									maxHeight: '300px',
+									maxHeight: '400px',
 									overflowY: 'auto',
 								}}
 							>
