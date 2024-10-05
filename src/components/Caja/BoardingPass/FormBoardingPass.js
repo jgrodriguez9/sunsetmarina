@@ -398,7 +398,6 @@ export default function FormBoardingPass({ cajero = false }) {
 			</div>
 		</>
 	);
-	const calcularPrice = async (pax) => {};
 
 	useEffect(() => {
 		if (!client && !boat && !slip) {
@@ -789,7 +788,9 @@ export default function FormBoardingPass({ cajero = false }) {
 								</Label>
 								<div className="form-control bg-light fw-bold">
 									{numberFormat(
-										formik.values?.currencyExchange ?? 0
+										formik.values?.currencyExchange ?? 0,
+										4,
+										4
 									)}{' '}
 								</div>
 								{isCalculatingPrice && (

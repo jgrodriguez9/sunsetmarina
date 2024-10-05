@@ -1,7 +1,7 @@
 import { Col, Row } from 'reactstrap';
 import DailyReportTable from './DailyReportTable';
 
-const ReportDailyContainer = ({ concepts }) => {
+const ReportDailyContainer = ({ concepts, groupByCustomer }) => {
 	return (
 		<>
 			{concepts.map((item, index) => (
@@ -16,6 +16,7 @@ const ReportDailyContainer = ({ concepts }) => {
 							creditTotalUSD={item.totalCreditUSD}
 							balanceTotal={item.totalBalance}
 							balanceTotalUSD={item.totalBalanceUSD}
+							groupByCustomer={groupByCustomer}
 						/>
 					</Col>
 				</Row>

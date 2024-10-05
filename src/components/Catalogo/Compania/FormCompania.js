@@ -65,7 +65,6 @@ export default function FormCompania({ item, btnTextSubmit = 'Aceptar' }) {
 				.max(100, 'Campo no puede ser mayor a 100')
 				.min(0, 'Campo no puede ser menor a 0'),
 			boardingPassExchange: Yup.number()
-				.integer(FIELD_INTEGER)
 				.typeError(FIELD_NUMERIC)
 				.required(FIELD_REQUIRED)
 				.min(0, 'Campo no puede ser menor a 0'),

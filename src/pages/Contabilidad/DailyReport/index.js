@@ -18,6 +18,110 @@ import moment from 'moment';
 import jsFormatNumber from '../../../utils/jsFormatNumber';
 import { getFormaPago } from '../../../utils/getFormaPago';
 
+const getColumns = (isGroupByCustomer) => {
+	const columns = [
+		{
+			key: 'code',
+			header: 'Código',
+			width: 14,
+		},
+		{
+			key: 'customer',
+			header: 'Cliente',
+			width: 35,
+		},
+		{
+			key: 'boat',
+			header: 'Embarcación',
+			width: 35,
+		},
+		{
+			key: 'slip',
+			header: 'Slip',
+			width: 14,
+		},
+		{
+			key: 'date',
+			header: 'Fecha',
+			width: 14,
+		},
+		{
+			key: 'paymentForm',
+			header: 'Forma pago',
+			width: 14,
+		},
+		{
+			key: 'charge',
+			header: 'Cargo (MXN)',
+			width: 14,
+			style: {
+				alignment: { horizontal: 'right' },
+			},
+		},
+		{
+			key: 'credit',
+			header: 'Abono (MXN)',
+			width: 14,
+			style: {
+				alignment: { horizontal: 'right' },
+			},
+		},
+		{
+			key: 'balance',
+			header: 'Deuda (MXN)',
+			width: 14,
+			style: {
+				alignment: { horizontal: 'right' },
+			},
+		},
+		{
+			key: 'currencyExchange',
+			header: 'Tipo de cambio',
+			width: 14,
+			style: {
+				alignment: { horizontal: 'right' },
+			},
+		},
+		{
+			key: 'chargeUSD',
+			header: 'Cargo (USD)',
+			width: 14,
+			style: {
+				alignment: { horizontal: 'right' },
+			},
+		},
+		{
+			key: 'creditUSD',
+			header: 'Abono (USD)',
+			width: 14,
+			style: {
+				alignment: { horizontal: 'right' },
+			},
+		},
+		{
+			key: 'balanceUSD',
+			header: 'Deuda (USD)',
+			width: 14,
+			style: {
+				alignment: { horizontal: 'right' },
+			},
+		},
+	];
+	if (isGroupByCustomer) {
+		const columnsCustomer = columns.filter(
+			(it) =>
+				it.key !== 'code' &&
+				it.key !== 'boat' &&
+				it.key !== 'slip' &&
+				it.key !== 'paymentForm' &&
+				it.key !== 'currencyExchange'
+		);
+		return columnsCustomer;
+	} else {
+		return columns;
+	}
+};
+
 const groupedByCustomer = (data) => {
 	const grouped = data.map((d) => {
 		return {
@@ -156,95 +260,16 @@ function DailyReport() {
 			let posI = 1;
 			const sheet = workbook.addWorksheet(val.concept);
 			sheet.views = [{ state: 'frozen', xSplit: 0, ySplit: 1 }];
-			const columns = [
-				{
-					key: 'code',
-					header: 'Código',
-					width: 14,
-				},
-				{
-					key: 'customer',
-					header: 'Cliente',
-					width: 35,
-				},
-				{
-					key: 'boat',
-					header: 'Embarcación',
-					width: 35,
-				},
-				{
-					key: 'date',
-					header: 'Fecha',
-					width: 14,
-				},
-				{
-					key: 'paymentForm',
-					header: 'Forma pago',
-					width: 14,
-				},
-				{
-					key: 'charge',
-					header: 'Cargo (MXN)',
-					width: 14,
-					style: {
-						alignment: { horizontal: 'right' },
-					},
-				},
-				{
-					key: 'credit',
-					header: 'Abono (MXN)',
-					width: 14,
-					style: {
-						alignment: { horizontal: 'right' },
-					},
-				},
-				{
-					key: 'balance',
-					header: 'Deuda (MXN)',
-					width: 14,
-					style: {
-						alignment: { horizontal: 'right' },
-					},
-				},
-				{
-					key: 'currencyExchange',
-					header: 'Tipo de cambio',
-					width: 14,
-					style: {
-						alignment: { horizontal: 'right' },
-					},
-				},
-				{
-					key: 'chargeUSD',
-					header: 'Cargo (USD)',
-					width: 14,
-					style: {
-						alignment: { horizontal: 'right' },
-					},
-				},
-				{
-					key: 'creditUSD',
-					header: 'Abono (USD)',
-					width: 14,
-					style: {
-						alignment: { horizontal: 'right' },
-					},
-				},
-				{
-					key: 'balanceUSD',
-					header: 'Deuda (USD)',
-					width: 14,
-					style: {
-						alignment: { horizontal: 'right' },
-					},
-				},
-			];
+
+			const columns = getColumns(groupByCustomer);
+			console.log(columns);
 			sheet.columns = columns;
 			val.items
 				.map((item) => ({
 					code: item.code,
 					customer: item.customer,
 					boat: item.boat,
+					slip: item.slip,
 					date: moment.utc(item.date).local().format('DD-MM-YYYY'),
 					paymentForm: getFormaPago(item.paymentForm),
 					charge: jsFormatNumber(item.charge),
@@ -373,7 +398,10 @@ function DailyReport() {
 				</div>
 			</Col>
 			<Col xs="12" xl="12">
-				<ReportDailyContainer concepts={items} />
+				<ReportDailyContainer
+					concepts={items}
+					groupByCustomer={groupByCustomer}
+				/>
 			</Col>
 		</Row>
 	);
