@@ -268,7 +268,7 @@ export const navigations = [
 			},
 			{
 				id: 'cobranza',
-				label: 'Reporte de contratos',
+				label: 'Reporte de saldo de cliente',
 				route: '/billreport',
 				classIcon: null,
 				show: existsRole(roles, [

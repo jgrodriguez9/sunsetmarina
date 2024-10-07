@@ -22,3 +22,5 @@ export const NOT_CASH_REGISTER_ASSIGN =
 export const ADD_BALANCE = 'Monto agregado correctamente';
 export const CHARGES_RUN_SUCCESSFULLY =
 	'Los cargos han sidos procesados correctamente';
+export const ACTIVE_DEBT =
+	'No se puede cancelar porque presenta una deuda activa';

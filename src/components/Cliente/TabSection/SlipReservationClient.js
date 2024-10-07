@@ -4,6 +4,7 @@ import DialogMain from '../../Common/DialogMain';
 import { useEffect, useMemo, useState } from 'react';
 import SimpleTable from '../../Tables/SimpleTable';
 import {
+	ACTIVE_DEBT,
 	CANCEL_RESERVATION_SUCCESS,
 	DELETE_QUESTION_CONFIRMATION,
 	ERROR_SERVER,
@@ -194,6 +195,7 @@ export default function SlipReservationClient({ formik }) {
 				Header: 'Acciones',
 				Cell: ({ row }) => (
 					<>
+						{console.log(row)}
 						<CellActions
 							edit={
 								row.original.status === 'CANCELLED'
@@ -243,8 +245,17 @@ export default function SlipReservationClient({ formik }) {
 	);
 
 	const handleShowDialogCancel = (row) => {
-		setOpenModalCancel(true);
-		setSelectedReservation(row.original);
+		if (row.original?.debt?.debt > 0) {
+			dispatch(
+				addMessage({
+					type: 'warning',
+					message: ACTIVE_DEBT,
+				})
+			);
+		} else {
+			setOpenModalCancel(true);
+			setSelectedReservation(row.original);
+		}
 	};
 
 	const handleShowDialogCancelReservation = (row) => {

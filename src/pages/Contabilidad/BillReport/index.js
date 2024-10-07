@@ -252,11 +252,7 @@ function BillReport() {
 					),
 				}))
 				.forEach((val2, idx, _) => {
-					if (idx > 0) {
-						posI += idx;
-					} else {
-						posI += 1;
-					}
+					posI += 1;
 					sheet.insertRow(posI, val2);
 				});
 		});
@@ -346,8 +342,8 @@ function BillReport() {
 		<div className="page-content">
 			<Container fluid>
 				<Breadcrumbs
-					title={'Reporte de Cotratos'}
-					breadcrumbItem={'Reporte de Cotratos'}
+					title={'Reporte de saldo de cliente'}
+					breadcrumbItem={'Reporte de saldo de cliente'}
 				/>
 
 				<Row className="pb-2">
@@ -358,7 +354,7 @@ function BillReport() {
 				<Row className="pb-5">
 					<Col lg="12">
 						<CardMain
-							title="Reporte de contratos"
+							title="Reporte de saldo de cliente"
 							children={carHandleEstadoCuenta}
 						/>
 					</Col>
