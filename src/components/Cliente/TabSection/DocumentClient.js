@@ -97,17 +97,24 @@ export default function DocumentClient({ formik }) {
 				),
 			},
 			{
+				Header: 'Embarcación',
+				accessor: 'boat.name',
+				style: {
+					width: '15%',
+				},
+			},
+			{
 				Header: 'Comentario',
 				accessor: 'comments',
 				style: {
-					width: '40%',
+					width: '30%',
 				},
 			},
 			{
 				Header: 'Fecha recordatorio',
 				accessor: 'reminderDate',
 				style: {
-					width: '20%',
+					width: '15%',
 				},
 				Cell: ({ row, value }) =>
 					value
@@ -251,8 +258,9 @@ export default function DocumentClient({ formik }) {
 						<TableLoader
 							columns={[
 								{ name: 'Tipo documento', width: '30%' },
-								{ name: 'Comentario', width: '40%' },
-								{ name: 'Fecha recordatorio', width: '20%' },
+								{ name: 'Embarcación', width: '15%' },
+								{ name: 'Comentario', width: '30%' },
+								{ name: 'Fecha recordatorio', width: '15%' },
 								{ name: 'Acciones', width: '10%' },
 							]}
 						/>
