@@ -186,7 +186,7 @@ function DailyReport() {
 		{
 			label: 'Cliente',
 			field: 'customer',
-			width: 4,
+			width: 3,
 			control: 'select',
 			type: '',
 			value: '',

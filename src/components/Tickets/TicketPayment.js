@@ -155,6 +155,18 @@ function TicketPayment({ ticket }) {
 						</View>
 						<View style={stylesTable.row2}></View>
 					</View>
+					{ticket.customerBalance > 0 && (
+						<View style={stylesTable.row} wrap={false}>
+							<View style={stylesTable.row1}>
+								<Text>{`Abono deducido (USD)`}</Text>
+							</View>
+							<View style={stylesTable.row2}>
+								<Text>
+									{formatNumber(ticket.customerBalance)}
+								</Text>
+							</View>
+						</View>
+					)}
 					<View style={stylesTable.row} wrap={false}>
 						<View style={stylesTable.row1}>
 							<Text>{`Precio x Pax (USD)`}</Text>

@@ -4,4 +4,5 @@ export const paymentFormOpt = [
 	{ value: 'CREDIT_CARD', label: 'Tarjeta de crédito' },
 	{ value: 'WIRE_TRANSFER', label: 'Transferencia electrónica' },
 	{ value: 'CHECK', label: 'Cheque' },
+	{ value: 'AMEX', label: 'American Express' },
 ];

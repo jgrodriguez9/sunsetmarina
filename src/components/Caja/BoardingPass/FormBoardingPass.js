@@ -83,6 +83,7 @@ export default function FormBoardingPass({ cajero = false }) {
 	//list colors
 	const [colorDefault, setColorDefault] = useState(null);
 	const [colorsOpt, setColorsOpt] = useState([]);
+	const [loadingBracelets, setLoadingBracelets] = useState(false);
 
 	//prices
 	const [isCalculatingPrice, setIsCalculatingPrice] = useState(false);
@@ -283,6 +284,7 @@ export default function FormBoardingPass({ cajero = false }) {
 
 	useEffect(() => {
 		const fetchListBraceletsAvailableApi = async () => {
+			setLoadingBracelets(true);
 			try {
 				const query = `?color=${colorDefault.value}&quantity=${formik.values.pax}`;
 				const response = await getListAvailableBraceletsAvailable(
@@ -299,8 +301,11 @@ export default function FormBoardingPass({ cajero = false }) {
 						id: it.value,
 					}))
 				);
+				setLoadingBracelets(false);
 			} catch (error) {
 				setBrazaletes([]);
+				formik.setFieldValue('bracelets', []);
+				setLoadingBracelets(false);
 			}
 		};
 		if (colorDefault && formik.values.pax > 0) {
@@ -665,7 +670,7 @@ export default function FormBoardingPass({ cajero = false }) {
 							</Col>
 						</Row>
 						<Row>
-							<Col xs="12" md="4">
+							<Col xs="12" md="4" className={'mb-2'}>
 								<Label htmlFor="pax" className="mb-0">
 									Pax
 								</Label>
@@ -690,7 +695,7 @@ export default function FormBoardingPass({ cajero = false }) {
 									</div>
 								)}
 							</Col>
-							<Col xs="12" md="4">
+							<Col xs="12" md="4" className={'mb-2'}>
 								<Label htmlFor="paymentForm" className="mb-0">
 									Forma de pago
 								</Label>
@@ -713,7 +718,8 @@ export default function FormBoardingPass({ cajero = false }) {
 									classNamePrefix="select2-selection"
 								/>
 							</Col>
-							<Col xs="12" md="4">
+							{console.log(formik.values)}
+							<Col xs="12" md="4" className={'mb-2'}>
 								<Label htmlFor="departureDate" className="mb-0">
 									Fecha de salida
 								</Label>
@@ -726,6 +732,15 @@ export default function FormBoardingPass({ cajero = false }) {
 												`departureDate`,
 												value[0]
 											);
+											const isBtw = isInRange(value[0]);
+											if (!isBtw) {
+												setColorDefault(null);
+												setBrazaletes([]);
+												formik.setFieldValue(
+													'bracelets',
+													[]
+												);
+											}
 										} else {
 											formik.setFieldValue(
 												`departureDate`,
@@ -746,7 +761,7 @@ export default function FormBoardingPass({ cajero = false }) {
 									</div>
 								)}
 							</Col>
-							<Col xs="12" md="2">
+							<Col xs="12" md="2" className={'mb-2'}>
 								<Label htmlFor="paymentForm" className="mb-0">
 									Moneda
 								</Label>
@@ -774,7 +789,7 @@ export default function FormBoardingPass({ cajero = false }) {
 									</div>
 								)}
 							</Col>
-							<Col xs="12" md="2">
+							<Col xs="12" md="2" className={'mb-2'}>
 								<Label htmlFor="amount" className="mb-0">
 									Precio x Pax (USD)
 								</Label>
@@ -809,7 +824,7 @@ export default function FormBoardingPass({ cajero = false }) {
 									/>
 								)}
 							</Col>
-							<Col xs="12" md="2">
+							<Col xs="12" md="2" className={'mb-2'}>
 								<Label htmlFor="amount" className="mb-0">
 									Total (USD)
 								</Label>
@@ -830,7 +845,7 @@ export default function FormBoardingPass({ cajero = false }) {
 									</div>
 								)}
 							</Col>
-							<Col xs="12" md="2">
+							<Col xs="12" md="2" className={'mb-2'}>
 								<Label htmlFor="priceMXN" className="mb-0">
 									Tipo Cambio
 								</Label>
@@ -848,7 +863,7 @@ export default function FormBoardingPass({ cajero = false }) {
 									/>
 								)}
 							</Col>
-							<Col xs="12" md="2">
+							<Col xs="12" md="2" className={'mb-2'}>
 								<Label htmlFor="priceMXN" className="mb-0">
 									Precio x Pax (MXN)
 								</Label>
@@ -862,7 +877,7 @@ export default function FormBoardingPass({ cajero = false }) {
 									/>
 								)}
 							</Col>
-							<Col xs="12" md="2">
+							<Col xs="12" md="2" className={'mb-2'}>
 								<Label htmlFor="priceMXN" className="mb-0">
 									Total (MXN)
 								</Label>
@@ -894,42 +909,52 @@ export default function FormBoardingPass({ cajero = false }) {
 										options={colorsOpt}
 										classNamePrefix="select2-selection"
 									/>
-									{console.log(colorsOpt)}
 								</Col>
-								<Col xs="12" md="12">
+								<Col xs="12" md="8">
 									<Label htmlFor="amount" className="mb-0">
 										Brazaletes
 									</Label>
-									<SelectAsync
-										fnFilter={getBracaletListPaginado}
-										query={
-											'?page=1&max=10&status=AVAILABLE'
-										}
-										keyCompare={'code'}
-										keyProperty={'code'}
-										label={['color', 'code']}
-										isClearable
-										value={brazaletes}
-										onChange={(value) => {
-											if (
-												value.length <=
-												formik.values.pax
-											) {
-												setBrazaletes(value);
-												formik.setFieldValue(
-													'bracelets',
-													value.map((it) => ({
-														id: it.value,
-													}))
-												);
-											}
-										}}
-										isMulti={true}
-									/>
-									{formik.errors.bracelets && (
-										<div className="invalid-tooltip d-block">
-											{formik.errors.bracelets}
-										</div>
+									{loadingBracelets ? (
+										<SimpleLoad
+											text={'Cargando brazaletes'}
+											extraClass="text-secondary"
+										/>
+									) : (
+										<>
+											<SelectAsync
+												fnFilter={
+													getBracaletListPaginado
+												}
+												query={
+													'?page=1&max=10&status=AVAILABLE'
+												}
+												keyCompare={'code'}
+												keyProperty={'code'}
+												label={['color', 'code']}
+												isClearable
+												value={brazaletes}
+												onChange={(value) => {
+													if (
+														value.length <=
+														formik.values.pax
+													) {
+														setBrazaletes(value);
+														formik.setFieldValue(
+															'bracelets',
+															value.map((it) => ({
+																id: it.value,
+															}))
+														);
+													}
+												}}
+												isMulti={true}
+											/>
+											{formik.errors.bracelets && (
+												<div className="invalid-tooltip d-block">
+													{formik.errors.bracelets}
+												</div>
+											)}
+										</>
 									)}
 								</Col>
 							</Row>
