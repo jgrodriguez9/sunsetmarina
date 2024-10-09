@@ -3,6 +3,11 @@ import { Fragment, useCallback } from 'react';
 import { Col, Row } from 'reactstrap';
 import jsFormatNumber from '../../utils/jsFormatNumber';
 
+export const getTotalsReportContract = (concepts, key) => {
+	const total = concepts.reduce((acc, curr) => acc + curr[key], 0);
+	return jsFormatNumber(total);
+};
+
 const ReportContratos = ({ items }) => {
 	const getDeuda = useCallback((charges, payments, currency) => {
 		if (currency === 'MXN') {
@@ -24,7 +29,7 @@ const ReportContratos = ({ items }) => {
 			<Col>
 				<div className="table-rep-plugin">
 					<div className="table-responsive">
-						<table className="table align-middle table-bordered table-hover responsiveTable">
+						<table className="table align-middle table-bordered table-hover responsiveTable font-size-12">
 							<thead className="table-light">
 								<tr>
 									<th>Slip</th>
@@ -47,10 +52,50 @@ const ReportContratos = ({ items }) => {
 										<Fragment key={`type-${idx}`}>
 											<tr>
 												<td
-													colSpan={12}
+													colSpan={8}
 													className="fw-bold"
 												>
 													{it.boatType}
+												</td>
+												<td>
+													{getTotalsReportContract(
+														it.concepts,
+														'monthContract'
+													)}
+												</td>
+												<td>
+													{getTotalsReportContract(
+														it.concepts,
+														'monthRental'
+													)}
+												</td>
+												<td
+													className={
+														it.totalCharges -
+															it.totalPayments >
+														0
+															? 'text-danger fw-semibold'
+															: 'text-success fw-semibold'
+													}
+												>
+													{jsFormatNumber(
+														it.totalCharges -
+															it.totalPayments
+													)}
+												</td>
+												<td
+													className={
+														it.totalChargesUSD -
+															it.totalPaymentsUSD >
+														0
+															? 'text-danger fw-semibold'
+															: 'text-success fw-semibold'
+													}
+												>
+													{jsFormatNumber(
+														it.totalChargesUSD -
+															it.totalPaymentsUSD
+													)}
 												</td>
 											</tr>
 											{it.concepts.map(

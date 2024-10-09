@@ -72,6 +72,7 @@ export default function FormDocumentClient({
 	}, []);
 
 	const formik = useFormik({
+		enableReinitialize: true,
 		initialValues: {
 			id: item?.id ?? '',
 			comments: item?.comments ?? '',
@@ -85,7 +86,7 @@ export default function FormDocumentClient({
 		},
 		validationSchema: Yup.object({
 			fileToUpload: Yup.string().when([], {
-				is: () => !fileSelected,
+				is: () => !fileSelected && !item?.id,
 				then: Yup.string().required(FIELD_REQUIRED),
 				otherwise: Yup.string().notRequired(),
 			}),
@@ -185,6 +186,7 @@ export default function FormDocumentClient({
 			}
 		},
 	});
+	console.log(formik.errors);
 
 	return (
 		<div className="needs-validation">
@@ -208,7 +210,7 @@ export default function FormDocumentClient({
 																it.value ===
 																formik.values
 																	.documentType
-														).label ?? '',
+														)?.label ?? '',
 											  }
 											: null
 									}
@@ -229,26 +231,28 @@ export default function FormDocumentClient({
 								)}
 							</div>
 						</Col>
-						<Col xs="12" md="12">
-							<div className="mb-3">
-								<Label htmlFor="file" className="mb-0">
-									Archivo
-								</Label>
-								<Input
-									className="form-control"
-									type="file"
-									id="file"
-									onChange={(e) => {
-										setFileSelected(e.target.files[0]);
-									}}
-								/>
-								{formik.errors.fileToUpload && (
-									<div className="invalid-tooltip d-block">
-										{formik.errors.fileToUpload}
-									</div>
-								)}
-							</div>
-						</Col>
+						{!item.id && (
+							<Col xs="12" md="12">
+								<div className="mb-3">
+									<Label htmlFor="file" className="mb-0">
+										Archivo
+									</Label>
+									<Input
+										className="form-control"
+										type="file"
+										id="file"
+										onChange={(e) => {
+											setFileSelected(e.target.files[0]);
+										}}
+									/>
+									{formik.errors.fileToUpload && (
+										<div className="invalid-tooltip d-block">
+											{formik.errors.fileToUpload}
+										</div>
+									)}
+								</div>
+							</Col>
+						)}
 						<Col xs="12" md="12">
 							<Label htmlFor="reminderDate" className="mb-0">
 								Fecha recordatorio (opcional)

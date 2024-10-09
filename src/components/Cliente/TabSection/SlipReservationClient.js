@@ -245,17 +245,8 @@ export default function SlipReservationClient({ formik }) {
 	);
 
 	const handleShowDialogCancel = (row) => {
-		if (row.original?.debt?.debt > 0) {
-			dispatch(
-				addMessage({
-					type: 'warning',
-					message: ACTIVE_DEBT,
-				})
-			);
-		} else {
-			setOpenModalCancel(true);
-			setSelectedReservation(row.original);
-		}
+		setOpenModalCancel(true);
+		setSelectedReservation(row.original);
 	};
 
 	const handleShowDialogCancelReservation = (row) => {
@@ -339,7 +330,7 @@ export default function SlipReservationClient({ formik }) {
 	const handleCancelReservation = async (values) => {
 		setIsCancelingReservation(true);
 		try {
-			const query = `id=${selectedReservation.id}&reason=${values.reason}`;
+			const query = `id=${selectedReservation.id}&reason=${values.reason}&forgivenBalance=${values.forgivenBalance}`;
 			const response = await cancelReservation(query);
 			if (response) {
 				setIsCancelingReservation(false);
@@ -435,7 +426,7 @@ export default function SlipReservationClient({ formik }) {
 				size="md"
 				children={
 					selectedReservation
-						? selectedReservation?.debt > 0
+						? selectedReservation?.debt.debt > 0
 							? contentDialogNotCancel
 							: contentDialogCancel(
 									isCancel,

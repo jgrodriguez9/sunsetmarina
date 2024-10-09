@@ -48,12 +48,17 @@ export default function FormOpenCashRegisterControl({
 		initialValues: {
 			cashRegister: { id: '' },
 			initialAmount: 0,
+			initialAmountUSD: 0,
 		},
 		validationSchema: Yup.object({
 			cashRegister: Yup.object({
 				id: Yup.number().required(FIELD_REQUIRED),
 			}),
 			initialAmount: Yup.number()
+				.integer(FIELD_INTEGER)
+				.typeError(FIELD_NUMERIC)
+				.required(FIELD_REQUIRED),
+			initialAmountUSD: Yup.number()
 				.integer(FIELD_INTEGER)
 				.typeError(FIELD_NUMERIC)
 				.required(FIELD_REQUIRED),
@@ -133,7 +138,7 @@ export default function FormOpenCashRegisterControl({
 				</Col>
 				<Col xs="12" md="12">
 					<Label htmlFor="initialAmount" className="mb-0">
-						Monto inicial
+						Monto inicial (MXN)
 					</Label>
 					<Input
 						id="initialAmount"
@@ -147,6 +152,25 @@ export default function FormOpenCashRegisterControl({
 					{formik.errors.initialAmount && (
 						<div className="invalid-tooltip d-block">
 							{formik.errors.initialAmount}
+						</div>
+					)}
+				</Col>
+				<Col xs="12" md="12">
+					<Label htmlFor="initialAmountUSD" className="mb-0">
+						Monto inicial (USD)
+					</Label>
+					<Input
+						id="initialAmountUSD"
+						name="initialAmountUSD"
+						className={`form-control ${
+							formik.errors.initialAmountUSD ? 'is-invalid' : ''
+						}`}
+						onChange={formik.handleChange}
+						value={formik.values.initialAmountUSD}
+					/>
+					{formik.errors.initialAmountUSD && (
+						<div className="invalid-tooltip d-block">
+							{formik.errors.initialAmountUSD}
 						</div>
 					)}
 				</Col>

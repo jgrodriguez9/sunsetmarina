@@ -10,7 +10,9 @@ import extractMeaningfulMessage from '../../../utils/extractMeaningfulMessage';
 import { useDispatch } from 'react-redux';
 import { addMessage } from '../../../redux/messageSlice';
 import TableLoader from '../../../components/Loader/TablaLoader';
-import ReportContratos from '../../../components/Reportes/ReportContratos';
+import ReportContratos, {
+	getTotalsReportContract,
+} from '../../../components/Reportes/ReportContratos';
 import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import moment from 'moment';
@@ -206,12 +208,28 @@ function BillReport() {
 		sheet.columns = columns;
 		let posI = 0;
 		items.forEach((val, i, _) => {
+			console.log(val);
+			const value = {
+				slip: val.boatType,
+				monthContract: getTotalsReportContract(
+					val.concepts,
+					'monthContract'
+				),
+				monthRental: getTotalsReportContract(
+					val.concepts,
+					'monthRental'
+				),
+				deudaMXN: jsFormatNumber(val.totalCharges - val.totalPayments),
+				deudaUSD: jsFormatNumber(
+					val.totalChargesUSD - val.totalPaymentsUSD
+				),
+			};
 			if (i === 0) {
 				posI += 2;
 			} else {
 				posI += 1;
 			}
-			sheet.insertRow(posI, [val.boatType]);
+			sheet.insertRow(posI, value);
 			sheet.getCell(`A${posI}`).font = { bold: true };
 			val.concepts
 				.map((concept) => ({

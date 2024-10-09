@@ -180,7 +180,7 @@ function CashRegisterControl() {
 				Header: 'Fecha cierre',
 				accessor: 'closeDate',
 				style: {
-					width: '12%',
+					width: '10%',
 				},
 				Cell: ({ value }) =>
 					value
@@ -191,12 +191,20 @@ function CashRegisterControl() {
 				Header: 'Usuario aprobó',
 				accessor: 'approvedBy.name',
 				style: {
-					width: '13%',
+					width: '10%',
 				},
 			},
 			{
-				Header: 'Monto inicial',
+				Header: 'Monto inicial (MXN)',
 				accessor: 'initialAmount',
+				style: {
+					width: '6%',
+				},
+				Cell: ({ value }) => numberFormat(value),
+			},
+			{
+				Header: 'Monto inicial (USD)',
+				accessor: 'initialAmountUSD',
 				style: {
 					width: '6%',
 				},
@@ -378,7 +386,8 @@ function CashRegisterControl() {
 						{ name: 'Usuario cierre', width: '13%' },
 						{ name: 'Fecha cierre', width: '12%' },
 						{ name: 'Usuario aprobó', width: '12%' },
-						{ name: 'Monto inicial', width: '6%' },
+						{ name: 'Monto inicial (MXN)', width: '6%' },
+						{ name: 'Monto inicial (USD)', width: '6%' },
 						{ name: 'Monto (MXN)', width: '7%' },
 						{ name: 'Monto (USD)', width: '7%' },
 						{ name: 'Acciones', width: '10%' },

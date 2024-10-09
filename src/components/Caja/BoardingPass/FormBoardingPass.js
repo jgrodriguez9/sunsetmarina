@@ -34,7 +34,11 @@ import { numberFormat } from '../../../utils/numberFormat';
 import { useRef } from 'react';
 import SimpleLoad from '../../Loader/SimpleLoad';
 import SelectAsync from '../../Common/SelectAsync';
-import { getBracaletListPaginado } from '../../../helpers/contabilidad/bracalet';
+import {
+	getBracaletListPaginado,
+	getColorsAvailable,
+	getListAvailableBraceletsAvailable,
+} from '../../../helpers/contabilidad/bracalet';
 import { paymentFormOpt } from '../../../constants/paymentForm';
 import { currencyOpt } from '../../../constants/currencies';
 import moment from 'moment';
@@ -76,6 +80,9 @@ export default function FormBoardingPass({ cajero = false }) {
 		loading: true,
 		hasCaja: false,
 	});
+	//list colors
+	const [colorDefault, setColorDefault] = useState(null);
+	const [colorsOpt, setColorsOpt] = useState([]);
 
 	//prices
 	const [isCalculatingPrice, setIsCalculatingPrice] = useState(false);
@@ -135,6 +142,19 @@ export default function FormBoardingPass({ cajero = false }) {
 			}
 		};
 		fetchSlipsApi();
+
+		//colors list
+		const fetchColorsApi = async () => {
+			try {
+				const response = await getColorsAvailable();
+				setColorsOpt(
+					response.map((item) => ({ label: item, value: item }))
+				);
+			} catch (error) {
+				setColorsOpt([]);
+			}
+		};
+		fetchColorsApi();
 	}, []);
 
 	const isInRange = useCallback((value) => {
@@ -239,6 +259,7 @@ export default function FormBoardingPass({ cajero = false }) {
 					setBoat(null);
 					setClient(null);
 					setSlip(null);
+					setColorDefault(null);
 				} else {
 					dispatch(
 						addMessage({
@@ -259,6 +280,33 @@ export default function FormBoardingPass({ cajero = false }) {
 			}
 		},
 	});
+
+	useEffect(() => {
+		const fetchListBraceletsAvailableApi = async () => {
+			try {
+				const query = `?color=${colorDefault.value}&quantity=${formik.values.pax}`;
+				const response = await getListAvailableBraceletsAvailable(
+					query
+				);
+				const braceletsAvailable = response.list.map((it) => ({
+					value: it.id,
+					label: `${it.color} - ${it.code}`,
+				}));
+				setBrazaletes(braceletsAvailable);
+				formik.setFieldValue(
+					'bracelets',
+					braceletsAvailable.map((it) => ({
+						id: it.value,
+					}))
+				);
+			} catch (error) {
+				setBrazaletes([]);
+			}
+		};
+		if (colorDefault && formik.values.pax > 0) {
+			fetchListBraceletsAvailableApi();
+		}
+	}, [colorDefault, formik.values.pax]);
 
 	const buscar = async () => {
 		setLoading(true);
@@ -831,46 +879,58 @@ export default function FormBoardingPass({ cajero = false }) {
 						</Row>
 						{isInRange(formik.values.departureDate) && (
 							<Row>
-								<Col>
-									<Col xs="12" md="12">
-										<Label
-											htmlFor="amount"
-											className="mb-0"
-										>
-											Brazaletes
-										</Label>
-										<SelectAsync
-											fnFilter={getBracaletListPaginado}
-											query={
-												'?page=1&max=10&status=AVAILABLE'
+								<Col xs="12" md="4">
+									<Label
+										htmlFor="paymentForm"
+										className="mb-0"
+									>
+										Color
+									</Label>
+									<Select
+										value={colorDefault}
+										onChange={(value) => {
+											setColorDefault(value);
+										}}
+										options={colorsOpt}
+										classNamePrefix="select2-selection"
+									/>
+									{console.log(colorsOpt)}
+								</Col>
+								<Col xs="12" md="12">
+									<Label htmlFor="amount" className="mb-0">
+										Brazaletes
+									</Label>
+									<SelectAsync
+										fnFilter={getBracaletListPaginado}
+										query={
+											'?page=1&max=10&status=AVAILABLE'
+										}
+										keyCompare={'code'}
+										keyProperty={'code'}
+										label={['color', 'code']}
+										isClearable
+										value={brazaletes}
+										onChange={(value) => {
+											if (
+												value.length <=
+												formik.values.pax
+											) {
+												setBrazaletes(value);
+												formik.setFieldValue(
+													'bracelets',
+													value.map((it) => ({
+														id: it.value,
+													}))
+												);
 											}
-											keyCompare={'code'}
-											keyProperty={'code'}
-											label={['color', 'code']}
-											isClearable
-											value={brazaletes}
-											onChange={(value) => {
-												if (
-													value.length <=
-													formik.values.pax
-												) {
-													setBrazaletes(value);
-													formik.setFieldValue(
-														'bracelets',
-														value.map((it) => ({
-															id: it.value,
-														}))
-													);
-												}
-											}}
-											isMulti={true}
-										/>
-										{formik.errors.bracelets && (
-											<div className="invalid-tooltip d-block">
-												{formik.errors.bracelets}
-											</div>
-										)}
-									</Col>
+										}}
+										isMulti={true}
+									/>
+									{formik.errors.bracelets && (
+										<div className="invalid-tooltip d-block">
+											{formik.errors.bracelets}
+										</div>
+									)}
 								</Col>
 							</Row>
 						)}

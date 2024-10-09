@@ -43,8 +43,11 @@ export default function DocumentClient({ formik }) {
 		setItem((prev) => ({
 			...prev,
 			id: boat.id,
+			customer: boat.customer,
 			comments: boat.comments,
 			reminderDate: boat.reminderDate,
+			documentType: boat.documentType ?? null,
+			boat: boat.boat ?? null,
 		}));
 		setOpenModalAdd(true);
 	};
@@ -127,7 +130,7 @@ export default function DocumentClient({ formik }) {
 				Cell: ({ row }) => (
 					<>
 						<CellActions
-							edit={{ allow: false, action: editAction }}
+							edit={{ allow: true, action: editAction }}
 							del={{
 								allow: true,
 								action: handleShowDialogDelete,
