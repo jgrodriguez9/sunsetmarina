@@ -78,9 +78,9 @@ const Navbar = (props) => {
 														) {
 															setapp(null);
 														} else {
-															setapp(
-																navigation.id
-															);
+															// setapp(
+															// 	navigation.id
+															// );
 														}
 													}
 												}}

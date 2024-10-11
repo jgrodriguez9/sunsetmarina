@@ -17,6 +17,7 @@ import moment from 'moment';
 import CellActions from '../../Tables/CellActions';
 import {
 	cancelReservation,
+	cancelReservationUser,
 	getSlipReservationByClient,
 	updateReservation,
 } from '../../../helpers/marina/slipReservation';
@@ -291,11 +292,9 @@ export default function SlipReservationClient({ formik }) {
 	const handleCancelar = async () => {
 		setIsCancel(true);
 		try {
-			const data = {
-				id: selectedReservation.id,
-				status: 'CANCELLED',
-			};
-			const response = await updateReservation(data.id, data);
+			const response = await cancelReservationUser(
+				selectedReservation.id
+			);
 			if (response) {
 				setRefetch(true);
 				setOpenModalCancel(false);

@@ -15,6 +15,8 @@ const updateReservation = (id, data) =>
 const deleteReservation = (id) => del(`${url.slipReservation}/${id}`);
 const cancelReservation = (query) =>
 	post(`${url.slipReservation}/cancelReservationWithDeb?${query}`, {});
+const cancelReservationUser = (id) =>
+	post(`${url.slipReservation}/cancelReservation/${id}`, {});
 
 export {
 	getSlipReservationByClient,
@@ -25,4 +27,5 @@ export {
 	deleteReservation,
 	getReservation,
 	cancelReservation,
+	cancelReservationUser,
 };

@@ -28,7 +28,8 @@ import {
 	ROLE_CONTABILIDAD,
 	ROLE_OPERACIONES,
 } from './constants/roles';
-
+import SpinLoader from './components/Loader/SpinLoader';
+let loading = true;
 function App() {
 	const [authRoutes, setAuthRoutes] = useState(authProtectedRoutes);
 	const user = useSelector((state) => state.user);
@@ -51,6 +52,8 @@ function App() {
 			if (user.roles.includes(ROLE_CAJA)) {
 				setAuthRoutes((prev) => [...prev, ...cajeroRoutes]);
 			}
+			console.log('useMemo');
+			loading = false;
 		}
 	}, [user.name, user.roles]);
 
@@ -104,6 +107,15 @@ function App() {
 			}
 		}
 	}, [message, dispatch]);
+
+	if (loading) {
+		return (
+			<div className="d-flex flex-row justify-content-center items-align-center mt-5">
+				<SpinLoader />
+			</div>
+		);
+	}
+
 	return (
 		<>
 			<BrowserRouter>
