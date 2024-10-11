@@ -1,4 +1,10 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import {
+	BrowserRouter,
+	Navigate,
+	Route,
+	Routes,
+	useMatch,
+} from 'react-router-dom';
 import {
 	adminRoutes,
 	authProtectedRoutes,
@@ -31,6 +37,7 @@ import {
 import SpinLoader from './components/Loader/SpinLoader';
 let loading = true;
 function App() {
+	const isLoginUrl = useMatch('/login');
 	const [authRoutes, setAuthRoutes] = useState(authProtectedRoutes);
 	const user = useSelector((state) => state.user);
 	const message = useSelector((state) => state.message);
@@ -52,7 +59,6 @@ function App() {
 			if (user.roles.includes(ROLE_CAJA)) {
 				setAuthRoutes((prev) => [...prev, ...cajeroRoutes]);
 			}
-			console.log('useMemo');
 			loading = false;
 		}
 	}, [user.name, user.roles]);
@@ -107,8 +113,7 @@ function App() {
 			}
 		}
 	}, [message, dispatch]);
-
-	if (loading) {
+	if (loading && !isLoginUrl) {
 		return (
 			<div className="d-flex flex-row justify-content-center items-align-center mt-5">
 				<SpinLoader />
@@ -118,45 +123,43 @@ function App() {
 
 	return (
 		<>
-			<BrowserRouter>
-				<Routes>
-					{publicRoutes.map((route, idx) => (
-						<Route
-							path={route.path}
-							element={
-								<NonAuthLayout>{route.component}</NonAuthLayout>
-							}
-							key={idx}
-							exact={true}
-						/>
-					))}
-
-					{authRoutes.map((route, idx) => (
-						<Route
-							path={route.path}
-							element={
-								!sessionStorage.getItem('sunsetadmiralauth') ? (
-									<Navigate to="/login" replace />
-								) : (
-									<AuthLayout>{route.component}</AuthLayout>
-								)
-							}
-							key={idx}
-							exact={true}
-						/>
-					))}
+			<Routes>
+				{publicRoutes.map((route, idx) => (
 					<Route
-						path={'*'}
+						path={route.path}
+						element={
+							<NonAuthLayout>{route.component}</NonAuthLayout>
+						}
+						key={idx}
+						exact={true}
+					/>
+				))}
+
+				{authRoutes.map((route, idx) => (
+					<Route
+						path={route.path}
 						element={
 							!sessionStorage.getItem('sunsetadmiralauth') ? (
 								<Navigate to="/login" replace />
 							) : (
-								<NotFoundPage />
+								<AuthLayout>{route.component}</AuthLayout>
 							)
 						}
+						key={idx}
+						exact={true}
 					/>
-				</Routes>
-			</BrowserRouter>
+				))}
+				<Route
+					path={'*'}
+					element={
+						!sessionStorage.getItem('sunsetadmiralauth') ? (
+							<Navigate to="/login" replace />
+						) : (
+							<NotFoundPage />
+						)
+					}
+				/>
+			</Routes>
 			<ToastContainer
 				position="top-center"
 				autoClose={5000}
