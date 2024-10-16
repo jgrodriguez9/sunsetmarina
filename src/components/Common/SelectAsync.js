@@ -17,6 +17,7 @@ const SelectAsync = ({
 	defaultOptions = true,
 	keyProperty = 'name',
 	label = null,
+	exact = false,
 	...props
 }) => {
 	const messageRef = useRef(MESSAGE.noOption);
@@ -30,14 +31,27 @@ const SelectAsync = ({
 					if (!options.list?.length) {
 						messageRef.current = MESSAGE.noOption;
 					}
-					callback(
-						options.list.map((it) => ({
-							label: label
-								? label.map((l) => it[l]).join(' - ')
-								: it[keyProperty],
-							value: it.id,
-						}))
-					);
+					if (exact) {
+						callback(
+							options.list
+								.filter((it) => it[keyCompare] === keyword)
+								.map((it) => ({
+									label: label
+										? label.map((l) => it[l]).join(' - ')
+										: it[keyProperty],
+									value: it.id,
+								}))
+						);
+					} else {
+						callback(
+							options.list.map((it) => ({
+								label: label
+									? label.map((l) => it[l]).join(' - ')
+									: it[keyProperty],
+								value: it.id,
+							}))
+						);
+					}
 				})
 				.catch((err) => {
 					messageRef.current = MESSAGE.networkError;

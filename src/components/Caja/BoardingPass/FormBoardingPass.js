@@ -926,7 +926,7 @@ export default function FormBoardingPass({ cajero = false }) {
 													getBracaletListPaginado
 												}
 												query={
-													'?page=1&max=10&status=AVAILABLE'
+													'?page=1&max=1000&status=AVAILABLE'
 												}
 												keyCompare={'code'}
 												keyProperty={'code'}
@@ -948,6 +948,7 @@ export default function FormBoardingPass({ cajero = false }) {
 													}
 												}}
 												isMulti={true}
+												exact={true}
 											/>
 											{formik.errors.bracelets && (
 												<div className="invalid-tooltip d-block">
