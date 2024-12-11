@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { DropdownMenu } from 'reactstrap';
 import { hasCashRegisterAssign } from '../../helpers/caja/boardingPass';
@@ -26,9 +26,9 @@ const LogoutLink = () => {
 		const isAssigned = await checkCajaApi();
 		setLoading(false);
 		if (!isAssigned) {
-			sessionStorage.removeItem('sunsetadmiralauth');
-			navigate('/login');
 			await postLogout();
+			sessionStorage.removeItem('sunsetadmiralauth');
+			navigate('/login');			
 		} else {
 			dispatch(
 				addMessage({

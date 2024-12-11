@@ -332,7 +332,7 @@ export default function FormSlipReservationClient({
 				paymentForm: paymentForm,
 				customer: formik.values.customer,
 				systemPayment: 'BALANCE_RESERVATION',
-				systemID: formik.values.id,
+				systemId: formik.values.id,
 			};
 			await addSaldoReservation(data);
 			dispatch(

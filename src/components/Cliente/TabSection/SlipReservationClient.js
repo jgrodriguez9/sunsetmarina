@@ -196,7 +196,6 @@ export default function SlipReservationClient({ formik }) {
 				Header: 'Acciones',
 				Cell: ({ row }) => (
 					<>
-						{console.log(row)}
 						<CellActions
 							edit={
 								row.original.status === 'CANCELLED'
