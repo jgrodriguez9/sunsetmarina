@@ -5,4 +5,5 @@ export const paymentFormOpt = [
 	{ value: 'WIRE_TRANSFER', label: 'Transferencia electrónica' },
 	{ value: 'CHECK', label: 'Cheque' },
 	{ value: 'AMEX', label: 'American Express' },
+	{ value: 'DIRECT_DEBIT', label: 'DOMICILIADO' },
 ];

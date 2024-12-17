@@ -204,6 +204,14 @@ function BillReport() {
 					alignment: { horizontal: 'right' },
 				},
 			},
+			{
+				key: 'saldo',
+				header: 'Saldo a favor',
+				width: 14,
+				style: {
+					alignment: { horizontal: 'right' },
+				},
+			},
 		];
 		sheet.columns = columns;
 		let posI = 0;
@@ -219,9 +227,12 @@ function BillReport() {
 					val.concepts,
 					'monthRental'
 				),
-				deudaMXN: jsFormatNumber(val.totalCharges - val.totalPayments),
+				deudaMXN: jsFormatNumber(val.totalCharges + val.totalInterest),
 				deudaUSD: jsFormatNumber(
-					val.totalChargesUSD - val.totalPaymentsUSD
+					val.totalChargesUSD + val.totalInterestUSD
+				),
+				saldo: jsFormatNumber(
+					val.concepts.reduce((acc, curr) => acc + curr.balance, 0)
 				),
 			};
 			if (i === 0) {
@@ -258,16 +269,13 @@ function BillReport() {
 							: concept.finalContractDate,
 					monthContract: jsFormatNumber(concept.monthContract),
 					monthRental: jsFormatNumber(concept.monthRental),
-					deudaMXN: getDeuda(
-						concept.charges,
-						concept.payments,
-						'MXN'
+					deudaMXN: jsFormatNumber(
+						concept.charges.amount + concept.charges.interest
 					),
-					deudaUSD: getDeuda(
-						concept.charges,
-						concept.payments,
-						'USD'
+					deudaUSD: jsFormatNumber(
+						concept.charges.amountUSD + concept.charges.interestUSD
 					),
+					saldo: jsFormatNumber(concept.balance),
 				}))
 				.forEach((val2, idx, _) => {
 					posI += 1;

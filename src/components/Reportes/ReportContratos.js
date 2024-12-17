@@ -9,20 +9,8 @@ export const getTotalsReportContract = (concepts, key) => {
 };
 
 const ReportContratos = ({ items }) => {
-	const getDeuda = useCallback((charges, payments, currency) => {
-		if (currency === 'MXN') {
-			const deudaMXN = charges.amount - payments.amount;
-			return {
-				total: deudaMXN,
-				totalFormat: jsFormatNumber(deudaMXN),
-			};
-		} else {
-			const deudaUSD = charges.amountUSD - payments.amountUSD;
-			return {
-				total: deudaUSD,
-				totalFormat: jsFormatNumber(deudaUSD),
-			};
-		}
+	const getTotalBalance = useCallback((concepts) => {
+		return concepts.reduce((acc, curr) => acc + curr.balance, 0);
 	}, []);
 	return (
 		<Row>
@@ -44,6 +32,7 @@ const ReportContratos = ({ items }) => {
 									<th>Renta Mensual</th>
 									<th>Deuda (MXN)</th>
 									<th>Deuda (USD)</th>
+									<th>Saldo a favor</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -71,30 +60,41 @@ const ReportContratos = ({ items }) => {
 												</td>
 												<td
 													className={
-														it.totalCharges -
-															it.totalPayments >
-														0
+														it.totalCharges > 0
 															? 'text-danger fw-semibold'
-															: 'text-success fw-semibold'
+															: ''
 													}
 												>
 													{jsFormatNumber(
-														it.totalCharges -
-															it.totalPayments
+														it.totalCharges +
+															it.totalInterest
 													)}
 												</td>
 												<td
 													className={
-														it.totalChargesUSD -
-															it.totalPaymentsUSD >
-														0
+														it.totalChargesUSD > 0
 															? 'text-danger fw-semibold'
-															: 'text-success fw-semibold'
+															: ''
 													}
 												>
 													{jsFormatNumber(
-														it.totalChargesUSD -
-															it.totalPaymentsUSD
+														it.totalChargesUSD +
+															it.totalInterestUSD
+													)}
+												</td>
+												<td
+													className={
+														getTotalBalance(
+															it.concepts
+														) > 0
+															? 'text-success fw-semibold'
+															: ''
+													}
+												>
+													{jsFormatNumber(
+														getTotalBalance(
+															it.concepts
+														)
 													)}
 												</td>
 											</tr>
@@ -158,41 +158,48 @@ const ReportContratos = ({ items }) => {
 														</td>
 														<td
 															className={
-																getDeuda(
-																	slip.charges,
-																	slip.payments,
-																	'MXN'
-																).total > 0
+																slip.charges
+																	.amount +
+																	slip.charges
+																		.interest >
+																0
 																	? 'text-danger fw-semibold'
 																	: ''
 															}
 														>
-															{
-																getDeuda(
-																	slip.charges,
-																	slip.payments,
-																	'MXN'
-																).totalFormat
-															}
+															{jsFormatNumber(
+																slip.charges
+																	.amount +
+																	slip.charges
+																		.interest
+															)}
 														</td>
 														<td
 															className={
-																getDeuda(
-																	slip.charges,
-																	slip.payments,
-																	'USD'
-																).total > 0
+																slip.charges
+																	.amountUSD >
+																0
 																	? 'text-danger fw-semibold'
 																	: ''
 															}
 														>
-															{
-																getDeuda(
-																	slip.charges,
-																	slip.payments,
-																	'USD'
-																).totalFormat
+															{jsFormatNumber(
+																slip.charges
+																	.amountUSD +
+																	slip.charges
+																		.interestUSD
+															)}
+														</td>
+														<td
+															className={
+																slip.balance > 0
+																	? 'text-success fw-semibold'
+																	: ''
 															}
+														>
+															{jsFormatNumber(
+																slip.balance
+															)}
 														</td>
 													</tr>
 												)
