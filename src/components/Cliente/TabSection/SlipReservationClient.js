@@ -19,7 +19,6 @@ import {
 	cancelReservation,
 	cancelReservationUser,
 	getSlipReservationByClient,
-	updateReservation,
 } from '../../../helpers/marina/slipReservation';
 import FormSlipReservationClient from '../../Marina/SlipReservation/FormSlipReservationClient';
 import { numberFormat } from '../../../utils/numberFormat';
@@ -66,6 +65,7 @@ export default function SlipReservationClient({ formik }) {
 			status: slip.status,
 			balance: slip.balance,
 			needInvoice: slip.needInvoice ?? false,
+			forgivenInterest: slip.forgivenInterest ?? false,
 		}));
 		setOpenModalAdd(true);
 	};

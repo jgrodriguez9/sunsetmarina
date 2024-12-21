@@ -1,6 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
-import { Alert, Button, Col, Input, InputGroup, Label, Row } from 'reactstrap';
+import {
+	Alert,
+	Button,
+	Col,
+	FormGroup,
+	Input,
+	InputGroup,
+	Label,
+	Row,
+} from 'reactstrap';
 import * as Yup from 'yup';
 import {
 	ADD_BALANCE,
@@ -165,6 +174,7 @@ export default function FormSlipReservationClient({
 			finalContractDate: item?.finalContractDate ?? '',
 			balance: item?.balance ?? 0,
 			needInvoice: item?.needInvoice ?? false,
+			forgivenInterest: item?.forgivenInterest ?? false,
 		},
 		validationSchema: Yup.object({
 			boat: Yup.object({
@@ -827,23 +837,37 @@ export default function FormSlipReservationClient({
 							</div>
 						</Col>
 					</Row>
-					<Row className="align-items-center">
-						<Label
-							htmlFor="needInvoice"
-							className="mb-0 col-md-5 col-12"
-						>
-							Requiere factura
-						</Label>
-						<div className="col-md-6 col-12">
-							<Input
-								id="needInvoice"
-								name="needInvoice"
-								type="checkbox"
-								className={`form-check-Input form-check-input`}
-								onChange={formik.handleChange}
-								checked={formik.values.needInvoice || false}
-							/>
-						</div>
+					<Row>
+						<Col lg="12">
+							<FormGroup check inline>
+								<Input
+									id="needInvoice"
+									name="needInvoice"
+									type="checkbox"
+									onChange={formik.handleChange}
+									checked={formik.values.needInvoice || false}
+								/>
+								<Label check htmlFor="needInvoice">
+									Requiere factura
+								</Label>
+							</FormGroup>
+						</Col>
+						<Col lg="12">
+							<FormGroup check inline>
+								<Input
+									id="forgivenInterest"
+									name="forgivenInterest"
+									type="checkbox"
+									onChange={formik.handleChange}
+									checked={
+										formik.values.forgivenInterest || false
+									}
+								/>
+								<Label check htmlFor="forgivenInterest">
+									Condonar moratorio
+								</Label>
+							</FormGroup>
+						</Col>
 					</Row>
 				</Col>
 			</Row>

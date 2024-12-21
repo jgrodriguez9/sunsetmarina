@@ -7,6 +7,7 @@ import {
 	Button,
 	Col,
 	Form,
+	FormGroup,
 	Input,
 	InputGroup,
 	Label,
@@ -177,6 +178,7 @@ export default function FormReserva({ item, btnTextSubmit = 'Aceptar' }) {
 			finalContractDate: item?.finalContractDate ?? '',
 			balance: item.balance ?? 0,
 			needInvoice: item?.needInvoice ?? false,
+			forgivenInterest: item?.forgivenInterest ?? false,
 		},
 		validationSchema: Yup.object({
 			arrivalDate: Yup.string().required(FIELD_REQUIRED),
@@ -796,6 +798,40 @@ export default function FormReserva({ item, btnTextSubmit = 'Aceptar' }) {
 							placeholder="dd-MM-YYYY"
 						/>
 					</div>
+				</Col>
+				<Col xs="12" md="3">
+					<Row>
+						<Col lg="12">
+							<FormGroup check inline>
+								<Input
+									id="needInvoice"
+									name="needInvoice"
+									type="checkbox"
+									onChange={formik.handleChange}
+									checked={formik.values.needInvoice || false}
+								/>
+								<Label check htmlFor="needInvoice">
+									Requiere factura
+								</Label>
+							</FormGroup>
+						</Col>
+						<Col lg="12">
+							<FormGroup check inline>
+								<Input
+									id="forgivenInterest"
+									name="forgivenInterest"
+									type="checkbox"
+									onChange={formik.handleChange}
+									checked={
+										formik.values.forgivenInterest || false
+									}
+								/>
+								<Label check htmlFor="forgivenInterest">
+									Condonar moratorio
+								</Label>
+							</FormGroup>
+						</Col>
+					</Row>
 				</Col>
 			</Row>
 			<Row>
