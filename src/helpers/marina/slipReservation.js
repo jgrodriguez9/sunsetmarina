@@ -17,6 +17,7 @@ const cancelReservation = (query) =>
 	post(`${url.slipReservation}/cancelReservationWithDeb?${query}`, {});
 const cancelReservationUser = (id) =>
 	post(`${url.slipReservation}/cancelReservation/${id}`, {});
+const swapSlip = (data) => post(`${url.slipReservation}/swapLocation`, data);
 
 export {
 	getSlipReservationByClient,
@@ -28,4 +29,5 @@ export {
 	getReservation,
 	cancelReservation,
 	cancelReservationUser,
+	swapSlip,
 };

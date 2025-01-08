@@ -10,16 +10,65 @@ import {
 	SAVE_SUCCESS,
 	SELECT_OPTION,
 } from '../../../constants/messages';
-import { saveBracaletLote } from '../../../helpers/contabilidad/bracalet';
+import {
+	getColorsAvailable,
+	getLastSequenceByColor,
+	saveBracaletLote,
+} from '../../../helpers/contabilidad/bracalet';
 import { addMessage } from '../../../redux/messageSlice';
 import extractMeaningfulMessage from '../../../utils/extractMeaningfulMessage';
 import { Button, Col, Form, Input, Label, Row } from 'reactstrap';
 import ButtonsDisabled from '../../Common/ButtonsDisabled';
 import Select from 'react-select';
+import { useEffect, useState } from 'react';
 
 const FormBrazaleteLote = ({ btnTextSubmit }) => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
+	const [lastSequence, setLastSequence] = useState(null);
+	const [loading, setLoading] = useState(false);
+	const [colorDefault, setColorDefault] = useState(null);
+	const [colorsOpt, setColorsOpt] = useState([]);
+
+	useEffect(() => {
+		const fetchColorsApi = async () => {
+			try {
+				const response = await getColorsAvailable();
+				setColorsOpt(
+					response.map((item) => ({ label: item, value: item }))
+				);
+			} catch (error) {
+				setColorsOpt([]);
+			}
+		};
+		fetchColorsApi();
+	}, []);
+
+	useEffect(() => {
+		const getLastSequenceApi = async () => {
+			setLoading(true);
+			try {
+				const response = await getLastSequenceByColor(
+					colorDefault.value
+				);
+				setColorsOpt(
+					response.map((item) => ({ label: item, value: item }))
+				);
+			} catch (error) {
+				let message = ERROR_SERVER;
+				message = extractMeaningfulMessage(error, message);
+				dispatch(
+					addMessage({
+						type: 'error',
+						message: message,
+					})
+				);
+			}
+		};
+		if (colorDefault) {
+			getLastSequenceApi();
+		}
+	}, [colorDefault, dispatch]);
 
 	const formik = useFormik({
 		initialValues: {
@@ -81,6 +130,21 @@ const FormBrazaleteLote = ({ btnTextSubmit }) => {
 				return false;
 			}}
 		>
+			<Row>
+				<Col xs="12" md="3">
+					<Label htmlFor="startNumber" className="mb-0">
+						Checar última secuencia de brazalete
+					</Label>
+					<Select
+						value={colorDefault}
+						onChange={(value) => {
+							setColorDefault(value);
+						}}
+						options={colorsOpt}
+						classNamePrefix="select2-selection"
+					/>
+				</Col>
+			</Row>
 			<Row>
 				<Col xs="12" md="3">
 					<Label htmlFor="startNumber" className="mb-0">

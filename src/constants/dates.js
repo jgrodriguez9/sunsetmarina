@@ -43,8 +43,10 @@ const monthsOpt = [
 	{ value: 12, label: 'Diciembre' },
 ];
 
-const yearsOpt = () => {
-	const currentYear = moment().format('YYYY');
+const yearsOpt = (fromYear) => {
+	const currentYear = moment()
+		.year(fromYear ?? moment().year())
+		.format('YYYY');
 	const arrayYears = [];
 	const firstYear = parseInt(currentYear);
 	let i = firstYear;

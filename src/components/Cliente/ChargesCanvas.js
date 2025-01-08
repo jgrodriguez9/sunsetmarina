@@ -331,16 +331,32 @@ const ChargesCanvas = ({
 																		: monthsOpt.filter(
 																				(
 																					it
-																				) =>
-																					parseInt(
-																						it.value
-																					) >=
-																					parseInt(
-																						desde?.date?.split(
-																							'-'
-																						)[1] ??
-																							0
-																					)
+																				) => {
+																					if (
+																						year?.value ===
+																							moment().year() &&
+																						year?.value !==
+																							parseInt(
+																								desde?.date?.split(
+																									'-'
+																								)[2]
+																							)
+																					) {
+																						return true;
+																					} else {
+																						return (
+																							parseInt(
+																								it.value
+																							) >=
+																							parseInt(
+																								desde?.date?.split(
+																									'-'
+																								)[1] ??
+																									0
+																							)
+																						);
+																					}
+																				}
 																		  )
 																}
 																placeholder="Mes"
@@ -367,7 +383,14 @@ const ChargesCanvas = ({
 																	);
 																}}
 																placeholder="Año"
-																options={yearsOpt().map(
+																options={yearsOpt(
+																	moment(
+																		desde?.date,
+																		'YYYY-MM'
+																	).format(
+																		'YYYY'
+																	)
+																).map(
 																	(it) => it
 																)}
 																classNamePrefix="select2-selection"

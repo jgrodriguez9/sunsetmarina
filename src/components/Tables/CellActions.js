@@ -8,13 +8,14 @@ export default function CellActions({
 	charge = null,
 	cancel = null,
 	cancelReservation = null,
+	swapSlip = null,
 }) {
 	return (
 		<>
 			{edit?.allow && (
 				<span
 					onClick={() => edit.action(row)}
-					className="pe-2"
+					className="pe-1"
 					id="btn-span-editar"
 				>
 					<i className="fas fa-edit text-info" />
@@ -24,7 +25,7 @@ export default function CellActions({
 			{del?.allow && (
 				<span
 					onClick={() => del.action(row)}
-					className="pe-2"
+					className="pe-1"
 					id="btn-span-eliminar"
 				>
 					<i className="far fa-trash-alt text-danger" />
@@ -37,7 +38,7 @@ export default function CellActions({
 			{report?.allow && (
 				<span
 					onClick={() => report.action(row)}
-					className="pe-2"
+					className="pe-1"
 					id="btn-span-report"
 				>
 					<i className="far fa-file-pdf text-dark" />
@@ -48,10 +49,23 @@ export default function CellActions({
 				<span
 					onClick={() => charge.action(row)}
 					id="btn-span-charges"
-					className="pe-2"
+					className="pe-1"
 				>
 					<i className="fas fa-file-invoice-dollar text-success" />
 					<TooltipDescription text="Cargos" id="btn-span-charges" />
+				</span>
+			)}
+			{swapSlip?.allow && (
+				<span
+					onClick={() => swapSlip.action(row)}
+					id="btn-span-swap-slip"
+					className="pe-1"
+				>
+					<i className="mdi mdi-swap-horizontal-circle-outline text-primary" />
+					<TooltipDescription
+						text="Permutar slip"
+						id="btn-span-swap-slip"
+					/>
 				</span>
 			)}
 			{cancel?.allow && (

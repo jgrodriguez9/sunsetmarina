@@ -10,6 +10,8 @@ const deleteBracaletLote = (data) => post(`${url.bracalet}/deleteLot`, data);
 const getColorsAvailable = () => get(`${url.bracalet}/listColors`);
 const getListAvailableBraceletsAvailable = (query) =>
 	get(`${url.bracalet}/getAvailableByColor${query}`);
+const getLastSequenceByColor = async (color) =>
+	await get(`${url.bracalet}/getLastBraceletByColor?color=${color}`);
 
 export {
 	getBracalet,
@@ -19,4 +21,5 @@ export {
 	deleteBracaletLote,
 	getColorsAvailable,
 	getListAvailableBraceletsAvailable,
+	getLastSequenceByColor,
 };

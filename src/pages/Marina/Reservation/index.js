@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
@@ -29,6 +29,7 @@ import { getClientList } from '../../../helpers/marina/client';
 import { getSlipList } from '../../../helpers/marina/slip';
 import DialogMain from '../../../components/Common/DialogMain';
 import ContentLoader from '../../../components/Loader/ContentLoader';
+import FormSwapSlip from '../../../components/Marina/SlipReservation/FormSwapSlip';
 
 function Reservation() {
 	const dispatch = useDispatch();
@@ -40,6 +41,7 @@ function Reservation() {
 	const [selectedReservation, setSelectedReservation] = useState(null);
 	const [openModalCancel, setOpenModalCancel] = useState(false);
 	const [isCancel, setIsCancel] = useState(false);
+	const [openModalSwap, setOpenModalSwap] = useState(false);
 	const [query, setQuery] = useState({
 		max: totalRegistros,
 		page: 1,
@@ -161,9 +163,17 @@ function Reservation() {
 		fetchList();
 	}, [JSON.stringify(query)]);
 
-	const editAction = (row) => {
-		navigate(`/reservation/edit/${row.original.id}`);
-	};
+	const editAction = useCallback(
+		(row) => {
+			navigate(`/reservation/edit/${row.original.id}`);
+		},
+		[navigate]
+	);
+
+	const swapSlip = useCallback((row) => {
+		setSelectedReservation(row.original);
+		setOpenModalSwap(true);
+	}, []);
 
 	const columns = useMemo(
 		() => [
@@ -275,6 +285,10 @@ function Reservation() {
 								allow: row.original.status !== 'CANCELLED',
 								action: editAction,
 							}}
+							swapSlip={{
+								allow: row.original.status !== 'CANCELLED',
+								action: swapSlip,
+							}}
 							cancel={
 								row.original.status === 'CANCELLED'
 									? null
@@ -288,11 +302,11 @@ function Reservation() {
 					</>
 				),
 				style: {
-					width: '7%',
+					width: '10%',
 				},
 			},
 		],
-		[]
+		[editAction, swapSlip]
 	);
 
 	const handleShowDialogCancel = (row) => {
@@ -375,6 +389,11 @@ function Reservation() {
 			);
 			setIsCancel(false);
 		}
+	};
+
+	const handleRefetch = () => {
+		setOpenModalSwap(false);
+		fetchList();
 	};
 
 	const cardHandleList = loading ? (
@@ -474,6 +493,19 @@ function Reservation() {
 									handleCancelar
 							  )
 						: null
+				}
+			/>
+
+			<DialogMain
+				open={openModalSwap}
+				setOpen={setOpenModalSwap}
+				title={'Permutar Slip'}
+				size="md"
+				children={
+					<FormSwapSlip
+						reservationId={selectedReservation?.id}
+						handleRefetch={handleRefetch}
+					/>
 				}
 			/>
 		</>
