@@ -21,7 +21,5 @@ yarn-debug.log*
 yarn-error.log*
 
 # files api/apiSign
-/src/helpers/api.js
-/src/helpers/apiSign.js
 src/helpers/api.js
 src/helpers/apiSign.js
