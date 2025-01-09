@@ -281,7 +281,7 @@ const ChargesCanvas = ({
 												'YYYY-MM-DD'
 											).format('DD-MM-YYYY')}{' '}
 											{reservation?.departureDate
-												? `al{' '}
+												? `al 
 												${moment(reservation?.departureDate, 'YYYY-MM-DD').format('DD-MM-YYYY')}`
 												: ' - No definido'}
 										</h5>

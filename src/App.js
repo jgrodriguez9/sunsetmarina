@@ -1,10 +1,4 @@
-import {
-	BrowserRouter,
-	Navigate,
-	Route,
-	Routes,
-	useMatch,
-} from 'react-router-dom';
+import { Navigate, Route, Routes, useMatch } from 'react-router-dom';
 import {
 	adminRoutes,
 	authProtectedRoutes,
@@ -19,7 +13,7 @@ import AuthLayout from './components/Layout/AuthLayout';
 
 import './assets/scss/theme.scss';
 import 'react-toastify/dist/ReactToastify.css';
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { getUserLoguedInfo } from './helpers/auth';
@@ -35,15 +29,17 @@ import {
 	ROLE_OPERACIONES,
 } from './constants/roles';
 import SpinLoader from './components/Loader/SpinLoader';
+import useUser from './hooks/useUser';
+
 let loading = true;
 function App() {
 	const isLoginUrl = useMatch('/login');
 	const [authRoutes, setAuthRoutes] = useState(authProtectedRoutes);
-	const user = useSelector((state) => state.user);
+	const user = useUser();
 	const message = useSelector((state) => state.message);
 	const dispatch = useDispatch();
-	useMemo(() => {
-		if (user.name) {
+	useEffect(() => {
+		if (user?.username) {
 			if (user.roles.includes(ROLE_ADMINISTRACION)) {
 				setAuthRoutes((prev) => [...prev, ...adminRoutes]);
 			}
@@ -61,7 +57,8 @@ function App() {
 			}
 			loading = false;
 		}
-	}, [user.name, user.roles]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [user?.username]);
 
 	useEffect(() => {
 		if (sessionStorage.getItem('sunsetadmiralauth')) {
@@ -113,7 +110,8 @@ function App() {
 			}
 		}
 	}, [message, dispatch]);
-	if (loading && !isLoginUrl) {
+
+	if (loading && !isLoginUrl && user) {
 		return (
 			<div className="d-flex flex-row justify-content-center items-align-center mt-5">
 				<SpinLoader />

@@ -17,10 +17,11 @@ import {
 } from '../../../helpers/contabilidad/bracalet';
 import { addMessage } from '../../../redux/messageSlice';
 import extractMeaningfulMessage from '../../../utils/extractMeaningfulMessage';
-import { Button, Col, Form, Input, Label, Row } from 'reactstrap';
+import { Alert, Button, Col, Form, Input, Label, Row } from 'reactstrap';
 import ButtonsDisabled from '../../Common/ButtonsDisabled';
 import Select from 'react-select';
 import { useEffect, useState } from 'react';
+import SpinLoader from '../../Loader/SpinLoader';
 
 const FormBrazaleteLote = ({ btnTextSubmit }) => {
 	const navigate = useNavigate();
@@ -43,32 +44,6 @@ const FormBrazaleteLote = ({ btnTextSubmit }) => {
 		};
 		fetchColorsApi();
 	}, []);
-
-	useEffect(() => {
-		const getLastSequenceApi = async () => {
-			setLoading(true);
-			try {
-				const response = await getLastSequenceByColor(
-					colorDefault.value
-				);
-				setColorsOpt(
-					response.map((item) => ({ label: item, value: item }))
-				);
-			} catch (error) {
-				let message = ERROR_SERVER;
-				message = extractMeaningfulMessage(error, message);
-				dispatch(
-					addMessage({
-						type: 'error',
-						message: message,
-					})
-				);
-			}
-		};
-		if (colorDefault) {
-			getLastSequenceApi();
-		}
-	}, [colorDefault, dispatch]);
 
 	const formik = useFormik({
 		initialValues: {
@@ -120,6 +95,33 @@ const FormBrazaleteLote = ({ btnTextSubmit }) => {
 		},
 	});
 
+	useEffect(() => {
+		const getLastSequenceApi = async () => {
+			setLoading(true);
+			try {
+				const response = await getLastSequenceByColor(
+					colorDefault.value
+				);
+				setLoading(false);
+				setLastSequence(response.code);
+				console.log(response);
+				if (response.code) {
+					formik.setFieldValue(
+						'startNumber',
+						parseInt(response.code) + 1
+					);
+				}
+			} catch (error) {
+				setLoading(false);
+				setLastSequence(-1);
+			}
+		};
+		if (colorDefault) {
+			getLastSequenceApi();
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [colorDefault, dispatch]);
+
 	return (
 		<Form
 			className="needs-validation"
@@ -143,6 +145,24 @@ const FormBrazaleteLote = ({ btnTextSubmit }) => {
 						options={colorsOpt}
 						classNamePrefix="select2-selection"
 					/>
+					{loading && (
+						<div className="d-flex flex-row justify-content-center items-align-center mt-5">
+							<SpinLoader className="fs-5" />
+						</div>
+					)}
+					{!loading &&
+						lastSequence !== -1 &&
+						lastSequence !== null && (
+							<Alert
+								color={'warning'}
+								className={'mt-1'}
+							>{`El último código usado es el: ${lastSequence} `}</Alert>
+						)}
+					{!loading && lastSequence === -1 && (
+						<Alert color={'warning'} className={'mt-1'}>
+							No tiene código registrado
+						</Alert>
+					)}
 				</Col>
 			</Row>
 			<Row>

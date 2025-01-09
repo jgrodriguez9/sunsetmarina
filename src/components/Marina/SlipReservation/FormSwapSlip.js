@@ -49,7 +49,6 @@ const FormSwapSlip = ({ reservationId, handleRefetch }) => {
 				setLoading(true);
 				const response = await getSlip(slipModel.value);
 				setLoading(false);
-				console.log(response);
 				setSelectedSlip({
 					status: response.status,
 					reservation:
@@ -108,7 +107,6 @@ const FormSwapSlip = ({ reservationId, handleRefetch }) => {
 			}
 		},
 	});
-	console.log(formik.errors);
 	return (
 		<Form
 			className="needs-validation"

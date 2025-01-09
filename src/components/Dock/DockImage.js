@@ -16,7 +16,7 @@ import DialogMain from '../Common/DialogMain';
 import { ERROR_SERVER } from '../../constants/messages';
 import extractMeaningfulMessage from '../../utils/extractMeaningfulMessage';
 import { addMessage } from '../../redux/messageSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getSlipList } from '../../helpers/marina/slip';
 import { getClassSlipStatus } from '../../utils/getClassSlipStatus';
 import { slipStatus } from '../../constants/constants';
@@ -29,9 +29,13 @@ import SimpleTable from '../Tables/SimpleTable';
 import TableLoader from '../Loader/TablaLoader';
 import { getContactByClient } from '../../helpers/marina/contact';
 import SimpleLoad from '../Loader/SimpleLoad';
+import FormSwapSlip from '../Marina/SlipReservation/FormSwapSlip';
+import { ROLE_ADMINISTRACION, ROLE_MUELLE } from '../../constants/roles';
+import { existsRole } from '../../utils/roles';
 
 export default function DockImage() {
 	const dispatch = useDispatch();
+	const user = useSelector((state) => state.user);
 	const [loading, setLoading] = useState(true);
 	const [slips, setSlips] = useState([]);
 	const [showDialog, setShowDialog] = useState(false);
@@ -132,6 +136,101 @@ export default function DockImage() {
 			fetchItemsForClientApi();
 		}
 	}, [boatId, customActiveTab, customerId]);
+
+	const showDialogInfo = (slip) => {
+		const reservationId =
+			slip.status !== 'AVAILABLE' && slip?.reservations.length > 0
+				? slip?.reservations[slip.reservations.length - 1].id
+				: null;
+		setSlipInfo({
+			slip: slip.code,
+			reservationId: reservationId,
+			propietario:
+				slip.status !== 'AVAILABLE' && slip?.reservations.length > 0
+					? `${slip?.reservations[0]?.customer?.name} ${slip?.reservations[0].customer?.lastName}`
+					: null,
+			arrivalDate:
+				slip.status !== 'AVAILABLE' && slip?.reservations.length > 0
+					? `${
+							slip?.reservations[slip?.reservations.length - 1]
+								?.arrivalDate
+					  } ${
+							slip?.reservations[slip?.reservations.length - 1]
+								.arrivalDate
+					  }`
+					: null,
+			departureDate:
+				slip.status !== 'AVAILABLE' && slip?.reservations.length > 0
+					? slip?.reservations[slip?.reservations.length - 1]
+							?.departureDate
+						? moment(
+								slip?.reservations[
+									slip?.reservations.length - 1
+								]?.departureDate,
+								'YYYY-MM-DD'
+						  ).format('DD-MM-YYYY')
+						: 'Vigente'
+					: null,
+			debt:
+				slip.status !== 'AVAILABLE' && slip?.reservations.length > 0
+					? `${
+							slip?.reservations[slip?.reservations.length - 1]
+								?.debt?.debt
+					  }`
+					: null,
+			embarcacion:
+				slip.status !== 'AVAILABLE'
+					? slip?.reservations[slip?.reservations.length - 1].boat
+							?.name ?? null
+					: null,
+			dimensiones:
+				slip?.reservations.length > 0
+					? slip?.reservations[slip?.reservations.length - 1].boat
+							.length
+					: null,
+			estado: slip.status,
+			fechaOperacion: slip.lastUpdated,
+		});
+		if (slip.status !== 'AVAILABLE' && slip?.reservations.length > 0) {
+			setBoatId(
+				slip?.reservations[slip?.reservations.length - 1].boat.id
+			);
+			setCustometId(
+				slip?.reservations[slip?.reservations.length - 1].customer.id
+			);
+		}
+
+		setShowDialog(true);
+	};
+
+	const fecthSlipsAllApi = async () => {
+		try {
+			const response = await getSlipList();
+			setSlips(response);
+			setLoading(false);
+		} catch (error) {
+			setLoading(false);
+			let message = ERROR_SERVER;
+			message = extractMeaningfulMessage(error, message);
+			dispatch(
+				addMessage({
+					message: message,
+					type: 'error',
+				})
+			);
+			setSlips([]);
+		}
+	};
+	useEffect(() => {
+		fecthSlipsAllApi();
+	}, []);
+
+	const handleRefetch = () => {
+		fecthSlipsAllApi();
+		setcustomActiveTab('1');
+		setShowDialog(false);
+	};
+
 	const children = (
 		<Row>
 			<Col xs="12" md="12">
@@ -179,6 +278,27 @@ export default function DockImage() {
 							<span className="d-none d-sm-block">Contactos</span>
 						</NavLink>
 					</NavItem>
+					{slipInfo?.reservationId &&
+						existsRole(user.roles, [
+							ROLE_ADMINISTRACION,
+							ROLE_MUELLE,
+						]) && (
+							<NavItem>
+								<NavLink
+									style={{ cursor: 'pointer' }}
+									className={classNames({
+										active: customActiveTab === '4',
+									})}
+									onClick={() => {
+										toggleCustom('4');
+									}}
+								>
+									<span className="d-none d-sm-block">
+										Permutar slip
+									</span>
+								</NavLink>
+							</NavItem>
+						)}
 				</Nav>
 				<TabContent
 					activeTab={customActiveTab}
@@ -202,21 +322,6 @@ export default function DockImage() {
 											{slipStatus(slipInfo?.estado)}
 										</Badge>
 									</ListGroupItem>
-									{/* {slipInfo?.estado !== 'AVAILABLE' && (
-						<ListGroupItem className="d-flex justify-content-between">
-							<h5 className="m-0">
-								{slipInfo?.estado === 'RESERVED'
-									? 'Fecha de reserva'
-									: 'Fecha de operación'}
-							</h5>
-							<span>
-								{moment(
-									slipInfo?.fechaOperacion,
-									'YYYY-MM-DD'
-								).format('DD-MM-YYYY')}
-							</span>
-						</ListGroupItem>
-					)} */}
 									{slipInfo?.arrivalDate && (
 										<ListGroupItem className="d-flex justify-content-between">
 											<h5 className="m-0">
@@ -311,101 +416,28 @@ export default function DockImage() {
 							/>
 						)}
 					</TabPane>
+					<TabPane tabId="4">
+						<FormSwapSlip
+							reservationId={slipInfo?.reservationId}
+							handleRefetch={handleRefetch}
+						/>
+					</TabPane>
 				</TabContent>
 			</Col>
 			<div className="d-flex mt-3 justify-content-center">
 				<button
 					type="button"
 					className="btn btn-light btn-lg"
-					onClick={() => setShowDialog(false)}
+					onClick={() => {
+						setShowDialog(false);
+						setcustomActiveTab('1');
+					}}
 				>
 					Cerrar
 				</button>
 			</div>
 		</Row>
 	);
-	const showDialogInfo = (slip) => {
-		setSlipInfo({
-			slip: slip.code,
-			propietario:
-				slip.status !== 'AVAILABLE' && slip?.reservations.length > 0
-					? `${slip?.reservations[0]?.customer?.name} ${slip?.reservations[0].customer?.lastName}`
-					: null,
-			arrivalDate:
-				slip.status !== 'AVAILABLE' && slip?.reservations.length > 0
-					? `${
-							slip?.reservations[slip?.reservations.length - 1]
-								?.arrivalDate
-					  } ${
-							slip?.reservations[slip?.reservations.length - 1]
-								.arrivalDate
-					  }`
-					: null,
-			departureDate:
-				slip.status !== 'AVAILABLE' && slip?.reservations.length > 0
-					? slip?.reservations[slip?.reservations.length - 1]
-							?.departureDate
-						? moment(
-								slip?.reservations[
-									slip?.reservations.length - 1
-								]?.departureDate,
-								'YYYY-MM-DD'
-						  ).format('DD-MM-YYYY')
-						: 'Vigente'
-					: null,
-			debt:
-				slip.status !== 'AVAILABLE' && slip?.reservations.length > 0
-					? `${
-							slip?.reservations[slip?.reservations.length - 1]
-								?.debt?.debt
-					  }`
-					: null,
-			embarcacion:
-				slip.status !== 'AVAILABLE'
-					? slip?.reservations[slip?.reservations.length - 1].boat
-							?.name ?? null
-					: null,
-			dimensiones:
-				slip?.reservations.length > 0
-					? slip?.reservations[slip?.reservations.length - 1].boat
-							.length
-					: null,
-			estado: slip.status,
-			fechaOperacion: slip.lastUpdated,
-		});
-		if (slip.status !== 'AVAILABLE' && slip?.reservations.length > 0) {
-			setBoatId(
-				slip?.reservations[slip?.reservations.length - 1].boat.id
-			);
-			setCustometId(
-				slip?.reservations[slip?.reservations.length - 1].customer.id
-			);
-		}
-
-		setShowDialog(true);
-	};
-
-	const fecthSlipsAllApi = async () => {
-		try {
-			const response = await getSlipList();
-			setSlips(response);
-			setLoading(false);
-		} catch (error) {
-			setLoading(false);
-			let message = ERROR_SERVER;
-			message = extractMeaningfulMessage(error, message);
-			dispatch(
-				addMessage({
-					message: message,
-					type: 'error',
-				})
-			);
-			setSlips([]);
-		}
-	};
-	useEffect(() => {
-		fecthSlipsAllApi();
-	}, []);
 
 	if (loading) {
 		return <SimpleLoad text="Cargando mapa" />;
