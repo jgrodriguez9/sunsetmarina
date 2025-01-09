@@ -156,7 +156,7 @@ const FormBrazaleteLote = ({ btnTextSubmit }) => {
 							<Alert
 								color={'warning'}
 								className={'mt-1'}
-							>{`El último código usado es el: ${lastSequence} `}</Alert>
+							>{`El último código disponible es el: ${lastSequence} `}</Alert>
 						)}
 					{!loading && lastSequence === -1 && (
 						<Alert color={'warning'} className={'mt-1'}>
@@ -164,8 +164,6 @@ const FormBrazaleteLote = ({ btnTextSubmit }) => {
 						</Alert>
 					)}
 				</Col>
-			</Row>
-			<Row>
 				<Col xs="12" md="3">
 					<Label htmlFor="startNumber" className="mb-0">
 						Iniciar secuencia

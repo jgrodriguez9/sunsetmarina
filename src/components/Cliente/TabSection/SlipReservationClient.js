@@ -26,6 +26,7 @@ import ChargesCanvas from '../ChargesCanvas';
 import ContentLoader from '../../Loader/ContentLoader';
 import { ROLE_ADMINISTRACION, ROLE_COMPANIA } from '../../../constants/roles';
 import FormCancelReservation from './FormCancelReservation';
+import { Link } from 'react-router-dom';
 
 export default function SlipReservationClient({ formik }) {
 	const dispatch = useDispatch();
@@ -78,6 +79,11 @@ export default function SlipReservationClient({ formik }) {
 				style: {
 					width: '12%',
 				},
+				Cell: ({ row, value }) => (
+					<Link to={`/reservation/edit/${row.original?.id}`}>
+						{`${value}`}
+					</Link>
+				),
 			},
 			{
 				Header: 'Slip',
