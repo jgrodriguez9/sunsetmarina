@@ -266,15 +266,35 @@ const ChargesCanvas = ({
 			}}
 		>
 			<OffcanvasHeader toggle={toggle} className="border-bottom">
-				<div className='d-flex align-items-center'>
+				<div className='d-flex align-items-center' style={{ gap: '2rem'}}>
 					<div className='d-flex flex-column'>
-						<div className='d-flex align-items-center'>
-							<i className='fas fa-user' />
-							<label>Cliente</label>
+						<div className='d-flex align-items-baseline' style={{ gap: '2px'}}>
+							<i className='fas fa-user' style={{ fontSize: '12px'}} />
+							<label className='m-0' style={{ fontSize: '12px'}}>Cliente</label>
 						</div>
-						<h6></h6>
+						<h5 className='m-0'>{`${reservation?.customer?.name} ${reservation?.customer?.lastName}`}</h5>
 					</div>
-					
+					<div className='d-flex flex-column'>
+						<div className='d-flex align-items-baseline' style={{ gap: '2px'}}>
+							<i className='fas fa-ship' style={{ fontSize: '12px'}} />
+							<label className='m-0' style={{ fontSize: '12px'}}>Embarcación</label>
+						</div>
+						<h5 className='m-0'>{reservation?.boat?.name}</h5>
+					</div>
+					<div className='d-flex flex-column'>
+						<div className='d-flex align-items-baseline' style={{ gap: '2px'}}>
+							<i className='fas fa-anchor' style={{ fontSize: '12px'}} />
+							<label className='m-0' style={{ fontSize: '12px'}}>Slip</label>
+						</div>
+						<h5 className='m-0'>{reservation?.slip?.code}</h5>
+					</div>
+					<div className='d-flex flex-column'>
+						<div className='d-flex align-items-baseline' style={{ gap: '2px'}}>
+							<i className='fas fa-dollar-sign' style={{ fontSize: '12px'}} />
+							<label className='m-0' style={{ fontSize: '12px'}}>Saldo a favor</label>
+						</div>
+						<h5 className='m-0'>{jsFormatNumber(reservation?.balance)}</h5>
+					</div>
 				</div>
 			</OffcanvasHeader>
 			<OffcanvasBody className="p-4">
@@ -284,32 +304,7 @@ const ChargesCanvas = ({
 					<>
 						<Row>
 							<Col xs="12" md="6">
-								<div 
-									className='d-flex justify-content-between border p-3 div-hover'
-									onClick={() => setOpenCollapse(!openCollapse)}
-								>
-									<h4 className='m-0'>Nuevo Cliente</h4>
-									<h4 className='m-0'>
-										Embarcación:{' '}
-										{reservation?.boat?.name}
-									</h4>
-									<h4 className='m-0'>
-										Slip: {reservation?.slip?.code}
-									</h4>
-									<h4 className="text-primary m-0">
-									Balance:{' '}
-												{jsFormatNumber(
-													reservation?.balance
-												)}
-									</h4>
-								</div>
-								<Collapse isOpen={openCollapse} className="accordion-collapse">
-									<Card>
-										<CardBody>
-											<TableCharges items={charge} />
-										</CardBody>
-									</Card>
-								</Collapse>
+							  <TableCharges items={charge} />
 							</Col>
 							<Col xs="12" md={"6"} className={"mt-2"}>
 								<div className="p-4 border bottom-0 w-100 bg-light ">
