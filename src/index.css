@@ -31,3 +31,6 @@ code {
 .table-wrapper tfoot td {
   bottom: 0; /* Stick the footer to the bottom */
 }
+.div-hover:hover{
+  background-color: #dedede;
+}

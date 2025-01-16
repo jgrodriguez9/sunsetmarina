@@ -9,6 +9,9 @@ import {
 	OffcanvasHeader,
 	Row,
 	Alert,
+	Collapse,
+	Card,
+	CardBody,
 } from 'reactstrap';
 import {
 	getChargeByReservation,
@@ -35,6 +38,7 @@ import { monthsOpt, yearsOpt } from '../../constants/dates';
 import { hasCashRegisterAssign } from '../../helpers/caja/boardingPass';
 import SimpleLoad from '../Loader/SimpleLoad';
 import jsFormatNumber from '../../utils/jsFormatNumber';
+import { currencyOpt, currencyShortOpt } from '../../constants/currencies';
 moment.locale('es');
 
 const objStyle = {
@@ -77,6 +81,16 @@ const ChargesCanvas = ({
 	//condonar intereses
 	const [forgivenInterest, setForgivenInterest] = useState(false);
 	const [forgivenInterestReason, setForgivenInterestReason] = useState('');
+
+	const [openCollapse, setOpenCollapse] = useState(false)
+	const [entryPayment, setEntryPayment] = useState([
+		{
+			paymentForm: 'CASH',
+			currency: 'MXN',
+			amount: 0,
+			amountMXN: 0
+		}
+	])
 	useEffect(() => {
 		const fecthChargesByReservation = async () => {
 			try {
@@ -258,215 +272,180 @@ const ChargesCanvas = ({
 				{loading ? (
 					<SpinLoader />
 				) : (
-					<Row>
-						<Col xs="12" md="8">
-							<TableCharges items={charge} />
-						</Col>
-						<Col xs="12" md="4">
-							<div className="py-4 border bottom-0 w-100 bg-light ">
-								<Row>
-									<Col xs="12" md={{ size: 8, offset: 2 }}>
-										<h4 className="mb-0">{`${reservation?.customer?.name} ${reservation?.customer?.lastName}`}</h4>
-										<h5 className="m-0 fw-normal">
-											Embarcación:{' '}
-											{reservation?.boat?.name}
-										</h5>
-										<h5 className="m-0 fw-normal">
-											Slip: {reservation?.slip?.code}
-										</h5>
-										<h5 className="m-0 fw-normal">
-											Duración:{' '}
-											{moment(
-												reservation?.arrivalDate,
-												'YYYY-MM-DD'
-											).format('DD-MM-YYYY')}{' '}
-											{reservation?.departureDate
-												? `al 
-												${moment(reservation?.departureDate, 'YYYY-MM-DD').format('DD-MM-YYYY')}`
-												: ' - No definido'}
-										</h5>
-										<h5 className="m-0 fw-normal">
-											Balance:{' '}
-											{jsFormatNumber(
-												reservation?.balance
-											)}
-										</h5>
-									</Col>
-								</Row>
-								<hr />
-								<Row>
-									<Col xs="12" md={{ size: 8, offset: 2 }}>
-										<div className="d-flex justify-content-between align-items-center mb-2">
-											<div>Desde</div>
-											<div>
-												<strong className="text-uppercase">
-													{desde
-														? moment(
-																desde.date,
-																'YYYY-MM'
-														  ).format('MMMM YYYY')
-														: '-'}
-												</strong>
-											</div>
+					<>
+						<Row>
+							<Col xs="12">
+								<div 
+									className='d-flex justify-content-between border p-3 div-hover'
+									onClick={() => setOpenCollapse(!openCollapse)}
+								>
+									<h4 className='m-0'>Nuevo Cliente</h4>
+									<h4 className='m-0'>
+										Embarcación:{' '}
+										{reservation?.boat?.name}
+									</h4>
+									<h4 className='m-0'>
+										Slip: {reservation?.slip?.code}
+									</h4>
+									<h4 className="text-primary m-0">
+									Balance:{' '}
+												{jsFormatNumber(
+													reservation?.balance
+												)}
+									</h4>
+								</div>
+								<Collapse isOpen={openCollapse} className="accordion-collapse">
+									<Card>
+										<CardBody>
+											<TableCharges items={charge} />
+										</CardBody>
+									</Card>
+								</Collapse>
+							</Col>
+							<Col xs="12" md={{offset: 3, size: 6}} className={"mt-2"}>
+								<div className="p-4 border bottom-0 w-100 bg-light ">
+									<div className="d-flex align-items-center mb-2">
+										<div>Desde</div>
+										<div className='ps-2'>
+											<strong className="text-uppercase">
+												{desde
+													? moment(
+															desde.date,
+															'YYYY-MM'
+													).format('MMMM YYYY')
+													: '-'}
+											</strong>
 										</div>
-										<div className="d-flex justify-content-between align-items-center mb-2">
-											<div className="flex-1">Hasta</div>
-											<div>
-												<div className="w-100">
-													<div className="d-flex">
-														<div className="me-1">
-															<Select
-																value={month}
-																onChange={(
-																	value
-																) => {
-																	setMonth(
-																		value
-																	);
-																}}
-																options={
-																	year?.value >
-																	moment().year()
-																		? monthsOpt
-																		: monthsOpt.filter(
-																				(
-																					it
-																				) => {
-																					if (
-																						year?.value ===
-																							moment().year() &&
-																						year?.value !==
-																							parseInt(
-																								desde?.date?.split(
-																									'-'
-																								)[2]
-																							)
-																					) {
-																						return true;
-																					} else {
-																						return (
-																							parseInt(
-																								it.value
-																							) >=
-																							parseInt(
-																								desde?.date?.split(
-																									'-'
-																								)[1] ??
-																									0
-																							)
-																						);
-																					}
-																				}
-																		  )
-																}
-																placeholder="Mes"
-																classNamePrefix="select2-selection"
-																styles={{
-																	control: (
-																		baseStyles,
-																		state
-																	) => ({
-																		...baseStyles,
-																		...objStyle,
-																	}),
-																}}
-															/>
-														</div>
-														<div>
-															<Select
-																value={year}
-																onChange={(
-																	value
-																) => {
-																	setYear(
-																		value
-																	);
-																}}
-																placeholder="Año"
-																options={yearsOpt(
-																	moment(
-																		desde?.date,
-																		'YYYY-MM'
-																	).format(
-																		'YYYY'
-																	)
-																).map(
-																	(it) => it
-																)}
-																classNamePrefix="select2-selection"
-																styles={{
-																	control: (
-																		baseStyles,
-																		state
-																	) => ({
-																		...baseStyles,
-																		...objStyle,
-																	}),
-																}}
-															/>
-														</div>
-													</div>
-												</div>
-												<div className="text-end">
-													<Input
-														id="enabled"
-														name="enabled"
-														type="checkbox"
-														className={`form-check-Input form-check-input`}
-														disabled={
-															charge.length !==
-															chargesToPay.length
-														}
-														checked={
-															finalizarReserva
-														}
-														onChange={(e) =>
-															onHandleChangeFinalizarReserva(
-																e.target.checked
-															)
-														}
-													/>
-													<Label
-														htmlFor={`enabled`}
-														className="mb-0 ms-1 me-2 text-danger"
-													>
-														Finalizar reserva
-													</Label>
-													<i
-														className="far fa-question-circle text-dark"
-														id="help"
-													/>
-													<TooltipDescription
-														text="Si marca esta casilla el monto a cobrar será hasta el día actual"
-														id="help"
-													/>
-												</div>
-											</div>
-										</div>
-										<div className="mb-2">
-											<Label
-												htmlFor="paymentForm"
-												className="mb-0"
-											>
-												Forma de pago
-											</Label>
+										<div className="ps-4">Hasta</div>
+										<div className="ps-2">
 											<Select
-												value={{
-													value: paymentForm,
-													label: paymentFormOpt.find(
-														(it) =>
-															it.value ===
-															paymentForm
-													).label,
+												value={month}
+												onChange={(
+													value
+												) => {
+													setMonth(
+														value
+													);
 												}}
-												onChange={(value) => {
-													setPaymentForm(value.value);
-												}}
-												options={paymentFormOpt}
+												options={
+													year?.value >
+													moment().year()
+														? monthsOpt
+														: monthsOpt.filter(
+																(
+																	it
+																) => {
+																	if (
+																		year?.value ===
+																			moment().year() &&
+																		year?.value !==
+																			parseInt(
+																				desde?.date?.split(
+																					'-'
+																				)[2]
+																			)
+																	) {
+																		return true;
+																	} else {
+																		return (
+																			parseInt(
+																				it.value
+																			) >=
+																			parseInt(
+																				desde?.date?.split(
+																					'-'
+																				)[1] ??
+																					0
+																			)
+																		);
+																	}
+																}
+														)
+												}
+												placeholder="Mes"
 												classNamePrefix="select2-selection"
+												styles={{
+													control: (
+														baseStyles,
+														state
+													) => ({
+														...baseStyles,
+														...objStyle,
+													}),
+												}}
 											/>
 										</div>
-										<div className="mb-2">
+										<div className='ps-2'>
+											<Select
+												value={year}
+												onChange={(
+													value
+												) => {
+													setYear(
+														value
+													);
+												}}
+												placeholder="Año"
+												options={yearsOpt(
+													moment(
+														desde?.date,
+														'YYYY-MM'
+													).format(
+														'YYYY'
+													)
+												).map(
+													(it) => it
+												)}
+												classNamePrefix="select2-selection"
+												styles={{
+													control: (
+														baseStyles,
+														state
+													) => ({
+														...baseStyles,
+														...objStyle,
+													}),
+												}}
+											/>
+										</div>
+										<div className="ps-2">
+											<Input
+												id="enabled"
+												name="enabled"
+												type="checkbox"
+												className={`form-check-Input form-check-input`}
+												disabled={
+													charge.length !==
+													chargesToPay.length
+												}
+												checked={
+													finalizarReserva
+												}
+												onChange={(e) =>
+													onHandleChangeFinalizarReserva(
+														e.target.checked
+													)
+												}
+											/>
+											<Label
+												htmlFor={`enabled`}
+												className="mb-0 ms-1 me-2 text-danger"
+											>
+												Finalizar reserva
+											</Label>
+											<i
+												className="far fa-question-circle text-dark"
+												id="help"
+											/>
+											<TooltipDescription
+												text="Si marca esta casilla el monto a cobrar será hasta el día actual"
+												id="help"
+											/>
+										</div>
+									</div>
+									<hr />
+									<Row className={"mb-2"}>
+										<Col xs="12" md="6">
 											<Label
 												htmlFor="concept"
 												className="mb-0 fw-normal"
@@ -482,8 +461,8 @@ const ChargesCanvas = ({
 												}
 												value={concept}
 											/>
-										</div>
-										<div className="mb-2">
+										</Col>
+										<Col xs="12" md="6">
 											<Label
 												htmlFor="concept"
 												className="mb-0 fw-normal"
@@ -499,139 +478,285 @@ const ChargesCanvas = ({
 												}
 												value={reference}
 											/>
-										</div>
-
-										<div className="d-flex justify-content-between align-items-center mt-5">
-											<div>
-												<span>
-													<strong>Total</strong>
-												</span>
-											</div>
-											<div>
-												{isCalculating ? (
-													<SpinLoader />
-												) : (
-													<h3 className="text-primary m-0">
-														{totalToPay
-															? numberFormat(
-																	totalToPay
-															  )
-															: '-'}
-													</h3>
-												)}
-											</div>
-										</div>
-										{totalToPay > 0 && (
-											<div
-												className="d-flex flex-column align-items-end"
-												style={{ gap: '2px' }}
-											>
-												<div>
-													<Input
-														id="forgivenInterest"
-														name="forgivenInterest"
-														type="checkbox"
-														className={`form-check-Input form-check-input`}
-														checked={
-															forgivenInterest
-														}
-														onChange={(e) => {
-															setForgivenInterest(
-																e.target.checked
-															);
-															if (
-																!e.target
-																	.checked
-															) {
-																setForgivenInterestReason(
-																	''
-																);
-															}
-														}}
-													/>
-													<Label
-														htmlFor={`forgivenInterest`}
-														className="mb-0 ms-1 me-2 text-secondary"
+										</Col>
+									</Row>
+									{
+										entryPayment.map((entry, index) => (
+											<Row key={`payment-${index}`}>
+												<Col xs="3" md="4">
+													{index === 0 && <Label
+														htmlFor="paymentForm"
+														className="mb-0"
 													>
-														Condonar intereses
-													</Label>
-													<i
-														className="far fa-question-circle text-dark"
-														id="help-forgivenInterest"
+														Forma de pago
+													</Label>}
+													<Select
+														value={{
+															value: entry.paymentForm,
+															label: paymentFormOpt.find(
+																(it) =>
+																	it.value ===
+																	entry.paymentForm
+															)?.label ?? '',
+														}}
+														onChange={(value) => {
+															setPaymentForm(value.value);
+														}}
+														options={paymentFormOpt}
+														classNamePrefix="select2-selection"
 													/>
-													<TooltipDescription
-														text="Si marca esta casilla no se tomará en cuenta los intereses de la reservación"
-														id="help-forgivenInterest"
+												</Col>
+												<Col xs="2" md="3">
+													{index === 0 && <Label htmlFor="currency" className="mb-0">
+														Moneda
+													</Label>}
+													<Select
+														id='currency'
+														value={{
+															value: entry.currency,
+															label: currencyShortOpt.find(
+																(it) =>
+																	it.value === entry.currency
+															).label,
+														}}
+														onChange={(value) => {
+															
+														}}
+														options={currencyShortOpt}
+														classNamePrefix="select2-selection"
+													/>
+												</Col>
+												<Col xs="3" md="4">
+													{index === 0 && <Label htmlFor="amount" className="mb-0">
+														Monto
+													</Label>}
+													<Input
+														id="amount"
+														name="amount"
+														className={`form-control text-primary fw-semibold`}
+														onChange={(e) => {}}
+														value={entry.amount}
+													/>
+												</Col>
+												{index > 0 && <Col xs="1" md="1">
+													<Button
+														color="danger"
+														outline
+														onClick={() => {
+															const copyEntryPayment = [...entryPayment]
+															copyEntryPayment.splice(index, 1)
+															setEntryPayment(copyEntryPayment)
+														}}
+													>
+														<i className="fas fa-trash" />
+													</Button>
+												</Col>}
+											</Row>
+										))
+									}
+									<Row className={"mt-1"}>
+										<Col xs="12" md="3">
+										<Button color="secondary" size={"sm"} onClick={() => {
+											setEntryPayment(prev=>[...prev, {
+												paymentForm: 'CASH',
+												currency: 'MXN',
+												amount: 0,
+												amountMXN: 0
+											}])
+										}}>
+											Nueva forma de pago
+										</Button>
+										</Col>
+									</Row>	
+
+									<Row>
+										<Col xs="7" md="7" className={'text-end'}>
+											<strong className='fs-4 '>Total</strong>
+										</Col>
+										<Col xs="5" md="5">
+										
+											{isCalculating ? (
+												<SimpleLoad text='' extraClass='text-start text-dark' />
+											) : (
+												<h3 className="text-primary m-0">
+													{totalToPay
+														? numberFormat(
+																totalToPay
+														)
+														: '-'}
+												</h3>
+											)}
+											{totalToPay > 0 && 
+											<div>
+												<Input
+													id="forgivenInterest"
+													name="forgivenInterest"
+													type="checkbox"
+													className={`form-check-Input form-check-input`}
+													checked={
+														forgivenInterest
+													}
+													onChange={(e) => {
+														setForgivenInterest(
+															e.target.checked
+														);
+														if (
+															!e.target
+																.checked
+														) {
+															setForgivenInterestReason(
+																''
+															);
+														}
+													}}
+												/>
+												<Label
+													htmlFor={`forgivenInterest`}
+													className="mb-0 ms-1 me-2 text-secondary"
+												>
+													Condonar intereses
+												</Label>
+												<i
+													className="far fa-question-circle text-dark"
+													id="help-forgivenInterest"
+												/>
+												<TooltipDescription
+													text="Si marca esta casilla no se tomará en cuenta los intereses de la reservación"
+													id="help-forgivenInterest"
+												/>
+											</div>}
+											{forgivenInterest && (
+												<div className="w-100">
+													<textarea
+														className="form-control"
+														rows={2}
+														placeholder="Razón por la que condona los interses"
+														value={
+															forgivenInterestReason
+														}
+														onChange={(e) =>
+															setForgivenInterestReason(
+																e.target
+																	.value
+															)
+														}
 													/>
 												</div>
-												{forgivenInterest && (
-													<div className="w-100">
-														<textarea
-															className="form-control"
-															rows={2}
-															placeholder="Razón por la que condona los interses"
-															value={
-																forgivenInterestReason
-															}
-															onChange={(e) =>
-																setForgivenInterestReason(
-																	e.target
-																		.value
-																)
-															}
-														/>
-													</div>
-												)}
-											</div>
-										)}
-										{checkCaja.loading && (
-											<SimpleLoad text="Checando asignación de caja" />
-										)}
-										{!checkCaja.hasCaja &&
-											!checkCaja.loading && (
+											)}
+											{checkCaja.loading && (
+												<SimpleLoad text="Checando asignación de caja" />
+											)}
+										</Col>
+									</Row>
+
+									{!checkCaja.hasCaja && !checkCaja.loading && (
+										<Row>
+											<Col>
 												<Alert color="warning">
 													{NOT_CASH_REGISTER_ASSIGN}
 												</Alert>
-											)}
-										{checkCaja.hasCaja && (
-											<div className="text-center mt-3">
-												{isPaying ? (
-													<Button
-														color="primary"
-														className="fs-4"
-														disabled
-														block
-													>
-														<i className="bx bx-loader bx-spin font-size-16 align-middle" />{' '}
-														Pagar
-													</Button>
-												) : (
-													<Button
-														color="primary"
-														className="fs-4"
-														disabled={
-															totalToPay <= 0 ||
-															!paymentForm ||
-															(forgivenInterest &&
-																!Boolean(
-																	forgivenInterestReason
-																))
-														}
-														block
-														onClick={
-															onHandlePayment
-														}
-													>
-														Pagar
-													</Button>
+											</Col>
+										</Row>
+									)}
+									{checkCaja.hasCaja && (
+										<Row>
+											<Col>
+												<div className="text-center mt-3">
+													{isPaying ? (
+														<Button
+															color="primary"
+															className="fs-4"
+															disabled
+															block
+														>
+															<i className="bx bx-loader bx-spin font-size-16 align-middle" />{' '}
+															Pagar
+														</Button>
+													) : (
+														<Button
+															color="primary"
+															className="fs-4"
+															disabled={
+																totalToPay <= 0 ||
+																!paymentForm ||
+																(forgivenInterest &&
+																	!Boolean(
+																		forgivenInterestReason
+																	))
+															}
+															block
+															onClick={
+																onHandlePayment
+															}
+														>
+															Pagar
+														</Button>
+													)}
+												</div>
+											</Col>
+										</Row>	
+									)}
+								</div>
+							</Col>
+						</Row>
+						{/* <Row>
+							
+							<Col xs="12" md="4">
+								<div className="py-4 border bottom-0 w-100 bg-light ">
+									
+									<Row>
+										<Col xs="12" md={{ size: 8, offset: 2 }}>
+											
+											
+											
+											
+											{!checkCaja.hasCaja &&
+												!checkCaja.loading && (
+													<Alert color="warning">
+														{NOT_CASH_REGISTER_ASSIGN}
+													</Alert>
 												)}
-											</div>
-										)}
-									</Col>
-								</Row>
-							</div>
-						</Col>
-					</Row>
+											{checkCaja.hasCaja && (
+												<div className="text-center mt-3">
+													{isPaying ? (
+														<Button
+															color="primary"
+															className="fs-4"
+															disabled
+															block
+														>
+															<i className="bx bx-loader bx-spin font-size-16 align-middle" />{' '}
+															Pagar
+														</Button>
+													) : (
+														<Button
+															color="primary"
+															className="fs-4"
+															disabled={
+																totalToPay <= 0 ||
+																!paymentForm ||
+																(forgivenInterest &&
+																	!Boolean(
+																		forgivenInterestReason
+																	))
+															}
+															block
+															onClick={
+																onHandlePayment
+															}
+														>
+															Pagar
+														</Button>
+													)}
+												</div>
+											)}
+										</Col>
+									</Row>
+								</div>
+							</Col>
+						</Row> */}
+					</>
+					
 				)}
 
 				<SuccessPaymentDialog
