@@ -266,7 +266,16 @@ const ChargesCanvas = ({
 			}}
 		>
 			<OffcanvasHeader toggle={toggle} className="border-bottom">
-				Cargos
+				<div className='d-flex align-items-center'>
+					<div className='d-flex flex-column'>
+						<div className='d-flex align-items-center'>
+							<i className='fas fa-user' />
+							<label>Cliente</label>
+						</div>
+						<h6></h6>
+					</div>
+					
+				</div>
 			</OffcanvasHeader>
 			<OffcanvasBody className="p-4">
 				{loading ? (
@@ -274,7 +283,7 @@ const ChargesCanvas = ({
 				) : (
 					<>
 						<Row>
-							<Col xs="12">
+							<Col xs="12" md="6">
 								<div 
 									className='d-flex justify-content-between border p-3 div-hover'
 									onClick={() => setOpenCollapse(!openCollapse)}
@@ -302,7 +311,7 @@ const ChargesCanvas = ({
 									</Card>
 								</Collapse>
 							</Col>
-							<Col xs="12" md={{offset: 3, size: 6}} className={"mt-2"}>
+							<Col xs="12" md={"6"} className={"mt-2"}>
 								<div className="p-4 border bottom-0 w-100 bg-light ">
 									<div className="d-flex align-items-center mb-2">
 										<div>Desde</div>
@@ -444,46 +453,11 @@ const ChargesCanvas = ({
 										</div>
 									</div>
 									<hr />
-									<Row className={"mb-2"}>
-										<Col xs="12" md="6">
-											<Label
-												htmlFor="concept"
-												className="mb-0 fw-normal"
-											>
-												Concepto (Opcional)
-											</Label>
-											<Input
-												id="concept"
-												name="concept"
-												className="form-control"
-												onChange={(e) =>
-													setConcept(e.target.value)
-												}
-												value={concept}
-											/>
-										</Col>
-										<Col xs="12" md="6">
-											<Label
-												htmlFor="concept"
-												className="mb-0 fw-normal"
-											>
-												Referencia (Opcional)
-											</Label>
-											<Input
-												id="concept"
-												name="concept"
-												className="form-control"
-												onChange={(e) =>
-													setReference(e.target.value)
-												}
-												value={reference}
-											/>
-										</Col>
-									</Row>
+									
 									{
 										entryPayment.map((entry, index) => (
 											<Row key={`payment-${index}`}>
-												<Col xs="3" md="4">
+												<Col xs="3" md="8">
 													{index === 0 && <Label
 														htmlFor="paymentForm"
 														className="mb-0"
@@ -506,7 +480,7 @@ const ChargesCanvas = ({
 														classNamePrefix="select2-selection"
 													/>
 												</Col>
-												<Col xs="2" md="3">
+												<Col xs="2" md="4">
 													{index === 0 && <Label htmlFor="currency" className="mb-0">
 														Moneda
 													</Label>}
@@ -524,6 +498,41 @@ const ChargesCanvas = ({
 														}}
 														options={currencyShortOpt}
 														classNamePrefix="select2-selection"
+													/>
+												</Col>
+												
+												<Col xs="12" md="4">
+													{index === 0 && <Label
+														htmlFor="concept"
+														className="mb-0 fw-normal"
+													>
+														Concepto (Opcional)
+													</Label>}
+													<Input
+														id="concept"
+														name="concept"
+														className="form-control"
+														onChange={(e) =>
+															setConcept(e.target.value)
+														}
+														value={concept}
+													/>
+												</Col>
+												<Col xs="12" md="4">
+													{index === 0 &&<Label
+														htmlFor="concept"
+														className="mb-0 fw-normal"
+													>
+														Referencia (Opcional)
+													</Label>}
+													<Input
+														id="concept"
+														name="concept"
+														className="form-control"
+														onChange={(e) =>
+															setReference(e.target.value)
+														}
+														value={reference}
 													/>
 												</Col>
 												<Col xs="3" md="4">
@@ -551,6 +560,7 @@ const ChargesCanvas = ({
 														<i className="fas fa-trash" />
 													</Button>
 												</Col>}
+												<hr className='mt-2' />
 											</Row>
 										))
 									}
