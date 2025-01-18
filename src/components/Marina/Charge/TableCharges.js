@@ -10,22 +10,20 @@ const TableCharges = ({ items }) => {
 			<table className="table table-nowrap align-middle mb-0">
 				<thead>
 					<tr>
-						<th style={{ width: '15%' }}>Mes</th>
-						<th style={{ width: '15%' }}>Año</th>
-						<th style={{ width: '15%' }}>Estado</th>
-						<th style={{ width: '15%' }}>Precio diario</th>
+						<th style={{ width: '15%' }}>Período</th>
+						<th style={{ width: '20%' }}>Estado</th>
+						<th style={{ width: '20%' }}>Precio diario</th>
 						<th style={{ width: '15%' }}>Interés</th>
 						<th style={{ width: '15%' }}>Monto actual</th>
-						<th style={{ width: '10%' }}>Monto mensual</th>
+						<th style={{ width: '15%' }}>Monto mensual</th>
 					</tr>
 				</thead>
 				<tbody>
 					{items.map((it) => (
 						<tr key={it.id}>
 							<td>
-								{getMonth(parseInt(it.monthYear.split('-')[1]))}
+								{getMonth(parseInt(it.monthYear.split('-')[1]))}{' '}{it.monthYear.split('-')[0]}
 							</td>
-							<td>{it.monthYear.split('-')[0]}</td>
 							<td>
 								<Badge
 									className={
