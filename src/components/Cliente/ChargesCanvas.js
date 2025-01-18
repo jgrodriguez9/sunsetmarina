@@ -59,7 +59,6 @@ const ChargesCanvas = ({
 	const [loading, setLoading] = useState(false);
 	const [desde, setDesde] = useState(null);
 	const [chargesToPay, setChargesToPay] = useState([]);
-	const [paymentForm, setPaymentForm] = useState('CASH');
 	const [finalizarReserva, setFinalizarReserva] = useState(false);
 	const dispatch = useDispatch();
 	const [isPaying, setIsPaying] = useState(false);
@@ -766,7 +765,6 @@ const ChargesCanvas = ({
 															className="fs-4"
 															disabled={
 																totalToPay <= 0 || !totalCalculatedToPay ||
-																!paymentForm ||
 																(forgivenInterest &&
 																	!Boolean(
 																		forgivenInterestReason
