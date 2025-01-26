@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Container, Row, Col, Button } from 'reactstrap';
-import generatePDF, { Resolution, Margin, usePDF } from 'react-to-pdf';
+import generatePDF, { Resolution, Margin } from 'react-to-pdf';
 import moment from 'moment';
 import ButtonsDisabled from '../Common/ButtonsDisabled';
 import { getPayment } from '../../helpers/marina/payment';
@@ -9,7 +9,7 @@ import TicketClientPaymentDetail from './TicketClientPaymentDetail';
 import 'moment/locale/es';
 moment.locale('es');
 
-const options: Options = {
+const options = {
 	filename: `recibo-pago-${moment().format('YYYYMMDDHHMMSS')}.pdf`,
 	method: 'save',
 	// default is Resolution.MEDIUM = 3, which should be enough, higher values
@@ -63,6 +63,7 @@ const TicketClientPayment = ({ idPayment, show, toggle = null }) => {
 			setIsRequesting(true);
 			try {
 				const response = await getPayment(idPayment);
+				console.log(response)
 				setPayment(response);
 				setIsRequesting(false);
 			} catch (error) {

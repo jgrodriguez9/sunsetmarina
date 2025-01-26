@@ -10,18 +10,22 @@ import { getFormaPago } from '../../utils/getFormaPago';
 const TicketClientPaymentDetail = ({ payment, hide = false }) => {
 	const paymentsMonths = useMemo(() => {
 		if (!payment) return '';
-		return payment.charges
+		return (payment?.charges ?? [])
 			.map((it) => moment(it.monthYear, 'YYYY-MM').format('MMMM'))
 			.join(',');
 	}, [payment]);
 	const paymentsYears = useMemo(() => {
 		if (!payment) return '';
-		const years = payment.charges.map((it) =>
+		const years = (payment?.charges ?? []).map((it) =>
 			moment(it.monthYear, 'YYYY-MM').format('YYYY')
 		);
 		const res = Array.from(new Set(years));
 		return res.join(',');
 	}, [payment]);
+
+	const granTotal = useMemo(() => {
+		return payment.payments.reduce((acc, curr) => acc+curr.amount, 0)
+	}, [payment])
 
 	return (
 		<Container>
@@ -104,7 +108,7 @@ const TicketClientPaymentDetail = ({ payment, hide = false }) => {
 							<RowControl
 								title="EMBARCACION"
 								text={
-									payment?.charges[0]?.reservation?.boat
+									payment?.reservation?.boat
 										?.name ?? ''
 								}
 								titleStyle={{
@@ -114,38 +118,42 @@ const TicketClientPaymentDetail = ({ payment, hide = false }) => {
 							/>
 						</Col>
 					</Row>
-
-					<Row>
-						<Col
-							md="6"
-							style={{
-								padding: 0,
-							}}
-						>
-							<RowControl
-								title="SUMA DE IMPORTE"
-								text={jsFormatNumber(payment?.amount ?? 0)}
-								titleStyle={{
-									borderRight: '1px solid #004a8f',
+					{
+						payment.payments.map((pay) => (
+						<Row key={pay.id}>
+							<Col
+								md="6"
+								style={{
+									padding: 0,
 								}}
-							/>
-						</Col>
-						<Col
-							md="6"
-							style={{
-								padding: 0,
-							}}
-						>
-							<RowControl
-								title="FORMA DE PAGO"
-								text={getFormaPago(payment?.paymentForm)}
-								titleStyle={{
-									borderLeft: '1px solid #004a8f',
-									borderRight: '1px solid #004a8f',
+							>
+								<RowControl
+									title="SUMA DE IMPORTE"
+									text={`${jsFormatNumber(pay?.amount ?? 0)} (MXN)`}
+									titleStyle={{
+										borderRight: '1px solid #004a8f',
+									}}
+								/>
+							</Col>
+							<Col
+								md="6"
+								style={{
+									padding: 0,
 								}}
-							/>
-						</Col>
-					</Row>
+							>
+								<RowControl
+									title="FORMA DE PAGO"
+									text={getFormaPago(pay?.paymentForm)}
+									titleStyle={{
+										borderLeft: '1px solid #004a8f',
+										borderRight: '1px solid #004a8f',
+									}}
+								/>
+							</Col>
+						</Row>
+						))
+					}			
+					
 					<Row
 						style={{
 							border: '1px solid #999',
@@ -247,7 +255,7 @@ const TicketClientPaymentDetail = ({ payment, hide = false }) => {
 						>
 							<RowControl
 								title="GRAN TOTAL"
-								text={jsFormatNumber(payment?.amount ?? 0)}
+								text={jsFormatNumber(granTotal ?? 0)}
 								titleStyle={{
 									borderRight: '1px solid #004a8f',
 								}}

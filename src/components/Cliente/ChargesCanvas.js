@@ -154,24 +154,24 @@ const ChargesCanvas = ({
 		};
 		console.log(data)
 
-		try {
-			const response = await savePayment(data);
-			setTicket({ idPayment: response.id });
-			setShowSuccess(true);
-			setIsPaying(false);
-			// setOpen(false);
-			setRefetch(true);
-		} catch (error) {
-			setIsPaying(false);
-			let message = ERROR_SERVER;
-			message = extractMeaningfulMessage(error, message);
-			dispatch(
-				addMessage({
-					message: message,
-					type: 'error',
-				})
-			);
-		}
+		// try {
+		// 	const response = await savePayment(data);
+		// 	setTicket({ idPayment: response.id });
+		// 	setShowSuccess(true);
+		// 	setIsPaying(false);
+		// 	// setOpen(false);
+		// 	setRefetch(true);
+		// } catch (error) {
+		// 	setIsPaying(false);
+		// 	let message = ERROR_SERVER;
+		// 	message = extractMeaningfulMessage(error, message);
+		// 	dispatch(
+		// 		addMessage({
+		// 			message: message,
+		// 			type: 'error',
+		// 		})
+		// 	);
+		// }
 	};
 
 	const onHandleChangeFinalizarReserva = (isFinalizar) => {
@@ -228,6 +228,7 @@ const ChargesCanvas = ({
 						finished: finalizarReserva,
 						charges: charge.map((it) => ({ id: it.id })),
 						forgivenInterest: forgivenInterest,
+						reservationId: reservation.id
 						
 					};
 					const response = await getTotalChargeUpdated(data);

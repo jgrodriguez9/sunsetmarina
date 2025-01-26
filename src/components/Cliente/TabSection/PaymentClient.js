@@ -24,6 +24,8 @@ import TicketClientPayment from '../../Tickets/TicketClientPayment';
 import DeleteDialog from '../../Common/DeleteDialog';
 import FormPayment from '../../Marina/Payment/FormPayment';
 import { getBoatByClient } from '../../../helpers/marina/boat';
+import CellDate from '../../Tables/CellDate';
+import jsFormatNumber from '../../../utils/jsFormatNumber';
 
 export default function PaymentClient({ formik }) {
 	const dispatch = useDispatch();
@@ -200,49 +202,39 @@ export default function PaymentClient({ formik }) {
 				Header: 'Código',
 				accessor: 'code',
 				style: {
-					width: '10%',
-				},
-			},
-			{
-				Header: 'Slip / Embarcación',
-				accessor: 'reservation',
-				style: {
-					width: '15%',
-				},
-				Cell: ({ row, value }) =>
-					`${value?.slip?.code ?? 'NA'} / ${
-						value?.boat?.name ?? 'NA'
-					}`,
-			},
-			{
-				Header: 'Concepto',
-				accessor: 'concept',
-				style: {
-					width: '20%',
+					width: '7%',
 				},
 			},
 			{
 				Header: 'Fecha',
 				accessor: 'dateCreated',
 				style: {
-					width: '10%',
+					width: '7%',
 				},
-				Cell: ({ value }) =>
-					value ? moment.utc(value).local().format('DD-MM-YYYY') : '',
+				Cell: CellDate,
 			},
 			{
-				Header: 'Monto',
-				accessor: 'amount',
+				Header: 'Slip / Embarcación',
+				accessor: 'systemPayment',
 				style: {
-					width: '8%',
+					width: '11%',
 				},
-				Cell: ({ value }) => numberFormat(value),
+				Cell: ({ row, value }) =>{
+					if(value === 'BALANCE_BP'){
+						return "Abono a pase de abordar"
+					}else{
+						return `${row?.original?.reservation?.slip?.code ?? 'NA'} / ${
+							row?.original?.reservation?.boat?.name ?? 'NA'
+					}`
+					}
+					
+				},
 			},
 			{
 				Header: 'Moratorios',
 				accessor: 'forgivenInterest',
 				style: {
-					width: '15%',
+					width: '10%',
 					textAlign: 'center',
 				},
 				Cell: ({ row, value }) => {
@@ -263,31 +255,68 @@ export default function PaymentClient({ formik }) {
 				},
 			},
 			{
-				Header: 'Forma de pago',
-				accessor: 'paymentForm',
+				Header: 'Total',
+				id: 'total',
 				style: {
 					width: '10%',
+					textAlign: 'center',
 				},
-				Cell: ({ value }) => getFormaPago(value),
-			},
+				Cell: ({ row }) => {
+					if(row.original.systemPayment === 'BALANCE_BP'){
+						const result =  row.original.payments.reduce((acc, curr) => acc+curr.amountUSD, 0)
+						return `${jsFormatNumber(result)} (USD)`
+					}else{
+						const result =  row.original.payments.reduce((acc, curr) => acc+curr.amount, 0)
+						return `${jsFormatNumber(result)} (MXN)`
+					}
+				},
+			},			
 			{
-				Header: 'Tipo de pago',
-				accessor: 'systemPayment',
+				Header: 'Detalle',
+				accessor: 'payments',
 				style: {
-					width: '15%',
+					width: '40%',
 				},
-				Cell: ({ value }) => getTipoPago(value),
+				Cell: ({ row, value }) => {
+					return (
+						<table className="mb-0 font-size-12" style={{ width: '100%'}}>
+							<thead>
+								<tr>
+									<th className='border-0 fw-semibold'>Monto</th>
+									<th className='border-0 fw-semibold'>C/E</th>
+									<th className='border-0 fw-semibold'>Forma de pago</th>
+									<th className='border-0 fw-semibold'>Concepto</th>
+									<th className='border-0 fw-semibold'>Referencia</th>
+								</tr>
+							</thead>
+							<tbody>
+								{
+									value.map((item) => (
+										<tr key={item.id}>
+											<td className='border-top-0 border-end-0 border-start-0' style={{ width: '20%'}}>{numberFormat(item.currency === 'MXN' ? item.amount :  item.amountUSD)} ({item.currency})</td>
+											<td className='border-top-0 border-end-0 border-start-0' style={{ width: '10%'}}>{numberFormat(item.currencyExchange, 4, 4)}</td>
+											<td className='border-top-0 border-end-0 border-start-0' style={{ width: '20%'}}>{getFormaPago(item.paymentForm)}</td>
+											<td className='border-top-0 border-end-0 border-start-0' style={{ width: '30%'}}>{item.concept}</td>
+											<td className='border-top-0 border-end-0 border-start-0' style={{ width: '30%'}}>{item.reference}</td>
+										</tr>
+									))
+								}
+							</tbody>
+						</table>
+					)
+				}
 			},
 			{
 				Header: 'Estado',
-				accessor: 'status',
+				id: 'status',
 				style: {
-					width: '10%',
+					width: '5%',
 				},
-				Cell: ({ value }) => {
-					if (value === 'PENDING') {
+				Cell: ({ row }) => {
+					const firStatus = row?.original.payments[0].status
+					if (firStatus === 'PENDING') {
 						return <Badge color="warning">Pendiente</Badge>;
-					} else if (value === 'APPROVED') {
+					} else if (firStatus === 'APPROVED') {
 						return <Badge color="success">Aprobado</Badge>;
 					} else {
 						return <Badge color="danger">Cancelado</Badge>;
@@ -298,6 +327,7 @@ export default function PaymentClient({ formik }) {
 				id: 'acciones',
 				Header: 'Acciones',
 				Cell: ({ row }) => {
+					const firStatus = row?.original.payments[0].status
 					return (
 						<div className="d-flex">
 							<Button
@@ -305,7 +335,7 @@ export default function PaymentClient({ formik }) {
 								size="sm"
 								outline
 								type="button"
-								disabled={row.original.status === 'CANCELLED'}
+								disabled={firStatus === 'CANCELLED'}
 								className={'me-2 fs-4 px-2 py-0'}
 								onClick={() => handleEdit(row)}
 							>
@@ -313,17 +343,17 @@ export default function PaymentClient({ formik }) {
 							</Button>
 							<Button
 								color={
-									row.original.status === 'CANCELLED'
+									firStatus === 'CANCELLED'
 										? 'secondary'
 										: 'primary'
 								}
 								size="sm"
 								outline
 								type="button"
-								disabled={row.original.status === 'CANCELLED'}
+								disabled={firStatus === 'CANCELLED'}
 								className={'me-2 fs-4 px-2 py-0'}
 								onClick={
-									row.original.status === 'APPROVED'
+									firStatus === 'APPROVED'
 										? () => generatePayment(row)
 										: () => {}
 								}
@@ -332,17 +362,17 @@ export default function PaymentClient({ formik }) {
 							</Button>
 							<Button
 								color={
-									row.original.status === 'CANCELLED'
+									firStatus === 'CANCELLED'
 										? 'secondary'
 										: 'danger'
 								}
 								size="sm"
 								outline
-								disabled={row.original.status === 'CANCELLED'}
+								disabled={firStatus === 'CANCELLED'}
 								className={'fs-4 px-2 py-0'}
 								type="button"
 								onClick={
-									row.original.status === 'CANCELLED'
+									firStatus === 'CANCELLED'
 										? () => {}
 										: () => handleCancelPayment(row)
 								}
