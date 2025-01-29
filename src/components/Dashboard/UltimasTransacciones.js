@@ -11,6 +11,8 @@ import { getPaymentListPaginado } from '../../helpers/marina/payment';
 import { ERROR_SERVER } from '../../constants/messages';
 import extractMeaningfulMessage from '../../utils/extractMeaningfulMessage';
 import TableLoader from '../Loader/TablaLoader';
+import CellDate from '../Tables/CellDate';
+import jsFormatNumber from '../../utils/jsFormatNumber';
 
 export default function UltimasTransacciones() {
 	const [items, setItems] = useState(lastTransaction);
@@ -22,40 +24,16 @@ export default function UltimasTransacciones() {
 				Header: 'Código',
 				accessor: 'code',
 				style: {
-					width: '15%',
-				},
-			},
-			{
-				Header: 'Referencia',
-				accessor: 'reference',
-				style: {
-					width: '25%',
+					width: '10%',
 				},
 			},
 			{
 				Header: 'Fecha',
 				accessor: 'dateCreated',
 				style: {
-					width: '15%',
-				},
-				Cell: ({ value }) =>
-					value ? moment.utc(value).local().format('DD-MM-YYYY') : '',
-			},
-			{
-				Header: 'Monto',
-				accessor: 'amount',
-				style: {
 					width: '10%',
 				},
-				Cell: ({ value }) => numberFormat(value),
-			},
-			{
-				Header: 'Forma de pago',
-				accessor: 'paymentForm',
-				style: {
-					width: '10%',
-				},
-				Cell: ({ value }) => getFormaPago(value),
+				Cell: CellDate,
 			},
 			{
 				Header: 'Tipo de pago',
@@ -66,18 +44,81 @@ export default function UltimasTransacciones() {
 				Cell: ({ value }) => getTipoPago(value),
 			},
 			{
-				Header: 'Estado',
-				accessor: 'status',
+				Header: 'Total',
+				id: 'total',
 				style: {
 					width: '10%',
+					textAlign: 'center',
 				},
-				Cell: ({ value }) => {
-					if (value === 'PENDING') {
+				Cell: ({ row }) => {
+					if(row.original.systemPayment === 'BALANCE_BP'){
+						const selectCurrency = row.original.payments && row.original.payments.length > 0 ? row.original.payments[0].currency : 'USD'
+						const result =  row.original.payments?.reduce((acc, curr) => {
+							if(selectCurrency === 'MXN'){
+								acc += curr.amount
+							}else{	
+								acc += curr.amountUSD
+							}
+							return acc;
+						}, 0)
+						return `${jsFormatNumber(result)} (${selectCurrency})`
+					}else{
+						const result =  row.original.payments?.reduce((acc, curr) => acc+curr.amount, 0)
+						return `${jsFormatNumber(result)} (MXN)`
+					}
+				},
+			},				
+			{
+				Header: 'Detalle',
+				accessor: 'payments',
+				style: {
+					width: '40%',
+				},
+				Cell: ({ row, value }) => {
+					return (
+						<table className="mb-0 font-size-12" style={{ width: '100%'}}>
+							<thead>
+								<tr>
+									<th className='border-0 fw-semibold'>Monto</th>
+									<th className='border-0 fw-semibold'>C/E</th>
+									<th className='border-0 fw-semibold'>Forma de pago</th>
+									<th className='border-0 fw-semibold'>Concepto</th>
+									<th className='border-0 fw-semibold'>Referencia</th>
+								</tr>
+							</thead>
+							<tbody>
+								{
+									(value ?? []).map((item) => (
+										<tr key={item.id}>
+											<td className='border-top-0 border-end-0 border-start-0' style={{ width: '20%'}}>{numberFormat(item.currency === 'MXN' ? item.amount :  item.amountUSD)} ({item.currency})</td>
+											<td className='border-top-0 border-end-0 border-start-0' style={{ width: '10%'}}>{numberFormat(item.currencyExchange, 4, 4)}</td>
+											<td className='border-top-0 border-end-0 border-start-0' style={{ width: '20%'}}>{getFormaPago(item.paymentForm)}</td>
+											<td className='border-top-0 border-end-0 border-start-0' style={{ width: '30%'}}>{item.concept}</td>
+											<td className='border-top-0 border-end-0 border-start-0' style={{ width: '30%'}}>{item.reference}</td>
+										</tr>
+									))
+								}
+							</tbody>
+						</table>
+					)
+				}
+			},
+			{
+				Header: 'Estado',
+				id: 'status',
+				style: {
+					width: '5%',
+				},
+				Cell: ({ row }) => {
+					const firStatus = row?.original?.payments && row?.original?.payments.length > 0 ? row?.original?.payments[0]?.status : 'NA'
+					if (firStatus === 'PENDING') {
 						return <Badge color="warning">Pendiente</Badge>;
-					} else if (value === 'APPROVED') {
+					} else if (firStatus === 'APPROVED') {
 						return <Badge color="success">Aprobado</Badge>;
-					} else {
+					} else if(firStatus === 'CANCELLED'){
 						return <Badge color="danger">Cancelado</Badge>;
+					}else {
+						return <Badge color="light">No disponible</Badge>;
 					}
 				},
 			},

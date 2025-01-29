@@ -111,6 +111,27 @@ function IncomeReport() {
 	const columns = useMemo(
 		() => [
 			{
+				Header: 'Cliente',
+				accessor: 'customer',
+				style: {
+					width: '10%',
+				},
+			},
+			{
+				Header: 'Embarcación',
+				accessor: 'boat',
+				style: {
+					width: '10%',
+				},
+			},
+			{
+				Header: 'Slip',
+				accessor: 'slip',
+				style: {
+					width: '10%',
+				},
+			},
+			{
 				Header: 'Periodo',
 				accessor: 'period',
 				style: {
@@ -223,6 +244,21 @@ function IncomeReport() {
 		// en items tengo toda la info
 		const columns = [
 			{
+				key: 'customer',
+				header: 'Cliente',
+				width: 14,
+			},
+			{
+				key: 'boat',
+				header: 'Embarcación',
+				width: 14,
+			},
+			{
+				key: 'slip',
+				header: 'Slip',
+				width: 10,
+			},
+			{
 				key: 'period',
 				header: 'Periodo',
 				width: 14,
@@ -297,7 +333,11 @@ function IncomeReport() {
 		];
 		sheet.columns = columns;
 		items.forEach((val, i, _) => {
-			sheet.addRow(val);
+			const value = {
+				...val,
+				paymentMethod: getFormaPago(val.paymentMethod)
+			}
+			sheet.addRow(value);
 		});
 
 		sheet.getRow(1).font = { bold: true };
@@ -378,6 +418,9 @@ function IncomeReport() {
 			<Col xs="12" xl="12">
 				<TableLoader
 					columns={[
+						{ name: 'Cliente', width: '10%' },
+						{ name: 'Embarcación', width: '10%' },
+						{ name: 'Slip', width: '10%' },
 						{ name: 'Periodo', width: '10%' },
 						{ name: 'Mes de pago', width: '10%' },
 						{ name: 'Forma de pago', width: '10%' },

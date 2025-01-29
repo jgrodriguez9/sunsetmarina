@@ -7,21 +7,30 @@ import RowControl from './common/RowControl';
 import jsFormatNumber from '../../utils/jsFormatNumber';
 import { getFormaPago } from '../../utils/getFormaPago';
 
+function processMonthYearCharges(monthYearCharges) {
+	const monthYearChargesArr = monthYearCharges.split(", ").sort();
+	const months = monthYearChargesArr.map((it) => moment(it, 'YYYY-MM').format('MMMM')).join(",")
+	const years = [...new Set(monthYearChargesArr.map(m => m.split("-")[0]))].sort().join(",");
+
+  return { years, months };
+  }
+
 const TicketClientPaymentDetail = ({ payment, hide = false }) => {
-	const paymentsMonths = useMemo(() => {
-		if (!payment) return '';
-		return (payment?.charges ?? [])
-			.map((it) => moment(it.monthYear, 'YYYY-MM').format('MMMM'))
-			.join(',');
-	}, [payment]);
-	const paymentsYears = useMemo(() => {
-		if (!payment) return '';
-		const years = (payment?.charges ?? []).map((it) =>
-			moment(it.monthYear, 'YYYY-MM').format('YYYY')
-		);
-		const res = Array.from(new Set(years));
-		return res.join(',');
-	}, [payment]);
+
+
+	const {years, months} = useMemo(() => {
+		if (!payment) {
+			return {
+				years: '',
+				months: ''
+			};
+		}
+		const {years, months} = processMonthYearCharges(payment.monthYearCharges)
+		return {
+			years,
+			months
+		}
+	}, [payment])
 
 	const granTotal = useMemo(() => {
 		return payment.payments.reduce((acc, curr) => acc+curr.amount, 0)
@@ -74,7 +83,7 @@ const TicketClientPaymentDetail = ({ payment, hide = false }) => {
 									.format('DD-MM-YYYY')}
 							/>
 							<SpanControl text="Año del mes de pago" />
-							<SpanControl text={paymentsYears} />
+							<SpanControl text={years} />
 						</div>
 					</div>
 
@@ -227,7 +236,7 @@ const TicketClientPaymentDetail = ({ payment, hide = false }) => {
 							}}
 						>
 							<SpanControl
-								text={paymentsMonths}
+								text={months}
 								style={{ textTransform: 'uppercase' }}
 							/>
 						</Col>

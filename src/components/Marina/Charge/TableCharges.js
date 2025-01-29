@@ -12,10 +12,11 @@ const TableCharges = ({ items }) => {
 					<tr>
 						<th style={{ width: '15%' }}>Período</th>
 						<th style={{ width: '20%' }}>Estado</th>
-						<th style={{ width: '20%' }}>Precio diario</th>
-						<th style={{ width: '15%' }}>Interés</th>
+						<th style={{ width: '15%' }}>Precio diario</th>
+						<th style={{ width: '10%' }}>Interés</th>
 						<th style={{ width: '15%' }}>Monto actual</th>
 						<th style={{ width: '15%' }}>Monto mensual</th>
+						<th style={{ width: '10%' }}>Por pagar</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -40,6 +41,7 @@ const TableCharges = ({ items }) => {
 							<td>{numberFormat(it.interest)}</td>
 							<td>{numberFormat(it.amount)}</td>
 							<td>{numberFormat(it.totalMonth)}</td>
+							<td className={`${it.remitAmount > 0 ? 'text-danger' : 'text-success'}`}>{numberFormat(it.remitAmount)}</td>
 						</tr>
 					))}
 				</tbody>

@@ -313,13 +313,15 @@ export default function PaymentClient({ formik }) {
 					width: '5%',
 				},
 				Cell: ({ row }) => {
-					const firStatus = row?.original.payments[0].status
+					const firStatus = row?.original?.payments && row?.original?.payments.length > 0 ? row?.original?.payments[0]?.status : 'NA'
 					if (firStatus === 'PENDING') {
 						return <Badge color="warning">Pendiente</Badge>;
 					} else if (firStatus === 'APPROVED') {
 						return <Badge color="success">Aprobado</Badge>;
-					} else {
+					} else if(firStatus === 'CANCELLED'){
 						return <Badge color="danger">Cancelado</Badge>;
+					}else {
+						return <Badge color="light">No disponible</Badge>;
 					}
 				},
 			},
@@ -327,7 +329,7 @@ export default function PaymentClient({ formik }) {
 				id: 'acciones',
 				Header: 'Acciones',
 				Cell: ({ row }) => {
-					const firStatus = row?.original.payments[0].status
+					const firStatus = row?.original?.payments && row?.original?.payments.length > 0 ? row?.original?.payments[0]?.status : 'NA'
 					return (
 						<div className="d-flex">
 							<Button
@@ -335,7 +337,7 @@ export default function PaymentClient({ formik }) {
 								size="sm"
 								outline
 								type="button"
-								disabled={firStatus === 'CANCELLED'}
+								disabled={firStatus === 'CANCELLED' || firStatus === 'NA'}
 								className={'me-2 fs-4 px-2 py-0'}
 								onClick={() => handleEdit(row)}
 							>
@@ -343,14 +345,14 @@ export default function PaymentClient({ formik }) {
 							</Button>
 							<Button
 								color={
-									firStatus === 'CANCELLED'
+									firStatus === 'CANCELLED' || firStatus === 'NA'
 										? 'secondary'
 										: 'primary'
 								}
 								size="sm"
 								outline
 								type="button"
-								disabled={firStatus === 'CANCELLED'}
+								disabled={firStatus === 'CANCELLED' || firStatus === 'NA'}
 								className={'me-2 fs-4 px-2 py-0'}
 								onClick={
 									firStatus === 'APPROVED'
@@ -362,17 +364,17 @@ export default function PaymentClient({ formik }) {
 							</Button>
 							<Button
 								color={
-									firStatus === 'CANCELLED'
+									firStatus === 'CANCELLED' || firStatus === 'NA'
 										? 'secondary'
 										: 'danger'
 								}
 								size="sm"
 								outline
-								disabled={firStatus === 'CANCELLED'}
+								disabled={firStatus === 'CANCELLED' || firStatus === 'NA'}
 								className={'fs-4 px-2 py-0'}
 								type="button"
 								onClick={
-									firStatus === 'CANCELLED'
+									firStatus === 'CANCELLED' || firStatus === 'NA'
 										? () => {}
 										: () => handleCancelPayment(row)
 								}

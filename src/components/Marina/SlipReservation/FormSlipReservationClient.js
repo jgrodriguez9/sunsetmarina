@@ -171,7 +171,8 @@ export default function FormSlipReservationClient({
 			departureDate: item?.departureDate ?? '',
 			status: item?.status ?? 'CONFIRMED',
 			paymentFrequency: item?.paymentFrequency ?? '',
-			finalContractDate: item?.finalContractDate ?? '',			
+			finalContractDate: item?.finalContractDate ?? '',
+			balance: item?.balance ?? 0		
 		},
 		validationSchema: Yup.object({
 			boat: Yup.object({
