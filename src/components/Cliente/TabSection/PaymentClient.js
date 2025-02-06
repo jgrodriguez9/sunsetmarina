@@ -311,13 +311,13 @@ export default function PaymentClient({ formik }) {
 							</thead>
 							<tbody>
 								{
-									value.map((item) => (
+									value.map((item, index) => (
 										<tr key={item.id}>
-											<td className='border-top-0 border-end-0 border-start-0' style={{ width: '20%'}}>{numberFormat(item.currency === 'MXN' ? item.amount :  item.amountUSD)} ({item.currency})</td>
-											<td className='border-top-0 border-end-0 border-start-0' style={{ width: '10%'}}>{numberFormat(item.currencyExchange, 4, 4)}</td>
-											<td className='border-top-0 border-end-0 border-start-0' style={{ width: '20%'}}>{getFormaPago(item.paymentForm)}</td>
-											<td className='border-top-0 border-end-0 border-start-0' style={{ width: '30%'}}>{item.concept}</td>
-											<td className='border-top-0 border-end-0 border-start-0' style={{ width: '30%'}}>{item.reference}</td>
+											<td className={`border-top-0 border-end-0 border-start-0 ${value.length - 1 === index ? 'border-bottom-0' : ''}`} style={{ width: '20%'}}>{numberFormat(item.currency === 'MXN' ? item.amount :  item.amountUSD)} ({item.currency})</td>
+											<td className={`border-top-0 border-end-0 border-start-0 ${value.length - 1 === index ? 'border-bottom-0' : ''}`} style={{ width: '10%'}}>{numberFormat(item.currencyExchange, 4, 4)}</td>
+											<td className={`border-top-0 border-end-0 border-start-0 ${value.length - 1 === index ? 'border-bottom-0' : ''}`} style={{ width: '20%'}}>{getFormaPago(item.paymentForm)}</td>
+											<td className={`border-top-0 border-end-0 border-start-0 ${value.length - 1 === index ? 'border-bottom-0' : ''}`} style={{ width: '30%'}}>{item.concept}</td>
+											<td className={`border-top-0 border-end-0 border-start-0 ${value.length - 1 === index ? 'border-bottom-0' : ''}`} style={{ width: '30%'}}>{item.reference}</td>
 										</tr>
 									))
 								}
@@ -485,11 +485,8 @@ export default function PaymentClient({ formik }) {
 			<Row className={"my-2"}>
 				<Col xs="12" lg="12">
 					<div className='d-flex justify-content-end' style={{ gap: '3px' }} >
-						<Button color="secondary" onClick={showMultiplePaymentDialog} disabled={receiptPayments.length <= 1}>
-							Consolidar tickets
-						</Button>
-						<Button color="danger" disabled>
-							{receiptPayments.length}
+						<Button color="primary" outline onClick={showMultiplePaymentDialog} disabled={receiptPayments.length <= 1}>
+							Consolidar tickets ({receiptPayments.length})
 						</Button>
 					</div>
 					

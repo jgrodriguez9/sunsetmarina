@@ -79,7 +79,7 @@ const TicketMultiDetail = ({payments}) => {
 							}}
 						>
 							<RowControl
-								title="Propietario"
+								title="PROPIETARIO"
 								text={customerFullName}
 								titleStyle={{
 									borderRight: '1px solid #004a8f',
@@ -90,10 +90,83 @@ const TicketMultiDetail = ({payments}) => {
                     {
                         payments.map((payment) => (
                             <Fragment key={payment.id}>
+                                <Row style={{ paddingTop: '4px' }}>
+                                    <Col
+                                        md="7"
+                                        style={{
+                                            padding: 0,
+                                        }}
+                                    >
+                                        <div
+                                            className="d-flex align-items-center"
+                                            style={{
+                                                padding: '0px 8px',
+                                                gap: '4px'
+                                            }}
+                                        >
+                                            <SpanControl text="FOLIO:" style={{ fontWeight: 400 }} />
+                                            <SpanControl text={payment?.code} />
+                                        </div>                                        
+                                    </Col>
+                                    <Col
+                                        md="5"
+                                        style={{
+                                            padding: 0,
+                                        }}
+                                    >
+                                        <div
+                                            className="d-flex align-items-center"
+                                            style={{
+                                                padding: '0px 8px',
+                                                gap: '4px'
+                                            }}
+                                        >
+                                            <SpanControl text="FECHA:" style={{ fontWeight: 400 }} />
+                                            <SpanControl text={moment.utc(payment?.dateCreated).local().format('DD-MM-YYYY')} />
+                                        </div>                                        					
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col
+                                        md="7"
+                                        style={{
+                                            padding: 0,
+                                        }}
+                                    >
+                                        <div
+                                            className="d-flex align-items-center"
+                                            style={{
+                                                padding: '0px 8px',
+                                                gap: '4px'
+                                            }}
+                                        >
+                                            <SpanControl text="EMBARCACION:" style={{ fontWeight: 400 }} />
+                                            <SpanControl text={payment?.reservation?.boat?.name ?? '-'} />
+                                        </div>
+                                    </Col>
+                                    <Col
+                                        md="5"
+                                        style={{
+                                            padding: 0,
+                                        }}
+                                    >
+                                        <div
+                                            className="d-flex align-items-center justify-content-between"
+                                            style={{
+                                                padding: '0px 8px',
+                                                gap: '4px'
+                                            }}
+                                        >
+                                            <SpanControl text="SUMA DE IMPORTE:" style={{ fontWeight: 400 }} />
+                                            <SpanControl text={`${jsFormatNumber(getTotalPay(payment.payments))} (MXN)`} />
+                                        </div>                                        						
+                                    </Col>
+                                </Row>
                                 <Row style={{
                                         borderBottom: '1px solid #999',
                                         borderLeft: 0,
                                         borderRight: 0,
+                                        paddingBottom: '4px'
                                     }}
                                 >
                                     <Col
@@ -105,19 +178,18 @@ const TicketMultiDetail = ({payments}) => {
                                         <div
                                             className="d-flex align-items-center"
                                             style={{
-                                                padding: '2px 8px',
+                                                padding: '0px 8px',
                                                 gap: '4px'
                                             }}
                                         >
-                                            <SpanControl text="FOLIO:" style={{ fontSize: '14px'}} />
+                                            <SpanControl text="MES DE PAGO:" style={{ fontWeight: 400 }} />
                                             <SpanControl
-                                                text={payment?.code}
+                                                text={getPaymentDate(payment).months}
                                                 style={{
-                                                    fontSize: '14px',
-                                                    color: '#f46a69',
+                                                    textTransform: 'uppercase'
                                                 }}
                                             />
-                                        </div>                                        
+                                        </div>
                                     </Col>
                                     <Col
                                         md="5"
@@ -125,90 +197,16 @@ const TicketMultiDetail = ({payments}) => {
                                             padding: 0,
                                         }}
                                     >
-                                        <RowControl
-                                            title="FECHA"
-                                            text={moment.utc(payment?.dateCreated).local().format('DD-MM-YYYY')}
-                                            titleStyle={{
-                                                borderLeft: '1px solid #004a8f',
-                                                borderRight: '1px solid #004a8f',
+                                        <div
+                                            className="d-flex align-items-center"
+                                            style={{
+                                                padding: '0px 8px',
+                                                gap: '4px'
                                             }}
-                                        />							
-                                    </Col>
-                                </Row>
-                                <Row style={{
-                                        borderBottom: '1px solid #999',
-                                        borderLeft: 0,
-                                        borderRight: 0,
-                                    }}
-                                >
-                                    <Col
-                                        md="7"
-                                        style={{
-                                            padding: 0,
-                                        }}
-                                    >
-                                        <RowControl
-                                            title="EMBARCACION"
-                                            text={
-                                                payment?.reservation?.boat
-                                                    ?.name ?? ''
-                                            }
-                                            titleStyle={{
-                                                borderRight: '1px solid #004a8f',
-                                            }}
-                                        />
-                                    </Col>
-                                    <Col
-                                        md="5"
-                                        style={{
-                                            padding: 0,
-                                        }}
-                                    >
-                                        <RowControl
-                                            title="SUMA DE IMPORTE"
-                                            text={`${jsFormatNumber(getTotalPay(payment.payments))} (MXN)`}
-                                            titleStyle={{
-                                                borderLeft: '1px solid #004a8f',
-                                                borderRight: '1px solid #004a8f',
-                                            }}
-                                        />							
-                                    </Col>
-                                </Row>
-                                <Row style={{
-                                        borderBottom: '1px solid #999',
-                                        borderLeft: 0,
-                                        borderRight: 0,
-                                    }}
-                                >
-                                    <Col
-                                        md="7"
-                                        style={{
-                                            padding: 0,
-                                        }}
-                                    >
-                                        <RowControl
-                                            title="MES DE PAGO"
-                                            text={getPaymentDate(payment).months}
-                                            titleStyle={{
-                                                borderRight: '1px solid #004a8f',
-                                            }}
-                                            textStyle={{ textTransform: 'uppercase' }}
-                                        />
-                                    </Col>
-                                    <Col
-                                        md="5"
-                                        style={{
-                                            padding: 0,
-                                        }}
-                                    >
-                                        <RowControl
-                                            title="AÑO"
-                                            text={getPaymentDate(payment).years}
-                                            titleStyle={{
-                                                borderLeft: '1px solid #004a8f',
-                                                borderRight: '1px solid #004a8f',
-                                            }}
-                                        />							
+                                        >
+                                            <SpanControl text="AÑO:" style={{ fontWeight: 400 }} />
+                                            <SpanControl text={getPaymentDate(payment).years} />
+                                        </div>						
                                     </Col>
                                 </Row>
                             </Fragment>                            
@@ -256,13 +254,14 @@ const TicketMultiDetail = ({payments}) => {
 						>
 							<RowControl
 								title="GRAN TOTAL"
-								text={jsFormatNumber(granTotal ?? 0)}
+								text={`${jsFormatNumber(granTotal ?? 0)} (MXN)`}
 								titleStyle={{
 									borderRight: '1px solid #004a8f',
 								}}
 								textStyle={{
 									borderRight: '1px solid #004a8f',
 									flexGrow: 1,
+                                    textAlign:'right'
 								}}
 							/>
 						</Col>						
