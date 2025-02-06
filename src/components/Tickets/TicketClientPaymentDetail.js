@@ -7,13 +7,17 @@ import RowControl from './common/RowControl';
 import jsFormatNumber from '../../utils/jsFormatNumber';
 import { getFormaPago } from '../../utils/getFormaPago';
 
-function processMonthYearCharges(monthYearCharges) {
+export function processMonthYearCharges(monthYearCharges) {
+	if(monthYearCharges.length === 0){
+		return { years: '', months: '' };
+	}
+
 	const monthYearChargesArr = monthYearCharges.split(", ").sort();
 	const months = monthYearChargesArr.map((it) => moment(it, 'YYYY-MM').format('MMMM')).join(",")
 	const years = [...new Set(monthYearChargesArr.map(m => m.split("-")[0]))].sort().join(",");
 
   return { years, months };
-  }
+}
 
 const TicketClientPaymentDetail = ({ payment, hide = false }) => {
 

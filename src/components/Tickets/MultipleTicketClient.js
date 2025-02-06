@@ -1,12 +1,13 @@
-import { useEffect, useState } from 'react';
-import { Container, Row, Col, Button } from 'reactstrap';
-import generatePDF, { Resolution, Margin } from 'react-to-pdf';
-import moment from 'moment';
-import ButtonsDisabled from '../Common/ButtonsDisabled';
-import { getPayment } from '../../helpers/marina/payment';
-import SpinLoader from '../Loader/SpinLoader';
-import TicketClientPaymentDetail from './TicketClientPaymentDetail';
+import { useEffect, useState } from "react"
+import moment from "moment/moment";
 import 'moment/locale/es';
+import generatePDF, { Margin, Resolution } from "react-to-pdf";
+import SpinLoader from '../Loader/SpinLoader';
+import { getPayment } from '../../helpers/marina/payment';
+import TicketMultiDetail from './multiPayment/TicketMultiDetail'
+import { Button, Col, Container, Row } from "reactstrap";
+import ButtonsDisabled from "../Common/ButtonsDisabled";
+
 moment.locale('es');
 
 const options = {
@@ -47,41 +48,46 @@ const options = {
 
 const getTargetElement = () => document.getElementById('ticketclientpayment');
 
-const TicketClientPayment = ({ idPayment, show, toggle = null }) => {
-	const [isRequesting, setIsRequesting] = useState(true);
-	const [loading, setLoading] = useState(false);
-	const [payment, setPayment] = useState(null);
-	const exportToPdf = async () => {
+const MultipleTicketClient = ({paymentsId, toggle = null}) => {
+    const [isRequesting, setIsRequesting] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [payments, setPayments] = useState(null);
+
+    const exportToPdf = async () => {
 		setLoading(true);
 		await generatePDF(getTargetElement, options);
 		setLoading(false);
 		if (toggle) toggle();
 	};
 
-	useEffect(() => {
+    useEffect(() => {
 		async function getPaymentApi() {
 			setIsRequesting(true);
 			try {
-				const response = await getPayment(idPayment);
-				setPayment(response);
+                const paymentPromises = paymentsId.map(async (id) => {
+                    const response = await getPayment(id)
+                    return response
+                })
+                const response = await Promise.all(paymentPromises)			
+				setPayments(response);
 				setIsRequesting(false);
 			} catch (error) {
-				setPayment(null);
+				setPayments(null);
 				setIsRequesting(false);
 			}
 		}
-		if (idPayment) {
+		if (paymentsId.length > 0) {
 			getPaymentApi();
 		}
-	}, [idPayment]);
+	}, [paymentsId]);
 
-	return isRequesting ? (
+    return isRequesting ? (
 		<div className="d-flex p-5 justify-content-center">
 			<SpinLoader />
 		</div>
 	) : (
 		<>
-			<TicketClientPaymentDetail payment={payment} />
+			<TicketMultiDetail payments={payments} />
 			<div
 				id={'ticketclientpayment'}
 				style={{
@@ -92,11 +98,11 @@ const TicketClientPayment = ({ idPayment, show, toggle = null }) => {
 				}}
 				className="d-flex flex-column"
 			>
-				<TicketClientPaymentDetail payment={payment} />
+				<TicketMultiDetail payments={payments} />
 				<hr />
-				<TicketClientPaymentDetail payment={payment} />
+				<TicketMultiDetail payments={payments} />
 				<hr />
-				<TicketClientPaymentDetail payment={payment} />
+				<TicketMultiDetail payments={payments} />
 			</div>
 			<Container>
 				<hr />
@@ -139,6 +145,7 @@ const TicketClientPayment = ({ idPayment, show, toggle = null }) => {
 			</Container>
 		</>
 	);
-};
 
-export default TicketClientPayment;
+}
+
+export default MultipleTicketClient

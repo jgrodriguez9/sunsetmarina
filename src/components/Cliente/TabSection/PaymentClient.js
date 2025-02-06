@@ -1,4 +1,3 @@
-import moment from 'moment';
 import { useCallback, useMemo } from 'react';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -16,7 +15,6 @@ import SimpleTable from '../../Tables/SimpleTable';
 import Paginate from '../../Tables/Paginate';
 import { numberFormat } from '../../../utils/numberFormat';
 import { getFormaPago } from '../../../utils/getFormaPago';
-import { getTipoPago } from '../../../utils/getTipoPago';
 import FormFilter from '../../Common/FormFilter';
 import CardBasic from '../../Common/CardBasic';
 import DialogMain from '../../Common/DialogMain';
@@ -26,6 +24,7 @@ import FormPayment from '../../Marina/Payment/FormPayment';
 import { getBoatByClient } from '../../../helpers/marina/boat';
 import CellDate from '../../Tables/CellDate';
 import jsFormatNumber from '../../../utils/jsFormatNumber';
+import MultipleTicketClient from '../../Tickets/MultipleTicketClient'
 
 export default function PaymentClient({ formik }) {
 	const dispatch = useDispatch();
@@ -39,6 +38,10 @@ export default function PaymentClient({ formik }) {
 	const [paymentToEdit, setPaymentToEdit] = useState(null);
 	const [openDialogEdit, setOpenDialogEdit] = useState(false);
 	const [refetch, setRefetch] = useState(true);
+	const [multiplePaymentDialog, setMultiplePaymentDialog] = useState(false)
+
+	//multiples payment para el recibo
+	const [receiptPayments, setReceiptPyaments] = useState([])
 
 	//paginar
 	const [totalPaginas, setTotalPaginas] = useState(0);
@@ -188,16 +191,33 @@ export default function PaymentClient({ formik }) {
 
 	const handleEdit = (row) => {
 		const { original } = row;
-		setPaymentToEdit({
-			id: original.id,
-			concept: original.concept,
-			reference: original.reference,
-		});
+		setPaymentToEdit(original.payments);
 		setOpenDialogEdit(true);
 	};
 
+	const onHandleChecked = useCallback((checked, id) => {
+		if(!checked){
+			setReceiptPyaments((prevItems) => prevItems.filter(it=>it!==id));
+		}else{
+			setReceiptPyaments(prev=>[...prev, id])
+		}
+	}, [])
+
 	const columns = useMemo(
 		() => [
+			{
+				id: 'select',
+				Header: '',
+				style: {
+					width: '3%',
+				},
+				Cell: ({ row }) => {
+					const id = row.original.id
+					return (
+						<input type='checkbox' checked={receiptPayments.includes(id)} onChange={(e) => onHandleChecked(e.target.checked, id)} />
+					)
+				}
+			},
 			{
 				Header: 'Código',
 				accessor: 'code',
@@ -258,7 +278,7 @@ export default function PaymentClient({ formik }) {
 				Header: 'Total',
 				id: 'total',
 				style: {
-					width: '10%',
+					width: '7%',
 					textAlign: 'center',
 				},
 				Cell: ({ row }) => {
@@ -338,7 +358,7 @@ export default function PaymentClient({ formik }) {
 								outline
 								type="button"
 								disabled={firStatus === 'CANCELLED' || firStatus === 'NA'}
-								className={'me-2 fs-4 px-2 py-0'}
+								className={'me-2 fs-5'}
 								onClick={() => handleEdit(row)}
 							>
 								<i className="bx bx-pencil" />
@@ -353,7 +373,7 @@ export default function PaymentClient({ formik }) {
 								outline
 								type="button"
 								disabled={firStatus === 'CANCELLED' || firStatus === 'NA'}
-								className={'me-2 fs-4 px-2 py-0'}
+								className={'me-2 fs-5'}
 								onClick={
 									firStatus === 'APPROVED'
 										? () => generatePayment(row)
@@ -371,7 +391,7 @@ export default function PaymentClient({ formik }) {
 								size="sm"
 								outline
 								disabled={firStatus === 'CANCELLED' || firStatus === 'NA'}
-								className={'fs-4 px-2 py-0'}
+								className={'fs-5'}
 								type="button"
 								onClick={
 									firStatus === 'CANCELLED' || firStatus === 'NA'
@@ -390,7 +410,7 @@ export default function PaymentClient({ formik }) {
 				},
 			},
 		],
-		[]
+		[onHandleChecked, receiptPayments]
 	);
 
 	useEffect(() => {
@@ -398,11 +418,10 @@ export default function PaymentClient({ formik }) {
 			setLoading(true);
 			fecthApiPaymentForClient();
 			setRefetch(false);
-		} else {
+		} else if (!formik.values.id) {
 			setLoading(false);
 		}
 	}, [refetch, JSON.stringify(query)]);
-
 	const handlePageClick = (page) => {
 		setQuery((prev) => ({
 			...prev,
@@ -443,6 +462,15 @@ export default function PaymentClient({ formik }) {
 		</Row>
 	);
 
+	const onCloseDialogUpdatePayment = (value) => {
+		setOpenDialogEdit(false)
+		setRefetch(true)
+	}
+
+	const showMultiplePaymentDialog = () => {
+		setMultiplePaymentDialog(true)
+	}
+
 	return (
 		<>
 			<Row>
@@ -452,6 +480,19 @@ export default function PaymentClient({ formik }) {
 						children={handleFilter}
 						initOpen={false}
 					/>
+				</Col>
+			</Row>
+			<Row className={"my-2"}>
+				<Col xs="12" lg="12">
+					<div className='d-flex justify-content-end' style={{ gap: '3px' }} >
+						<Button color="secondary" onClick={showMultiplePaymentDialog} disabled={receiptPayments.length <= 1}>
+							Consolidar tickets
+						</Button>
+						<Button color="danger" disabled>
+							{receiptPayments.length}
+						</Button>
+					</div>
+					
 				</Col>
 			</Row>
 			<Row>
@@ -502,16 +543,23 @@ export default function PaymentClient({ formik }) {
 			/>
 			<DialogMain
 				open={openDialogEdit}
-				setOpen={setOpenDialogEdit}
+				setOpen={onCloseDialogUpdatePayment}
 				title={'Actualizar pago'}
-				size="md"
+				size="lg"
 				children={
 					<FormPayment
 						item={paymentToEdit}
-						setOpenModalAdd={setOpenDialogEdit}
-						setRefetch={setRefetch}
+						setOpenModalAdd={onCloseDialogUpdatePayment}
 					/>
 				}
+			/>
+
+			<DialogMain
+				open={multiplePaymentDialog}
+				setOpen={setMultiplePaymentDialog}
+				title={'Comprobante de pago'}
+				size="xl"
+				children={<MultipleTicketClient paymentsId={receiptPayments} />}
 			/>
 		</>
 	);
