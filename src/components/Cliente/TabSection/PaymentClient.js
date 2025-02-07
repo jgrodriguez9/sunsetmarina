@@ -1,4 +1,3 @@
-import moment from 'moment';
 import { useCallback, useMemo } from 'react';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -16,7 +15,6 @@ import SimpleTable from '../../Tables/SimpleTable';
 import Paginate from '../../Tables/Paginate';
 import { numberFormat } from '../../../utils/numberFormat';
 import { getFormaPago } from '../../../utils/getFormaPago';
-import { getTipoPago } from '../../../utils/getTipoPago';
 import FormFilter from '../../Common/FormFilter';
 import CardBasic from '../../Common/CardBasic';
 import DialogMain from '../../Common/DialogMain';
@@ -24,6 +22,9 @@ import TicketClientPayment from '../../Tickets/TicketClientPayment';
 import DeleteDialog from '../../Common/DeleteDialog';
 import FormPayment from '../../Marina/Payment/FormPayment';
 import { getBoatByClient } from '../../../helpers/marina/boat';
+import CellDate from '../../Tables/CellDate';
+import jsFormatNumber from '../../../utils/jsFormatNumber';
+import MultipleTicketClient from '../../Tickets/MultipleTicketClient'
 
 export default function PaymentClient({ formik }) {
 	const dispatch = useDispatch();
@@ -37,6 +38,10 @@ export default function PaymentClient({ formik }) {
 	const [paymentToEdit, setPaymentToEdit] = useState(null);
 	const [openDialogEdit, setOpenDialogEdit] = useState(false);
 	const [refetch, setRefetch] = useState(true);
+	const [multiplePaymentDialog, setMultiplePaymentDialog] = useState(false)
+
+	//multiples payment para el recibo
+	const [receiptPayments, setReceiptPyaments] = useState([])
 
 	//paginar
 	const [totalPaginas, setTotalPaginas] = useState(0);
@@ -186,63 +191,70 @@ export default function PaymentClient({ formik }) {
 
 	const handleEdit = (row) => {
 		const { original } = row;
-		setPaymentToEdit({
-			id: original.id,
-			concept: original.concept,
-			reference: original.reference,
-		});
+		setPaymentToEdit(original.payments);
 		setOpenDialogEdit(true);
 	};
+
+	const onHandleChecked = useCallback((checked, id) => {
+		if(!checked){
+			setReceiptPyaments((prevItems) => prevItems.filter(it=>it!==id));
+		}else{
+			setReceiptPyaments(prev=>[...prev, id])
+		}
+	}, [])
 
 	const columns = useMemo(
 		() => [
 			{
+				id: 'select',
+				Header: '',
+				style: {
+					width: '3%',
+				},
+				Cell: ({ row }) => {
+					const id = row.original.id
+					return (
+						<input type='checkbox' checked={receiptPayments.includes(id)} onChange={(e) => onHandleChecked(e.target.checked, id)} />
+					)
+				}
+			},
+			{
 				Header: 'Código',
 				accessor: 'code',
 				style: {
-					width: '10%',
-				},
-			},
-			{
-				Header: 'Slip / Embarcación',
-				accessor: 'reservation',
-				style: {
-					width: '15%',
-				},
-				Cell: ({ row, value }) =>
-					`${value?.slip?.code ?? 'NA'} / ${
-						value?.boat?.name ?? 'NA'
-					}`,
-			},
-			{
-				Header: 'Concepto',
-				accessor: 'concept',
-				style: {
-					width: '20%',
+					width: '7%',
 				},
 			},
 			{
 				Header: 'Fecha',
 				accessor: 'dateCreated',
 				style: {
-					width: '10%',
+					width: '7%',
 				},
-				Cell: ({ value }) =>
-					value ? moment.utc(value).local().format('DD-MM-YYYY') : '',
+				Cell: CellDate,
 			},
 			{
-				Header: 'Monto',
-				accessor: 'amount',
+				Header: 'Slip / Embarcación',
+				accessor: 'systemPayment',
 				style: {
-					width: '8%',
+					width: '11%',
 				},
-				Cell: ({ value }) => numberFormat(value),
+				Cell: ({ row, value }) =>{
+					if(value === 'BALANCE_BP'){
+						return "Abono a pase de abordar"
+					}else{
+						return `${row?.original?.reservation?.slip?.code ?? 'NA'} / ${
+							row?.original?.reservation?.boat?.name ?? 'NA'
+					}`
+					}
+					
+				},
 			},
 			{
 				Header: 'Moratorios',
 				accessor: 'forgivenInterest',
 				style: {
-					width: '15%',
+					width: '10%',
 					textAlign: 'center',
 				},
 				Cell: ({ row, value }) => {
@@ -263,34 +275,73 @@ export default function PaymentClient({ formik }) {
 				},
 			},
 			{
-				Header: 'Forma de pago',
-				accessor: 'paymentForm',
+				Header: 'Total',
+				id: 'total',
 				style: {
-					width: '10%',
+					width: '7%',
+					textAlign: 'center',
 				},
-				Cell: ({ value }) => getFormaPago(value),
-			},
+				Cell: ({ row }) => {
+					if(row.original.systemPayment === 'BALANCE_BP'){
+						const result =  row.original.payments.reduce((acc, curr) => acc+curr.amountUSD, 0)
+						return `${jsFormatNumber(result)} (USD)`
+					}else{
+						const result =  row.original.payments.reduce((acc, curr) => acc+curr.amount, 0)
+						return `${jsFormatNumber(result)} (MXN)`
+					}
+				},
+			},			
 			{
-				Header: 'Tipo de pago',
-				accessor: 'systemPayment',
+				Header: 'Detalle',
+				accessor: 'payments',
 				style: {
-					width: '15%',
+					width: '40%',
 				},
-				Cell: ({ value }) => getTipoPago(value),
+				Cell: ({ row, value }) => {
+					return (
+						<table className="mb-0 font-size-12" style={{ width: '100%'}}>
+							<thead>
+								<tr>
+									<th className='border-0 fw-semibold'>Monto</th>
+									<th className='border-0 fw-semibold'>C/E</th>
+									<th className='border-0 fw-semibold'>Forma de pago</th>
+									<th className='border-0 fw-semibold'>Concepto</th>
+									<th className='border-0 fw-semibold'>Referencia</th>
+								</tr>
+							</thead>
+							<tbody>
+								{
+									value.map((item, index) => (
+										<tr key={item.id}>
+											<td className={`border-top-0 border-end-0 border-start-0 ${value.length - 1 === index ? 'border-bottom-0' : ''}`} style={{ width: '20%'}}>{numberFormat(item.currency === 'MXN' ? item.amount :  item.amountUSD)} ({item.currency})</td>
+											<td className={`border-top-0 border-end-0 border-start-0 ${value.length - 1 === index ? 'border-bottom-0' : ''}`} style={{ width: '10%'}}>{numberFormat(item.currencyExchange, 4, 4)}</td>
+											<td className={`border-top-0 border-end-0 border-start-0 ${value.length - 1 === index ? 'border-bottom-0' : ''}`} style={{ width: '20%'}}>{getFormaPago(item.paymentForm)}</td>
+											<td className={`border-top-0 border-end-0 border-start-0 ${value.length - 1 === index ? 'border-bottom-0' : ''}`} style={{ width: '30%'}}>{item.concept}</td>
+											<td className={`border-top-0 border-end-0 border-start-0 ${value.length - 1 === index ? 'border-bottom-0' : ''}`} style={{ width: '30%'}}>{item.reference}</td>
+										</tr>
+									))
+								}
+							</tbody>
+						</table>
+					)
+				}
 			},
 			{
 				Header: 'Estado',
-				accessor: 'status',
+				id: 'status',
 				style: {
-					width: '10%',
+					width: '5%',
 				},
-				Cell: ({ value }) => {
-					if (value === 'PENDING') {
+				Cell: ({ row }) => {
+					const firStatus = row?.original?.payments && row?.original?.payments.length > 0 ? row?.original?.payments[0]?.status : 'NA'
+					if (firStatus === 'PENDING') {
 						return <Badge color="warning">Pendiente</Badge>;
-					} else if (value === 'APPROVED') {
+					} else if (firStatus === 'APPROVED') {
 						return <Badge color="success">Aprobado</Badge>;
-					} else {
+					} else if(firStatus === 'CANCELLED'){
 						return <Badge color="danger">Cancelado</Badge>;
+					}else {
+						return <Badge color="light">No disponible</Badge>;
 					}
 				},
 			},
@@ -298,6 +349,7 @@ export default function PaymentClient({ formik }) {
 				id: 'acciones',
 				Header: 'Acciones',
 				Cell: ({ row }) => {
+					const firStatus = row?.original?.payments && row?.original?.payments.length > 0 ? row?.original?.payments[0]?.status : 'NA'
 					return (
 						<div className="d-flex">
 							<Button
@@ -305,25 +357,25 @@ export default function PaymentClient({ formik }) {
 								size="sm"
 								outline
 								type="button"
-								disabled={row.original.status === 'CANCELLED'}
-								className={'me-2 fs-4 px-2 py-0'}
+								disabled={firStatus === 'CANCELLED' || firStatus === 'NA'}
+								className={'me-2 fs-5'}
 								onClick={() => handleEdit(row)}
 							>
 								<i className="bx bx-pencil" />
 							</Button>
 							<Button
 								color={
-									row.original.status === 'CANCELLED'
+									firStatus === 'CANCELLED' || firStatus === 'NA'
 										? 'secondary'
 										: 'primary'
 								}
 								size="sm"
 								outline
 								type="button"
-								disabled={row.original.status === 'CANCELLED'}
-								className={'me-2 fs-4 px-2 py-0'}
+								disabled={firStatus === 'CANCELLED' || firStatus === 'NA'}
+								className={'me-2 fs-5'}
 								onClick={
-									row.original.status === 'APPROVED'
+									firStatus === 'APPROVED'
 										? () => generatePayment(row)
 										: () => {}
 								}
@@ -332,17 +384,17 @@ export default function PaymentClient({ formik }) {
 							</Button>
 							<Button
 								color={
-									row.original.status === 'CANCELLED'
+									firStatus === 'CANCELLED' || firStatus === 'NA'
 										? 'secondary'
 										: 'danger'
 								}
 								size="sm"
 								outline
-								disabled={row.original.status === 'CANCELLED'}
-								className={'fs-4 px-2 py-0'}
+								disabled={firStatus === 'CANCELLED' || firStatus === 'NA'}
+								className={'fs-5'}
 								type="button"
 								onClick={
-									row.original.status === 'CANCELLED'
+									firStatus === 'CANCELLED' || firStatus === 'NA'
 										? () => {}
 										: () => handleCancelPayment(row)
 								}
@@ -358,7 +410,7 @@ export default function PaymentClient({ formik }) {
 				},
 			},
 		],
-		[]
+		[onHandleChecked, receiptPayments]
 	);
 
 	useEffect(() => {
@@ -366,16 +418,16 @@ export default function PaymentClient({ formik }) {
 			setLoading(true);
 			fecthApiPaymentForClient();
 			setRefetch(false);
-		} else {
+		} else if (!formik.values.id) {
 			setLoading(false);
 		}
 	}, [refetch, JSON.stringify(query)]);
-
 	const handlePageClick = (page) => {
 		setQuery((prev) => ({
 			...prev,
 			page: page,
 		}));
+		setRefetch(true)
 	};
 	const handleChangeLimit = (limit) => {
 		setQuery((prev) => ({
@@ -411,6 +463,15 @@ export default function PaymentClient({ formik }) {
 		</Row>
 	);
 
+	const onCloseDialogUpdatePayment = (value) => {
+		setOpenDialogEdit(false)
+		setRefetch(true)
+	}
+
+	const showMultiplePaymentDialog = () => {
+		setMultiplePaymentDialog(true)
+	}
+
 	return (
 		<>
 			<Row>
@@ -420,6 +481,16 @@ export default function PaymentClient({ formik }) {
 						children={handleFilter}
 						initOpen={false}
 					/>
+				</Col>
+			</Row>
+			<Row className={"my-2"}>
+				<Col xs="12" lg="12">
+					<div className='d-flex justify-content-end' style={{ gap: '3px' }} >
+						<Button color="primary" outline onClick={showMultiplePaymentDialog} disabled={receiptPayments.length <= 1}>
+							Consolidar tickets ({receiptPayments.length})
+						</Button>
+					</div>
+					
 				</Col>
 			</Row>
 			<Row>
@@ -470,16 +541,23 @@ export default function PaymentClient({ formik }) {
 			/>
 			<DialogMain
 				open={openDialogEdit}
-				setOpen={setOpenDialogEdit}
+				setOpen={onCloseDialogUpdatePayment}
 				title={'Actualizar pago'}
-				size="md"
+				size="lg"
 				children={
 					<FormPayment
 						item={paymentToEdit}
-						setOpenModalAdd={setOpenDialogEdit}
-						setRefetch={setRefetch}
+						setOpenModalAdd={onCloseDialogUpdatePayment}
 					/>
 				}
+			/>
+
+			<DialogMain
+				open={multiplePaymentDialog}
+				setOpen={setMultiplePaymentDialog}
+				title={'Comprobante de pago'}
+				size="xl"
+				children={<MultipleTicketClient paymentsId={receiptPayments} />}
 			/>
 		</>
 	);

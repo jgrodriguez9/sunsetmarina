@@ -11,7 +11,7 @@ export default function EditableTable({ columns, data, updateFn }) {
 		columns,
 		getCoreRowModel: getCoreRowModel(),
 		meta: {
-			updateData: (id: number, columnId: string, value: string) => {
+			updateData: (id, columnId, value) => {
 				updateFn(id, columnId, value);
 			},
 		},

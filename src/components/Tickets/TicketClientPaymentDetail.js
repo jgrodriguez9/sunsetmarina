@@ -7,21 +7,38 @@ import RowControl from './common/RowControl';
 import jsFormatNumber from '../../utils/jsFormatNumber';
 import { getFormaPago } from '../../utils/getFormaPago';
 
+export function processMonthYearCharges(monthYearCharges) {
+	if(monthYearCharges.length === 0){
+		return { years: '', months: '' };
+	}
+
+	const monthYearChargesArr = monthYearCharges.split(", ").sort();
+	const months = monthYearChargesArr.map((it) => moment(it, 'YYYY-MM').format('MMMM')).join(",")
+	const years = [...new Set(monthYearChargesArr.map(m => m.split("-")[0]))].sort().join(",");
+
+  return { years, months };
+}
+
 const TicketClientPaymentDetail = ({ payment, hide = false }) => {
-	const paymentsMonths = useMemo(() => {
-		if (!payment) return '';
-		return payment.charges
-			.map((it) => moment(it.monthYear, 'YYYY-MM').format('MMMM'))
-			.join(',');
-	}, [payment]);
-	const paymentsYears = useMemo(() => {
-		if (!payment) return '';
-		const years = payment.charges.map((it) =>
-			moment(it.monthYear, 'YYYY-MM').format('YYYY')
-		);
-		const res = Array.from(new Set(years));
-		return res.join(',');
-	}, [payment]);
+
+
+	const {years, months} = useMemo(() => {
+		if (!payment) {
+			return {
+				years: '',
+				months: ''
+			};
+		}
+		const {years, months} = processMonthYearCharges(payment.monthYearCharges)
+		return {
+			years,
+			months
+		}
+	}, [payment])
+
+	const granTotal = useMemo(() => {
+		return payment.payments.reduce((acc, curr) => acc+curr.amount, 0)
+	}, [payment])
 
 	return (
 		<Container>
@@ -70,7 +87,7 @@ const TicketClientPaymentDetail = ({ payment, hide = false }) => {
 									.format('DD-MM-YYYY')}
 							/>
 							<SpanControl text="Año del mes de pago" />
-							<SpanControl text={paymentsYears} />
+							<SpanControl text={years} />
 						</div>
 					</div>
 
@@ -104,7 +121,7 @@ const TicketClientPaymentDetail = ({ payment, hide = false }) => {
 							<RowControl
 								title="EMBARCACION"
 								text={
-									payment?.charges[0]?.reservation?.boat
+									payment?.reservation?.boat
 										?.name ?? ''
 								}
 								titleStyle={{
@@ -114,38 +131,42 @@ const TicketClientPaymentDetail = ({ payment, hide = false }) => {
 							/>
 						</Col>
 					</Row>
-
-					<Row>
-						<Col
-							md="6"
-							style={{
-								padding: 0,
-							}}
-						>
-							<RowControl
-								title="SUMA DE IMPORTE"
-								text={jsFormatNumber(payment?.amount ?? 0)}
-								titleStyle={{
-									borderRight: '1px solid #004a8f',
+					{
+						payment.payments.map((pay) => (
+						<Row key={pay.id}>
+							<Col
+								md="6"
+								style={{
+									padding: 0,
 								}}
-							/>
-						</Col>
-						<Col
-							md="6"
-							style={{
-								padding: 0,
-							}}
-						>
-							<RowControl
-								title="FORMA DE PAGO"
-								text={getFormaPago(payment?.paymentForm)}
-								titleStyle={{
-									borderLeft: '1px solid #004a8f',
-									borderRight: '1px solid #004a8f',
+							>
+								<RowControl
+									title="SUMA DE IMPORTE"
+									text={`${jsFormatNumber(pay?.amount ?? 0)} (MXN)`}
+									titleStyle={{
+										borderRight: '1px solid #004a8f',
+									}}
+								/>
+							</Col>
+							<Col
+								md="6"
+								style={{
+									padding: 0,
 								}}
-							/>
-						</Col>
-					</Row>
+							>
+								<RowControl
+									title="FORMA DE PAGO"
+									text={getFormaPago(pay?.paymentForm)}
+									titleStyle={{
+										borderLeft: '1px solid #004a8f',
+										borderRight: '1px solid #004a8f',
+									}}
+								/>
+							</Col>
+						</Row>
+						))
+					}			
+					
 					<Row
 						style={{
 							border: '1px solid #999',
@@ -219,7 +240,7 @@ const TicketClientPaymentDetail = ({ payment, hide = false }) => {
 							}}
 						>
 							<SpanControl
-								text={paymentsMonths}
+								text={months}
 								style={{ textTransform: 'uppercase' }}
 							/>
 						</Col>
@@ -247,7 +268,7 @@ const TicketClientPaymentDetail = ({ payment, hide = false }) => {
 						>
 							<RowControl
 								title="GRAN TOTAL"
-								text={jsFormatNumber(payment?.amount ?? 0)}
+								text={jsFormatNumber(granTotal ?? 0)}
 								titleStyle={{
 									borderRight: '1px solid #004a8f',
 								}}

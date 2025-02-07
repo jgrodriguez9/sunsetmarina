@@ -172,9 +172,7 @@ export default function FormSlipReservationClient({
 			status: item?.status ?? 'CONFIRMED',
 			paymentFrequency: item?.paymentFrequency ?? '',
 			finalContractDate: item?.finalContractDate ?? '',
-			balance: item?.balance ?? 0,
-			needInvoice: item?.needInvoice ?? false,
-			forgivenInterest: item?.forgivenInterest ?? false,
+			balance: item?.balance ?? 0		
 		},
 		validationSchema: Yup.object({
 			boat: Yup.object({
@@ -204,7 +202,6 @@ export default function FormSlipReservationClient({
 					data[key] = value;
 				}
 			});
-
 			if (values.id) {
 				//update
 				try {

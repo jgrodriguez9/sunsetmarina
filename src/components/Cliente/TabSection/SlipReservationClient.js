@@ -27,6 +27,7 @@ import ContentLoader from '../../Loader/ContentLoader';
 import { ROLE_ADMINISTRACION, ROLE_COMPANIA } from '../../../constants/roles';
 import FormCancelReservation from './FormCancelReservation';
 import { Link } from 'react-router-dom';
+import { getCurrencyExchangeByCode } from '../../../helpers/catalogos/currencyExchange';
 
 export default function SlipReservationClient({ formik }) {
 	const dispatch = useDispatch();
@@ -45,6 +46,9 @@ export default function SlipReservationClient({ formik }) {
 		customer: { id: formik.values.id },
 	});
 	const [isCancelingReservation, setIsCancelingReservation] = useState(false);
+	//calculated  currencyExchange
+	const [currencyExchange, setCurrencyExchange] = useState(0)
+
 	const addNewModal = () => {
 		setItem({ customer: { id: formik.values.id } });
 		setOpenModalAdd(true);
@@ -367,6 +371,19 @@ export default function SlipReservationClient({ formik }) {
 		}
 	};
 
+	//checar //calculated  currencyExchange
+	useEffect(() => {
+		const fetchCE = async () => {
+			try {
+				const response = await getCurrencyExchangeByCode('usd')
+				setCurrencyExchange(response.currencyExchange)
+			} catch (error) {
+				setCurrencyExchange(0)
+			}
+		}
+		fetchCE();
+	}, [])
+
 	return (
 		<>
 			<TabActionHeader
@@ -421,6 +438,7 @@ export default function SlipReservationClient({ formik }) {
 				open={openCharges}
 				setOpen={setOpenCharges}
 				setRefetch={setRefetch}
+				currencyExchange={currencyExchange}
 			/>
 
 			<DialogMain
