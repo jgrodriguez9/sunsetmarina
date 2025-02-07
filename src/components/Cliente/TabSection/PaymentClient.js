@@ -427,6 +427,7 @@ export default function PaymentClient({ formik }) {
 			...prev,
 			page: page,
 		}));
+		setRefetch(true)
 	};
 	const handleChangeLimit = (limit) => {
 		setQuery((prev) => ({
