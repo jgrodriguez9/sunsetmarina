@@ -26,6 +26,7 @@ import {
 	ROLE_CAJA,
 	ROLE_COMPANIA,
 	ROLE_CONTABILIDAD,
+	ROLE_MUELLE,
 	ROLE_OPERACIONES,
 } from './constants/roles';
 import SpinLoader from './components/Loader/SpinLoader';
@@ -54,6 +55,9 @@ function App() {
 			}
 			if (user.roles.includes(ROLE_CAJA)) {
 				setAuthRoutes((prev) => [...prev, ...cajeroRoutes]);
+			}
+			if (user.roles.includes(ROLE_MUELLE)) {
+				setAuthRoutes((prev) => [...prev]);
 			}
 			loading = false;
 		}
