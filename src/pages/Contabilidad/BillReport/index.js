@@ -216,7 +216,6 @@ function BillReport() {
 		sheet.columns = columns;
 		let posI = 0;
 		items.forEach((val, i, _) => {
-			console.log(val);
 			const value = {
 				slip: val.boatType,
 				monthContract: getTotalsReportContract(
@@ -301,7 +300,6 @@ function BillReport() {
 				);
 			})
 			.catch((error) => {
-				console.log('Error');
 				console.log(error);
 			});
 	};

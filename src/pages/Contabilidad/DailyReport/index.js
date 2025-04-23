@@ -247,7 +247,6 @@ function DailyReport() {
 	};
 
 	const downloadToCSV = async () => {
-		console.log('entro');
 		const workbook = new ExcelJS.Workbook();
 		workbook.creator = 'Sunset Admiral';
 		workbook.created = new Date();
@@ -262,7 +261,6 @@ function DailyReport() {
 			sheet.views = [{ state: 'frozen', xSplit: 0, ySplit: 1 }];
 
 			const columns = getColumns(groupByCustomer);
-			console.log(columns);
 			sheet.columns = columns;
 			val.items
 				.map((item) => ({
@@ -324,7 +322,6 @@ function DailyReport() {
 				);
 			})
 			.catch((error) => {
-				console.log('Error');
 				console.log(error);
 			});
 	};

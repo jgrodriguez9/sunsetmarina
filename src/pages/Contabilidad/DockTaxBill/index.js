@@ -1,4 +1,4 @@
-import { Button, Col, Container, Row } from 'reactstrap';
+import { Button, Col, Container, Row, Badge } from 'reactstrap';
 import Breadcrumbs from '../../../components/Common/Breadcrumbs';
 import CardBasic from '../../../components/Common/CardBasic';
 import FormFilter from '../../../components/Common/FormFilter';
@@ -143,28 +143,44 @@ function DockTaxBill() {
 				Header: 'Fecha',
 				accessor: 'date',
 				style: {
-					width: '10%',
+					width: '7%',
 				},
 			},
 			{
-				Header: 'Horario',
+				Header: 'Hor',
 				accessor: 'hour',
 				style: {
-					width: '10%',
+					width: '5%',
 				},
 			},
 			{
-				Header: 'Nombre embarcación',
+				Header: 'Brazaletes',
+				accessor: 'bracelets',
+				style: {
+					width: '15%',
+				},
+				Cell: ({ value }) => (
+					<div className="d-flex flex-wrap">
+						{value.map((it, idx) => (
+							<Badge color="secondary" key={`braz-${idx}`}>
+								{`${it.color} ${it.code}`}
+							</Badge>
+						))}
+					</div>
+				),
+			},
+			{
+				Header: 'Embarcación',
 				accessor: 'boat',
 				style: {
-					width: '20%',
+					width: '15%',
 				},
 			},
 			{
 				Header: 'Propietario',
 				accessor: 'customer',
 				style: {
-					width: '20%',
+					width: '18%',
 				},
 			},
 			{
@@ -445,7 +461,6 @@ function DockTaxBill() {
 				);
 			})
 			.catch((error) => {
-				console.log('Error');
 				console.log(error);
 			});
 	};

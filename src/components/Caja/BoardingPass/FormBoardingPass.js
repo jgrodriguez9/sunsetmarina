@@ -718,7 +718,6 @@ export default function FormBoardingPass({ cajero = false }) {
 									classNamePrefix="select2-selection"
 								/>
 							</Col>
-							{console.log(formik.values)}
 							<Col xs="12" md="4" className={'mb-2'}>
 								<Label htmlFor="departureDate" className="mb-0">
 									Fecha de salida

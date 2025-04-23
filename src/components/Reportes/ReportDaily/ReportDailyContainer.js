@@ -4,7 +4,6 @@ import { useMemo } from 'react';
 import { numberFormat } from '../../../utils/numberFormat';
 
 const ReportDailyContainer = ({ concepts, groupByCustomer }) => {
-	console.log(concepts);
 	const {
 		totalChargesMXN,
 		totalChargesUSD,

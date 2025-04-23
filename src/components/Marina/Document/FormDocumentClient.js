@@ -186,7 +186,6 @@ export default function FormDocumentClient({
 			}
 		},
 	});
-	console.log(formik.errors);
 
 	return (
 		<div className="needs-validation">

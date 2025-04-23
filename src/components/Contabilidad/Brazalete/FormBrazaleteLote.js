@@ -104,7 +104,6 @@ const FormBrazaleteLote = ({ btnTextSubmit }) => {
 				);
 				setLoading(false);
 				setLastSequence(response.code);
-				console.log(response);
 				if (response.code) {
 					formik.setFieldValue(
 						'startNumber',
