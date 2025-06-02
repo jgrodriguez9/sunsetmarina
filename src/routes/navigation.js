@@ -166,6 +166,7 @@ export const navigations = [
 			ROLE_COMPANIA,
 			ROLE_OPERACIONES,
 			ROLE_CONTABILIDAD,
+			ROLE_MUELLE
 		]),
 		items: [
 			{
@@ -178,6 +179,7 @@ export const navigations = [
 					ROLE_COMPANIA,
 					ROLE_OPERACIONES,
 					ROLE_CONTABILIDAD,
+					ROLE_MUELLE
 				]),
 			},
 			{
@@ -190,6 +192,7 @@ export const navigations = [
 					ROLE_COMPANIA,
 					ROLE_OPERACIONES,
 					ROLE_CONTABILIDAD,
+					ROLE_MUELLE
 				]),
 			},
 			{

@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { Col, Container, Row } from 'reactstrap';
+import { Col, Container, Row, Badge } from 'reactstrap';
 import Breadcrumbs from '../../../components/Common/Breadcrumbs';
 import CardBasic from '../../../components/Common/CardBasic';
 import CardMain from '../../../components/Common/CardMain';
@@ -15,16 +15,19 @@ import {
 	getCurrencyExchangeListPaginado,
 	updateCurrencyExchange,
 } from '../../../helpers/catalogos/currencyExchange';
-import EditableTable from '../../../components/Tables/EditableTable';
 import DialogMain from '../../../components/Common/DialogMain';
 import FormCurrencyExchange from '../../../components/Catalogo/Moneda/FormCurrencyExchange';
 import ContentLoader from '../../../components/Loader/ContentLoader';
 import { numberFormat } from '../../../utils/numberFormat';
+import CellActions from '../../../components/Tables/CellActions';
+import SimpleTable from '../../../components/Tables/SimpleTable';
+
 
 function CurrencyExchange() {
 	const dispatch = useDispatch();
 	const [loading, setLoading] = useState(true);
 	const [items, setItems] = useState([]);
+	const [item, setItem] = useState(null);
 	const [totalPaginas, setTotalPaginas] = useState(0);
 	const [totalRegistros, setTotalRegistros] = useState(10);
 	const [isSubmiting, setIsSubmiting] = useState(false);
@@ -75,119 +78,90 @@ function CurrencyExchange() {
 		fetchList();
 	}, [JSON.stringify(query)]);
 
-	const TableCell = ({ getValue, row, column, table }) => {
-		const initialValue = getValue();
-		const [toggleClass, setToggleClass] = useState(false);
-		const [value, setValue] = useState(initialValue);
-		useEffect(() => {
-			setValue(initialValue);
-		}, [initialValue]);
-		const onBlur = () => {
-			if (value === '') {
-				setValue(initialValue);
-			} else if (value !== initialValue) {
-				table.options.meta?.updateData(
-					row.original.id,
-					column.id,
-					value
-				);
-			}
-			setToggleClass(false);
-		};
-		return (
-			<input
-				value={value}
-				onChange={(e) => setValue(e.target.value)}
-				onBlur={onBlur}
-				onFocus={() => setToggleClass(!toggleClass)}
-				className={`border-0 ${
-					toggleClass ? 'form-control border py-1' : ''
-				}`}
-			/>
-		);
-	};
 
-	const TableDifference = ({ getValue, row, column, table }) => {
-		return (
-			<span
-				className={
-					getValue() > 0
-						? 'text-danger fw-semibold'
-						: 'text-success fw-semibold'
-				}
-			>
-				{numberFormat(getValue())}
-			</span>
-		);
-	};
+	const editAction = useCallback((row) => {
+		const { original } = row;
+		setItem(original);
+		setOpenModal(true);
+	}, []);
 
 	const columns = useMemo(
 		() => [
 			{
-				id: 'name',
-				header: 'Nombre',
-				accessorKey: 'name',
+				Header: 'Nombre',
+				accessor: 'name',
 				style: {
 					width: '30%',
 				},
-				cell: TableCell,
 			},
 			{
-				id: 'code',
-				header: 'Código',
-				accessorKey: 'code',
+				Header: 'Código',
+				accessor: 'code',
 				style: {
 					width: '10%',
 				},
-				cell: TableCell,
 			},
 			{
-				id: 'currency',
-				header: 'Moneda',
-				accessorKey: 'currency',
+				Header: 'Moneda',
+				accessor: 'currency',
 				style: {
 					width: '10%',
 				},
-				cell: TableCell,
 			},
 			{
-				id: 'iso3',
-				header: 'ISO3',
-				accessorKey: 'iso3',
+				Header: 'ISO3',
+				accessor: 'iso3',
 				style: {
 					width: '10%',
 				},
-				cell: TableCell,
 			},
 			{
-				id: 'currencyExchange',
-				header: 'Tipo de cambio',
-				accessorKey: 'currencyExchange',
+				Header: 'Tipo de cambio',
+				accessor: 'currencyExchange',
 				style: {
 					width: '10%',
 				},
-				cell: TableCell,
+				ell: ({ getValue }) => numberFormat(getValue()),
 			},
 			{
-				id: 'yesterdayCurrencyExchange',
-				header: 'Tipo de cambio de ayer',
-				accessorKey: 'yesterdayCurrencyExchange',
+				Header: 'Tipo de cambio de ayer',
+				accessor: 'yesterdayCurrencyExchange',
 				style: {
 					width: '10%',
 				},
 				cell: ({ getValue }) => numberFormat(getValue()),
 			},
 			{
-				id: 'difference',
-				header: 'Diferencia',
-				accessorKey: 'difference',
+				Header: 'Diferencia',
+				accessor: 'difference',
 				style: {
 					width: '10%',
 				},
-				cell: TableDifference,
+				Cell: ({ value }) => {
+					if (value > 0) {
+						return <Badge color="danger">{numberFormat(value)}</Badge>;
+					} else {
+						return <Badge color="success">{numberFormat(value)}</Badge>;
+					}
+				},
+			},
+			{
+				id: 'acciones',
+				Header: 'Acciones',
+				Cell: ({ row }) => (
+					<>
+						<CellActions
+							edit={{ allow: true, action: editAction }}
+							row={row}
+						/>
+					</>
+				),
+				style: {
+					width: '10%',
+				},
 			},
 		],
-		[]
+		[editAction]
 	);
 
 	const handlePageClick = (page) => {
@@ -223,7 +197,6 @@ function CurrencyExchange() {
 	const goPageCreate = () => {
 		setOpenModal(true);
 	};
-
 	const updateCurr = async (id, columnId, value) => {
 		const data = {
 			id: id,
@@ -281,11 +254,7 @@ function CurrencyExchange() {
 	) : (
 		<Row>
 			<Col xl="12">
-				<EditableTable
-					columns={columns}
-					data={items}
-					updateFn={updateCurr}
-				/>
+				<SimpleTable columns={columns} data={items} />
 			</Col>
 			{items.length > 0 && (
 				<Paginate
@@ -353,6 +322,7 @@ function CurrencyExchange() {
 				size="lg"
 				children={
 					<FormCurrencyExchange
+						item={item}
 						handleCloseModal={() => setOpenModal(false)}
 						fetchList={fetchList}
 					/>

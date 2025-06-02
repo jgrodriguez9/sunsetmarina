@@ -23,6 +23,7 @@ export default function FormCurrencyExchange({
 	handleCloseModal,
 	fetchList,
 }) {
+	console.log(item)
 	const dispatch = useDispatch();
 
 	const formik = useFormik({
@@ -113,6 +114,11 @@ export default function FormCurrencyExchange({
 			}
 		},
 	});
+
+	const onHandleBlur = (e) => {
+		const value = e.target.value.replace(',', '.');
+		formik.setFieldValue('currencyExchange', value);
+	}
 
 	return (
 		<Form
@@ -211,6 +217,7 @@ export default function FormCurrencyExchange({
 						className={`form-control`}
 						onChange={formik.handleChange}
 						value={formik.values.currencyExchange}
+						onBlur={onHandleBlur}
 					/>
 					{formik.errors.currencyExchange && (
 						<div className="invalid-tooltip d-block">

@@ -138,6 +138,7 @@ export default function DockImage() {
 	}, [boatId, customActiveTab, customerId]);
 
 	const showDialogInfo = (slip) => {
+		console.log(slip)
 		const reservationId =
 			slip.status !== 'AVAILABLE' && slip?.reservations.length > 0
 				? slip?.reservations[slip.reservations.length - 1].id

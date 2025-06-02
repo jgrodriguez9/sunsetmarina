@@ -103,14 +103,21 @@ function BoardingPass() {
 				Header: 'Código',
 				accessor: 'code',
 				style: {
-					width: '10%',
+					width: '7%',
+				},
+			},
+			{
+				Header: 'Embarcación',
+				accessor: 'reservation.boat.name',
+				style: {
+					width: '15%',
 				},
 			},
 			{
 				Header: 'Pax',
 				accessor: 'pax',
 				style: {
-					width: '5%',
+					width: '4%',
 				},
 			},
 			{
@@ -133,7 +140,7 @@ function BoardingPass() {
 				Header: 'Precio x Pax (USD)',
 				accessor: 'priceUSD',
 				style: {
-					width: '10%',
+					width: '7%',
 				},
 				Cell: ({ value }) => numberFormat(value),
 			},
@@ -141,7 +148,7 @@ function BoardingPass() {
 				Header: 'Total (USD)',
 				accessor: 'amountUSD',
 				style: {
-					width: '9%',
+					width: '7%',
 				},
 				Cell: ({ value }) => (
 					<span className="text-primary fw-bold">
@@ -153,7 +160,7 @@ function BoardingPass() {
 				Header: 'Tipo cambio',
 				accessor: 'currencyExchange',
 				style: {
-					width: '10%',
+					width: '7%',
 				},
 				Cell: ({ value }) => numberFormat(value),
 			},
@@ -161,7 +168,7 @@ function BoardingPass() {
 				Header: 'Precio x Pax (MXN)',
 				accessor: 'price',
 				style: {
-					width: '10%',
+					width: '7%',
 				},
 				Cell: ({ value }) => numberFormat(value),
 			},
@@ -169,7 +176,7 @@ function BoardingPass() {
 				Header: 'Total (MXN)',
 				accessor: 'amount',
 				style: {
-					width: '9%',
+					width: '7%',
 				},
 				Cell: ({ value }) => (
 					<span className="text-success fw-bold">
@@ -181,7 +188,7 @@ function BoardingPass() {
 				Header: 'Abono cliente',
 				accessor: 'customerBalance',
 				style: {
-					width: '9%',
+					width: '7%',
 				},
 				Cell: ({ value }) => numberFormat(value),
 			},
