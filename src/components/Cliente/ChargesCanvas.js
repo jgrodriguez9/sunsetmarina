@@ -103,6 +103,7 @@ const ChargesCanvas = ({
 						id: it.id,
 						amount: it.amount,
 						interest: it.interest,
+						daysCharged: it.daysCharged,
 						status: it.status,
 						monthYear: it.monthYear,
 						fullMonth: true,

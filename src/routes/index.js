@@ -362,6 +362,17 @@ const cajeroRoutes = [
 	),
 ];
 
+const muelleRoutes = [
+	...authProtectedRoutes,
+	...publicRoutes,
+	...marineRoutes.filter(
+		(it) =>
+			it.path === '/slip' ||
+			it.path === '/slip/create' ||
+			it.path === '/slip/edit/:id'
+	),
+];
+
 export {
 	authProtectedRoutes,
 	publicRoutes,
@@ -370,4 +381,5 @@ export {
 	contabilidadRoutes,
 	operacionesRoutes,
 	cajeroRoutes,
+	muelleRoutes,
 };

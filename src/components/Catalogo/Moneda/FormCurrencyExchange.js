@@ -48,6 +48,7 @@ export default function FormCurrencyExchange({
 			//validaciones antes de enviarlo
 			if (values.id) {
 				//update
+				values.currencyExchange = parseFloat(values.currencyExchange);
 				try {
 					let response = await updateCurrencyExchange(
 						values.id,
@@ -82,6 +83,7 @@ export default function FormCurrencyExchange({
 				}
 			} else {
 				//save
+				values.currencyExchange = parseFloat(values.currencyExchange);
 				try {
 					let response = await saveCurrencyExchange(values);
 					if (response) {

@@ -7,6 +7,7 @@ import {
 	contabilidadRoutes,
 	operacionesRoutes,
 	publicRoutes,
+	muelleRoutes,
 } from './routes';
 import NonAuthLayout from './components/Layout/NonAuthLayout';
 import AuthLayout from './components/Layout/AuthLayout';
@@ -57,7 +58,7 @@ function App() {
 				setAuthRoutes((prev) => [...prev, ...cajeroRoutes]);
 			}
 			if (user.roles.includes(ROLE_MUELLE)) {
-				setAuthRoutes((prev) => [...prev]);
+				setAuthRoutes((prev) => [...prev, ...muelleRoutes]);
 			}
 			loading = false;
 		}

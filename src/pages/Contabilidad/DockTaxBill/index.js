@@ -283,41 +283,64 @@ function DockTaxBill() {
 				key: 'date',
 				header: 'Fecha',
 				width: 14,
+				style: {
+					alignment: { vertical: 'middle' },
+				},
 			},
 			{
 				key: 'hour',
 				header: 'Horario',
 				width: 14,
+				style: {
+					alignment: { vertical: 'middle' },
+				},
+			},
+			{
+				key: 'bracelets',
+				header: 'Brazaletes',
+				width: 35,
+				style: {
+					alignment: { wrapText: true },
+				},
 			},
 			{
 				key: 'boat',
 				header: 'Nombre embarcación',
 				width: 35,
+				style: {
+					alignment: { vertical: 'middle' },
+				},
 			},
 			{
 				key: 'customer',
 				header: 'Propietario',
 				width: 35,
+				style: {
+					alignment: { vertical: 'middle' },
+				},
 			},
 			{
 				key: 'currencyExchange',
 				header: 'Tipo cambio',
 				width: 10,
 				style: {
-					alignment: { horizontal: 'right', wrapText: true },
+					alignment: { horizontal: 'right', wrapText: true, vertical: 'middle' },
 				},
 			},
 			{
 				key: 'pax',
 				header: 'Pax',
 				width: 12,
+				style: {
+					alignment: { vertical: 'middle' },
+				},
 			},
 			{
 				key: 'amountMXN',
 				header: 'Efectivo MXN',
 				width: 14,
 				style: {
-					alignment: { horizontal: 'right' },
+					alignment: { horizontal: 'right', vertical: 'middle' },
 				},
 			},
 			{
@@ -325,7 +348,7 @@ function DockTaxBill() {
 				header: 'Efectivo USD',
 				width: 14,
 				style: {
-					alignment: { horizontal: 'right' },
+					alignment: { horizontal: 'right', vertical: 'middle' },
 				},
 			},
 			{
@@ -333,7 +356,7 @@ function DockTaxBill() {
 				header: 'Total',
 				width: 14,
 				style: {
-					alignment: { horizontal: 'right' },
+					alignment: { horizontal: 'right', vertical: 'middle' },
 				},
 			},
 			{
@@ -341,7 +364,7 @@ function DockTaxBill() {
 				header: 'IVA',
 				width: 14,
 				style: {
-					alignment: { horizontal: 'right' },
+					alignment: { horizontal: 'right', vertical: 'middle' },
 				},
 			},
 			{
@@ -349,7 +372,7 @@ function DockTaxBill() {
 				header: 'Impuesto muelle',
 				width: 12,
 				style: {
-					alignment: { horizontal: 'right', wrapText: true },
+					alignment: { horizontal: 'right', wrapText: true, vertical: 'middle' },
 				},
 			},
 			{
@@ -357,13 +380,18 @@ function DockTaxBill() {
 				header: 'IVA',
 				width: 14,
 				style: {
-					alignment: { horizontal: 'right' },
+					alignment: { horizontal: 'right', vertical: 'middle' },
 				},
 			},
 		];
 		sheet.columns = columns;
 		items.forEach((val, i, _) => {
-			sheet.addRow(val);
+			const bracelets = val.bracelets.length === 0 ? '' : val.bracelets.map(it=> `${it.color} ${it.code}`).join('\n')
+			const value = {
+				...val,
+				bracelets: bracelets
+			}
+			sheet.addRow(value);
 		});
 
 		sheet.getRow(1).font = { bold: true };

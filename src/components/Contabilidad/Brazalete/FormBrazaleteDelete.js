@@ -123,18 +123,14 @@ const FormBrazaleteDelete = ({ onHandleCloseDialog, setOpen }) => {
           <Label htmlFor="color" className="mb-0">
             Color
           </Label>
-          <Select
-            value={
-              formik.values.color
-                ? { value: formik.values.color, label: formik.values.color }
-                : null
-            }
-            onChange={(value) => {
-              formik.setFieldValue("color", value?.value ?? "");
-            }}
-            options={colorOpt}
-            classNamePrefix="select2-selection"
-            placeholder={SELECT_OPTION}
+          <Input
+            id="color"
+            name="color"
+            className={`form-control ${
+              formik.errors.color ? "is-invalid" : ""
+            }`}
+            onChange={formik.handleChange}
+            value={formik.values.color}
           />
           {formik.errors.color && (
             <div className="invalid-tooltip">{formik.errors.color}</div>
